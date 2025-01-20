@@ -42,9 +42,9 @@ To run the project, you will need to run the following commands in your first te
    ```
 2. NOTE: Continue the rest in your second termnial:  
     To install all requierd npm packages, navigate to the `backend/frontend/frontend` folder and run the following:
-   `bash
-npm install
-`
+   ```bash
+   npm install
+   ```
 3. To start the React server, in the same folder run the command:
    ```bash
    npm run dev
