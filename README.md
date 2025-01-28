@@ -23,10 +23,18 @@ To run the project and install these python packages, it is recommended to use a
    ```bash
    python -m venv venv
    ```
-2. Then activate the virtual environment:
+2. Then activate the virtual environment(FOR LINUX):
+
    ```bash
    source venv/bin/activate
    ```
+
+   FOR WINDOWS
+
+   ```bash
+   venv\Scripts\activate
+   ```
+
 3. To install the required python packages, run the following command:
    ```bash
    pip install -r requirements.txt
