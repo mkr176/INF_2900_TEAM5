@@ -35,6 +35,12 @@ To run the project and install these python packages, it is recommended to use a
    venv\Scripts\activate
    ```
 
+   or
+
+   ```
+   .\env\Scripts\activate
+   ```
+
 3. To install the required python packages, run the following command:
    ```bash
    pip install -r requirements.txt
