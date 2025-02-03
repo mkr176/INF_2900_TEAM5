@@ -3,7 +3,7 @@
   <br>
 </p>
 
-# Library Manager
+# LibManager
 
 ## Documentation
 [LateX Link](https://sharelatex.tum.de/1436619729gkstxqtxbvgv)
