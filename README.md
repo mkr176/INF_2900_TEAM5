@@ -7,6 +7,7 @@
 
 ## Documentation
 [LateX Link](https://sharelatex.tum.de/1436619729gkstxqtxbvgv)
+[Docs (Userstories, personas etc)](docs/README.md)
 ## Pre-requisites
 
 To run this project, you will need to have the following installed:
