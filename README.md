@@ -4,6 +4,7 @@
 </p>
 
 # LibManager
+Inventors: Alvaro, Carlos, Julius, Matt
 
 ## Documentation
 [LateX Link](https://sharelatex.tum.de/1436619729gkstxqtxbvgv)
