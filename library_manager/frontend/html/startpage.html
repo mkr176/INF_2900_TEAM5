@@ -1,0 +1,34 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Welcome to LibManager</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    {% if debug %}
+    <!-- if development -->
+    <script type="module">
+        import RefreshRuntime from 'http://localhost:5173/@react-refresh'
+        RefreshRuntime.injectIntoGlobalHook(window)
+        window.$RefreshReg$ = () => {}
+        window.$RefreshSig$ = () => (type) => type
+        window.__vite_plugin_react_preamble_installed__ = true
+    </script>
+    <script type="module" src="http://localhost:5173/@vite/client"></script>
+    <script type="module" src="http://localhost:5173/src/main.tsx"></script>
+    {% else %}
+    <!-- if production -->
+    <script type="module" crossorigin src="{% static '/assets/js/index.min.js' %}"></script>
+    <link rel="stylesheet" crossorigin href="{% static '/assets/css/index.min.css' %}">
+    {% endif %}
+</head>
+<body>
+    <div style="text-align: center; padding-top: 50px;">
+        <h1>Welcome to LibManager!</h1>
+        <img src="/static/images/library_seal.jpg" alt="LibManager Logo" width="200">
+        <p>Your Library Management System</p>
+    </div>
+    <div id="root"></div>
+</body>
+</html>

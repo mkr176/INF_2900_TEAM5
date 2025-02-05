@@ -1,15 +1,35 @@
 <p align="center">
-  <img src="library_manager\static\library_seal.jpg" alt="docu_llama" width="300"/>
+  <img src="library_manager\frontend\public\images\library_seal.jpg" alt="docu_llama" width="300"/>
   <br>
 </p>
 
 # LibManager
-Inventors: Alvaro, Carlos, Julius, Matt
+Agile Software Engineers and Inventors: Alvaro, Carlos, Julius, Matt
 
 ## Documentation
 [LateX Link](https://sharelatex.tum.de/1436619729gkstxqtxbvgv)
 
 [Docs (Userstories, personas etc)](docs/README.md)
+
+## Running the project
+
+To run the project, you will need to run the following commands in your first terminal:
+
+1. NOTE: Continue the rest in your second termnial:  
+    To install all requierd npm packages, navigate to the `library_manager/frontend/` folder and run the following:
+   ```bash
+   npm install
+   ```
+2. To start the React server, in the same folder run the command:. Note: The listed server does not serve static files managed by Django. It's specifically for developing the React frontend.
+   ```bash
+   npm run dev
+   ```
+3. To start the Django server, navigate to the `backend` folder and run the following command:
+   ```bash
+   python manage.py runserver
+   ```
+4. Open your browser and navigate to `http://localhost:8000/` (where the Django server is being hosted) to view the project. Or The port that is displayed on your terminal
+
 ## Pre-requisites
 
 To run this project, you will need to have the following installed:
@@ -54,24 +74,6 @@ To run the project and install these python packages, it is recommended to use a
    pip install -r requirements.txt
    ```
 
-## Running the project
-
-To run the project, you will need to run the following commands in your first terminal:
-
-1. NOTE: Continue the rest in your second termnial:  
-    To install all requierd npm packages, navigate to the `library_manager/frontend/` folder and run the following:
-   ```bash
-   npm install
-   ```
-2. To start the React server, in the same folder run the command:
-   ```bash
-   npm run dev
-   ```
-3. To start the Django server, navigate to the `backend` folder and run the following command:
-   ```bash
-   python manage.py runserver
-   ```
-4. Open your browser and navigate to `http://localhost:8000/` (where the Django server is being hosted) to view the project. Or The port that is displayed on your terminal
 
 ## Git Workflow
 
