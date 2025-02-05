@@ -9,7 +9,7 @@ Agile Software Engineers and Inventors: Alvaro, Carlos, Julius, Matt
 ## Documentation
 [LateX Link](https://sharelatex.tum.de/1436619729gkstxqtxbvgv)
 
-[Docs (Userstories, personas etc)](docs/README.md)
+[Docs (old, rather use the LaTeX Link above for user stories, features etc.)](docs/README.md)
 
 ## Running the project
 
@@ -28,7 +28,7 @@ To run the project, you will need to run the following commands in your first te
    ```bash
    python manage.py runserver
    ```
-4. Open your browser and navigate to `http://localhost:8000/` (where the Django server is being hosted) to view the project. Or The port that is displayed on your terminal
+4. Open your browser and navigate to [http://localhost:8000/](http://localhost:8000/) (where the Django server is being hosted) to view the project. Or The port that is displayed on your terminal
 
 ## Pre-requisites
 
