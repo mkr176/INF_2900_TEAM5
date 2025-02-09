@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', function() {
-    document.getElementById("signUpButton").addEventListener('click', function() {
+    document.getElementById("signButton").addEventListener('click', function() {
         const fullName = document.getElementById("fullName").value.trim();
         const username = document.getElementById("username").value.trim();
         const birthDate = document.getElementById("birthDate").value;
