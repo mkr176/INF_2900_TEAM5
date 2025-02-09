@@ -1,40 +1,18 @@
-import { useState } from 'react'
-import './App.css'
-import 'vite/modulepreload-polyfill'
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import LoginPage from "./pages/LoginPage/LoginPage";
+import SignUpPage from "./pages/SignUpPage/SignUpPage";
+import WelcomePage from "./pages/WelcomePage/WelcomePage";
 
-function App() {
-  const [count, setCount] = useState(0)
-  const reactLogo = '/static/react.svg'
-  const viteLogo = '/static/vite.svg'
-  const djangoLogo = '/static/django.svg'
-
+const App = () => {
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-        <a href="https://www.djangoproject.com" target="_blank">
-          <img src={djangoLogo} className="logo django" alt="Django logo" />
-        </a>
-      </div>
-      <h1>Vite + React + Django</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+    <Router>
+      <Routes>
+        <Route path="/" element={<WelcomePage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/signup" element={<SignUpPage />} />
+      </Routes>
+    </Router>
+  );
+};
 
-export default App
+export default App;
