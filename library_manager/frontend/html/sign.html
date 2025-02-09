@@ -3,10 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign Up</title>
+    <title>Sign Up Page</title>
+    <link rel="stylesheet" href="{% static 'library_manager/frontend/src/sign.css' %}">
 </head>
 <body>
-    <h1>Sign Up Page</h1>
-    <p>Welcome! This is where you can sign up.</p>
+    <div class="signup-container">
+        <h1>Sign Up</h1>
+        <input type="text" id="fullName" placeholder="Full Name" required>
+        <input type="text" id="username" placeholder="Username" required>
+        <input type="date" id="birthDate" required>
+        <input type="email" id="email" placeholder="Email" required>
+        <input type="password" id="password" placeholder="Password" required>
+        <button id="signUpButton">Sign Up</button>
+    </div>
+
+    <script src="{% static 'library_manager/frontend/js/sign.js' %}" defer></script>
 </body>
 </html>
