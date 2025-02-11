@@ -73,6 +73,24 @@ To run the project and install these python packages, it is recommended to use a
    ```bash
    pip install -r requirements.txt
    ```
+## DATABASE CONNECTIONS
+
+First download the version OF (mysql-installer-community-8.0.41.0.msi) [352.2m](https://dev.mysql.com/downloads/installer/)
+
+When you are installing it only install the MySQLServer version 8.0.41 and the MySQL Workbench 8.0.41
+The password should be SoftwareUser
+The only things that should be change is the port to 3005.
+
+These are the only changes that you must do when you are installing MySQL
+
+When it finish all the instalation and after you install the `requirements.txt` in the terminal you should enter while you are in `library_manager`:
+   - python manage.py
+
+And after that it will show that: No changes detected. Then you should run:
+   - python manage.py migrate
+
+And then finally you can run the server:
+   - python manage.py runserver
 
 
 ## Git Workflow
