@@ -83,6 +83,11 @@ The only things that should be change is the port to 3005.
 
 These are the only changes that you must do when you are installing MySQL
 
+When you start MySQL you should run and create a database called:
+   - CREATE DATABASE library
+
+Then connect to the database.
+
 When it finish all the instalation and after you install the `requirements.txt` in the terminal you should enter while you are in `library_manager`:
    - python manage.py
 
