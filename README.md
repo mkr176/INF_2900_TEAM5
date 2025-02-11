@@ -24,7 +24,7 @@ To run the project, you will need to run the following commands in your first te
    ```bash
    npm run dev
    ```
-3. To start the Django server, navigate to the `backend` folder and run the following command:
+3. To start the Django server, navigate to the `library_manager` folder and run the following command:
    ```bash
    python manage.py runserver
    ```
