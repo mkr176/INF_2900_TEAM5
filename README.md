@@ -89,7 +89,7 @@ When you start MySQL you should run and create a database called:
 Then connect to the database.
 
 When it finish all the instalation and after you install the `requirements.txt` in the terminal you should enter while you are in `library_manager`:
-   - python manage.py
+   - python manage.py makemigrations
 
 And after that it will show that: No changes detected. Then you should run:
    - python manage.py migrate
