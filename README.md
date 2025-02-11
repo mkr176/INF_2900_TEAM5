@@ -79,7 +79,7 @@ First download the version OF (mysql-installer-community-8.0.41.0.msi) [352.2m](
 
 When you are installing it only install the MySQLServer version 8.0.41 and the MySQL Workbench 8.0.41
 The password should be SoftwareUser
-The only things that should be change is the port to 3005.
+The only things that should be change is the port to 3305.
 
 These are the only changes that you must do when you are installing MySQL
 
