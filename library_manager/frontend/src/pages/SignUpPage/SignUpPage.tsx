@@ -15,6 +15,20 @@ const SignUpPage = () => {
     setFormData({ ...formData, [name]: value });
   };
 
+  const calculateAge = (birthDate: string): number => {
+    const birthDateObj = new Date(birthDate);
+    const today = new Date();
+    let age = today.getFullYear() - birthDateObj.getFullYear();
+    const monthDiff = today.getMonth() - birthDateObj.getMonth();
+    const dayDiff = today.getDate() - birthDateObj.getDate();
+
+    if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
+      age--;
+    }
+
+    return age;
+  };
+
   const handleSignUp = () => {
     const { fullName, username, birthDate, email, password } = formData;
 
@@ -27,6 +41,12 @@ const SignUpPage = () => {
       alert("Password must be at least 6 characters long!");
       return;
     }
+
+    if (calculateAge(birthDate) < 16) {
+      alert("You must be at least 16 years old to register.");
+      return;
+    }
+
 
     alert("Sign-up successful!");
     window.location.href = "/login";
