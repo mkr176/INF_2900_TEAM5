@@ -9,6 +9,15 @@ document.getElementById("loginButton").addEventListener('click', function(){
     }
 });
 
-document.getElementById("signButton").addEventListener('click', function(){
-    window.location.href = 'library_manager/frontend/html/sign.html'; //add url for sign.html
+document.addEventListener('DOMContentLoaded', function () {
+    const signButton = document.getElementById("signButton");
+
+    if (signButton) {
+        signButton.addEventListener('click', function () {
+            console.log("Redirecting to sign up page...");
+            window.location.href = '/library_manager/frontend/html/sign.html';
+        });
+    } else {
+        console.error("El botón signButton no se encontró en el DOM.");
+    }
 });
