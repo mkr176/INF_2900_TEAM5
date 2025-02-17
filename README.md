@@ -46,7 +46,7 @@ To run the project and install these python packages, it is recommended to use a
 
    ```
 
-2. Change directory to `library_manager` To install the required python packages, run the following command:
+2. To install the required python packages, run the following command:
 
    ```bash
    pip install -r requirements.txt
@@ -59,7 +59,7 @@ To run the project and install these python packages, it is recommended to use a
    python manage.py migrate
    ```
 
-4. To start the Django server, stay in the same folder and run the following command:
+4. To start the Django server. Change directory to `library_manager` and run the following command:
    ```bash
    python manage.py runserver
    ```
