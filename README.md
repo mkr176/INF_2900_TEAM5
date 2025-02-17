@@ -72,14 +72,49 @@ To run the project and install these python packages, it is recommended to use a
    pip install -r requirements.txt
    ```
 
-3. Run Database Migrations
+3. Change directory to `library_manager` and Run Database Migration
 
    ```bash
    python manage.py makemigrations
    python manage.py migrate
    ```
 
-4. To start the Django server. Change directory to `library_manager` and run the following command:
+4. If Any error occurs, Check if MySQL Server is Running
+
+Run the following command to check if MySQL is running inside WSL:
+
+Linux:
+
+```bash
+sudo service mysql status
+```
+
+Windows:
+
+```
+Get-Service -Name MySQL*
+```
+
+5. If MySQL is Not Running, start it and run step 3 again.
+
+Start it with:
+
+```bash
+sudo service mysql start
+```
+
+Windows:
+If you don’t know the exact MySQL service name, you can list all services:
+
+```bash
+Get-Service | Select-String "MySQL"
+```
+
+```bash
+Start-Service -Name MySQL80  # Change "MySQL80" if your service has a different name
+```
+
+6. To start the Django server. run the following command:
    ```bash
    python manage.py runserver
    ```
@@ -89,7 +124,7 @@ To run the project and install these python packages, it is recommended to use a
 To run the frontend , you will need to run the following commands in NEW terminal:
 
 1. NOTE: Continue the rest in your second termnial:  
-    To install all requierd npm packages, navigate to the `library_manager/frontend/frontend` folder and run the following:
+    To install all requierd npm packages, navigate to the `library_manager/frontend` folder and run the following:
    ```bash
    npm install
    ```
