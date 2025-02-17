@@ -4,31 +4,14 @@
 </p>
 
 # LibManager
+
 Agile Software Engineers and Inventors: Alvaro, Carlos, Julius, Matt
 
 ## Documentation
+
 [LateX Link](https://sharelatex.tum.de/1436619729gkstxqtxbvgv)
 
 [Docs (old, rather use the LaTeX Link above for user stories, features etc.)](docs/README.md)
-
-## Running the project
-
-To run the project, you will need to run the following commands in your first terminal:
-
-1. NOTE: Continue the rest in your second termnial:  
-    To install all requierd npm packages, navigate to the `library_manager/frontend/` folder and run the following:
-   ```bash
-   npm install
-   ```
-2. To start the React server, in the same folder run the command:. Note: The listed server does not serve static files managed by Django. It's specifically for developing the React frontend.
-   ```bash
-   npm run dev
-   ```
-3. To start the Django server, navigate to the `library_manager` folder and run the following command:
-   ```bash
-   python manage.py runserver
-   ```
-4. Open your browser and navigate to [http://localhost:8000/](http://localhost:8000/) (where the Django server is being hosted) to view the project. Or The port that is displayed on your terminal
 
 ## Pre-requisites
 
@@ -47,32 +30,56 @@ You will also need to install the following python packages:
 
 To run the project and install these python packages, it is recommended to use a virtual environment. Follow the steps below to create and activate a virtual environment.
 
-1. To create a virtual environment, run the following command in your terminal:
+1. Create & Activate Virtual Environment:
+   For Linux/Mac:
+
+   ```bash
+    python3 -m venv venv
+    source venv/bin/activate
+   ```
+
+   For Windows:
+
    ```bash
    python -m venv venv
-   ```
-2. Then activate the virtual environment(FOR LINUX):
-
-   ```bash
-   source venv/bin/activate
-   ```
-
-   FOR WINDOWS
-
-   ```bash
    venv\Scripts\activate
-   ```
-
-   or
 
    ```
-   .\env\Scripts\activate
-   ```
 
-3. To install the required python packages, run the following command:
+2. Change directory to `library_manager` To install the required python packages, run the following command:
+
    ```bash
    pip install -r requirements.txt
    ```
+
+3. Run Database Migrations
+
+   ```bash
+   python manage.py makemigrations
+   python manage.py migrate
+   ```
+
+4. To start the Django server, stay in the same folder and run the following command:
+   ```bash
+   python manage.py runserver
+   ```
+
+## Running the project
+
+To run the frontend , you will need to run the following commands in NEW terminal:
+
+1. NOTE: Continue the rest in your second termnial:  
+    To install all requierd npm packages, navigate to the `library_manager/frontend/frontend` folder and run the following:
+   ```bash
+   npm install
+   ```
+2. To start the React server, in the same folder run the command:. Note: The listed server does not serve static files managed by Django. It's specifically for developing the React frontend.
+   ```bash
+   npm run dev
+   ```
+3. Open your browser and navigate to [http://localhost:8000/](http://localhost:8000/)
+4.
+
 ## DATABASE CONNECTIONS
 
 First download the version OF (mysql-installer-community-8.0.41.0.msi) [352.2m](https://dev.mysql.com/downloads/installer/)
@@ -84,19 +91,22 @@ The only things that should be change is the port to 3305.
 These are the only changes that you must do when you are installing MySQL
 
 When you start MySQL you should run and create a database called:
-   - CREATE DATABASE library
+
+- CREATE DATABASE library
 
 Then connect to the database.
 
 When it finish all the instalation and after you install the `requirements.txt` in the terminal you should enter while you are in `library_manager`:
-   - python manage.py makemigrations
+
+- python manage.py makemigrations
 
 And after that it will show that: No changes detected. Then you should run:
-   - python manage.py migrate
+
+- python manage.py migrate
 
 And then finally you can run the server:
-   - python manage.py runserver
 
+- python manage.py runserver
 
 ## Git Workflow
 
