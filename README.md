@@ -28,18 +28,38 @@ You will also need to install the following python packages:
 
 ### Python Virtual Environment
 
+#### Automatic Routine
+##### Windows
+
+1.  **`Windows_start_backend.bat`**: Starts the Django backend server.
+    *   Double-click `Windows_start_backend.bat` or run it from the command prompt in the project root by typing `Windows_start_backend.bat` and pressing Enter.
+
+2.  **`Windows_start_frontend.bat`**: Starts the React frontend server in a **new terminal**.
+    *   Open a **new Command Prompt or PowerShell window**, navigate to the project root, and run the script by typing `Windows_start_frontend.bat` and pressing Enter.
+
+##### Linux/Mac
+
+1.  **`Linux_start_backend.sh`**: Starts the Django backend server.
+    *   Make the script executable: `chmod +x Linux_start_backend.sh`
+    *   Run the script from the project root: `./Linux_start_backend.sh`
+
+2.  **`start_frontend.sh`**: Starts the React frontend server in a **new terminal**.
+    *   Make the script executable: `chmod +x Linux_start_frontend.sh`
+    *   Open a **new terminal window**, navigate to the project root, and run the script: `./Linux_start_frontend.sh`
+
+
+#### Manual Routine
 To run the project and install these python packages, it is recommended to use a virtual environment. Follow the steps below to create and activate a virtual environment.
 
 1. Create & Activate Virtual Environment:
+   Navigate to INF_2900_TEAM5:
    For Linux/Mac:
-
    ```bash
     python3 -m venv venv
     source venv/bin/activate
    ```
 
    For Windows:
-
    ```bash
    python -m venv venv
    venv\Scripts\activate

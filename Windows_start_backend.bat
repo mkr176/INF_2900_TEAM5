@@ -1,0 +1,13 @@
+@echo off
+echo Activating Virtual Environment...
+call venv\Scripts\activate
+
+echo Navigating to library_manager...
+cd library_manager
+
+echo Running database migrations...
+python manage.py makemigrations
+python manage.py migrate
+
+echo Starting Django backend server...
+python manage.py runserver

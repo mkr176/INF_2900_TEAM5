@@ -1,0 +1,6 @@
+@echo off
+echo Navigating to frontend directory...
+cd library_manager\frontend\frontend
+
+echo Starting React frontend server...
+npm run dev
