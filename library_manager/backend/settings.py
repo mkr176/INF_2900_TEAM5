@@ -84,8 +84,8 @@ DATABASES = {
             'NAME': 'library',
             'USER': 'root',
             'PASSWORD': 'SoftwareUser',
-            'HOST': 'localhost',
-            'PORT': '3305',
+            'HOST': '127.0.0.1',
+            'PORT': '3306',
         }
     }
 
