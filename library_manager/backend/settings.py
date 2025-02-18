@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'frontend.apps.FrontendConfig',
+    'backend',
 ]
 
 MIDDLEWARE = [
@@ -59,7 +59,7 @@ ROOT_URLCONF = 'backend.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'frontend', 'frontend', 'html')],
+        'DIRS': [os.path.join(BASE_DIR, 'frontend', 'html')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -84,8 +84,8 @@ DATABASES = {
             'NAME': 'library',
             'USER': 'root',
             'PASSWORD': 'SoftwareUser',
-            'HOST': '127.0.0.1',
-            'PORT': '3306',
+            'HOST': 'localhost',
+            'PORT': '3305',
         }
     }
 
@@ -125,7 +125,7 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'frontend', 'frontend','public'),
+    os.path.join(BASE_DIR, 'frontend','public'),
     # os.path.join(BASE_DIR, 'frontend', 'dist'), # filepath did not exist in origin
 ]
 
