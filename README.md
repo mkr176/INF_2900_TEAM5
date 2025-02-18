@@ -43,7 +43,7 @@ You will also need to install the following python packages:
     *   Make the script executable: `chmod +x Linux_start_backend.sh`
     *   Run the script from the project root: `./Linux_start_backend.sh`
 
-2.  **`start_frontend.sh`**: Starts the React frontend server in a **new terminal**.
+2.  **`Linux_start_frontend.sh`**: Starts the React frontend server in a **new terminal**.
     *   Make the script executable: `chmod +x Linux_start_frontend.sh`
     *   Open a **new terminal window**, navigate to the project root, and run the script: `./Linux_start_frontend.sh`
 
@@ -119,7 +119,7 @@ Start-Service -Name MySQL80  # Change "MySQL80" if your service has a different 
    python manage.py runserver
    ```
 
-## Running the project
+## Running the Frontend
 
 To run the frontend , you will need to run the following commands in NEW terminal:
 
