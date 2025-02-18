@@ -1,14 +1,16 @@
-import pymysql
-
-pymysql.install_as_MySQLdb()
+import mysql.connector
+from mysql.connector import Error
 
 def get_db_connection():
-    connection = pymysql.connect(
-        host='localhost',
-        user='root',
-        password='SotfwareUser',
-        db='library',
-        charset='utf8mb4',
-        cursorclass=pymysql.cursors.DictCursor
-    )
-    return connection
+    try:
+        connection = mysql.connector.connect(
+            host='localhost',
+            user='root',
+            password='SotfwareUser',
+            database='library'
+        )
+        if connection.is_connected():
+            return connection
+    except Error as e:
+        print(f"Error while connecting to MySQL: {e}")
+        return None

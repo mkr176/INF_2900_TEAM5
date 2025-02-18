@@ -8,7 +8,7 @@ class User(models.Model):
         ('LB','Librarian')
     ]
     id = models.AutoField(primary_key=True)
-    nombre = models.CharField(max_length=200)
+    name = models.CharField(max_length=200)
     numberbooks = models.IntegerField()
     type = models.CharField(max_length=10, choices=TYPES)
 
@@ -39,7 +39,6 @@ class Libro(models.Model):
     isbn = models.CharField(max_length=13, unique=True)
     category = models.CharField(max_length=3, choices=CATEGORIES)
     language = models.CharField(max_length=50)
-    publisher = models.CharField(max_length=50)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     condition = models.CharField(max_length=4, choices=CONDITIONS)
     available = models.BooleanField(default=True)
@@ -47,4 +46,5 @@ class Libro(models.Model):
 
     def __str__(self):
         return self.title
-    
+
+
