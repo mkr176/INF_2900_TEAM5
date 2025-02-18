@@ -19,9 +19,23 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="flex items-center justify-center h-screen bg-gradient-to-r from-purple-500 to-pink-500">
+    <div className="relative flex items-center justify-center h-screen bg-gradient-to-r from-purple-500 to-pink-500 overflow-hidden">
       <motion.div
-        className="bg-white p-8 rounded-2xl shadow-xl w-96 text-center"
+        className="absolute inset-0 flex items-center justify-center overflow-hidden"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1 }}
+      >
+        <motion.img
+          src="/static/books_background.jpg" //need an image of books in the background
+          alt="Floating Books"
+          className="absolute w-full h-full object-cover opacity-30"
+          animate={{ y: [0, -10, 0] }}
+          transition={{ repeat: Infinity, duration: 5, ease: "easeInOut" }}
+        />
+      </motion.div>
+      <motion.div
+        className="bg-white p-8 rounded-2xl shadow-xl w-96 text-center relative z-10"
         initial={{ opacity: 0, y: -50 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
