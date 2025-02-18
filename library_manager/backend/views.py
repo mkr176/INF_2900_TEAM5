@@ -5,6 +5,8 @@ from django.contrib.auth.models import User
 from django.views.generic import TemplateView
 from django.contrib.auth import authenticate, login, logout
 import json
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
 from django.contrib.auth.models import User
 from rest_framework import generics
 from .serializers import UserSerializer
@@ -22,6 +24,7 @@ class FrontendAppView(TemplateView):
         return super().get(request, *args, **kwargs)
 
 # Register View
+@method_decorator(csrf_exempt, name='dispatch')
 class RegisterView(View):
     def post(self, request):
         try:
@@ -31,17 +34,12 @@ class RegisterView(View):
             email = data.get('email', '')
             birth_date = data.get('birthDate', '')
 
-            # Run validations
-            try:
-                validate_username(username)
-                validate_password(password)
-                validate_email(email)
-                validate_birth_date(birth_date)
-            except ValidationError as e:
-                return JsonResponse({'error': str(e)}, status=400)
+            # Check if user already exists
+            if User.objects.filter(username=username).exists():
+                return JsonResponse({'error': 'Username already exists'}, status=400)
 
-            # Create the user
-            user = User.objects.create_user(username=username, password=password, email=email)
+            # Create user
+            User.objects.create_user(username=username, password=password, email=email)
             return JsonResponse({'message': 'User registered successfully'}, status=201)
 
         except json.JSONDecodeError:
