@@ -115,6 +115,7 @@ Start-Service -Name MySQL80  # Change "MySQL80" if your service has a different 
 ```
 
 6. To start the Django server. run the following command:
+
    ```bash
    python manage.py runserver
    ```
@@ -125,15 +126,24 @@ To run the frontend , you will need to run the following commands in NEW termina
 
 1. NOTE: Continue the rest in your second termnial:  
     To install all requierd npm packages, navigate to the `library_manager/frontend` folder and run the following:
+
    ```bash
    npm install
    ```
-2. To start the React server, in the same folder run the command:. Note: The listed server does not serve static files managed by Django. It's specifically for developing the React frontend.
+
+2. Before run it, add npm package for react motion and movement
+
+   ```bash
+   npm install framer-motion
+   ```
+
+3. To start the React server, in the same folder run the command:. Note: The listed server does not serve static files managed by Django. It's specifically for developing the React frontend.
+
    ```bash
    npm run dev
    ```
-3. Open your browser and navigate to [http://localhost:8000/](http://localhost:8000/)
-4.
+
+4. Open your browser and navigate to [http://localhost:8000/](http://localhost:8000/)
 
 ## DATABASE CONNECTIONS
 
