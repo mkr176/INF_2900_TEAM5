@@ -5,7 +5,7 @@ import datetime
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'backend.settings')
 django.setup()
-from frontend.models import User, Libro
+from backend.models import User, Libro
 from django.db import connection
 
 with connection.cursor() as cursor:
