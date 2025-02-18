@@ -14,18 +14,18 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.contrib import admin
-from django.urls import path, include
-from backend.views import front, RegisterView, LoginView, LogoutView
+from django.urls import path, re_path
+from django.views.generic import TemplateView
+from .views import RegisterView, LoginView, LogoutView
+
+app_name = 'frontend'
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('api/signup/', RegisterView.as_view(), name='signup'),
+    path('api/login/', LoginView.as_view(), name='login'),
+    path('api/logout/', LogoutView.as_view(), name='logout'),
 
-    # Authentication routes
-    path('auth/signup/', RegisterView.as_view(), name='signup'),
-    path('auth/login/', LoginView.as_view(), name='login'),
-    path('auth/logout/', LogoutView.as_view(), name='logout'),
-
-    # Default route (Frontend rendering)
-    path('', front, name='front'),
+    # Catch-all for React routing 
+    re_path(r'^(?!api/).*$', TemplateView.as_view(template_name="startpage.html")),
+    
 ]
