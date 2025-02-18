@@ -5,6 +5,9 @@ from django.contrib.auth.models import User
 from django.views.generic import TemplateView
 from django.contrib.auth import authenticate, login, logout
 import json
+from django.contrib.auth.models import User
+from rest_framework import generics
+from .serializers import UserSerializer
 from .validations import validate_username, validate_password, validate_email, validate_birth_date
 
 # Landing Page View
@@ -70,3 +73,8 @@ class LogoutView(View):
     def post(self, request):
         logout(request)
         return JsonResponse({'message': 'Logout successful'}, status=200)
+
+
+class ListUsersView(generics.ListAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer

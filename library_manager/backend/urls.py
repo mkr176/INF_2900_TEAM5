@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.urls import path, re_path
 from django.views.generic import TemplateView
-from .views import RegisterView, LoginView, LogoutView
+from .views import RegisterView, LoginView, LogoutView, ListUsersView
 
 app_name = 'frontend'
 
@@ -27,5 +27,7 @@ urlpatterns = [
 
     # Catch-all for React routing 
     re_path(r'^(?!api/).*$', TemplateView.as_view(template_name="startpage.html")),
+
+    path('api/users/', ListUsersView.as_view(), name='list-users'),
     
 ]
