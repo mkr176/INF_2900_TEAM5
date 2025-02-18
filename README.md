@@ -163,6 +163,38 @@ And then finally you can run the server:
 
 - python manage.py runserver
 
+## Running Tests
+
+This project includes automated tests for the backend (Django) and frontend (React and Cypress).  Here's how to run them:
+
+### Automated Test Scripts
+
+We provide scripts for running tests on both Windows and Linux/macOS.  These scripts handle activating the virtual environment and executing the tests.
+
+#### Windows
+
+1.  **Activate Virtual Environment and Run Tests:**
+    *   Double-click `Windows_run_tests.bat` or run it from the command prompt in the project root:
+        ```bash
+        Windows_run_tests.bat
+        ```
+    * This script activates the Python virtual environment and then runs the `run_tests.py` script.
+
+#### Linux/macOS
+
+1.  **Activate Virtual Environment and Run Tests:**
+    *   Make the script executable:
+        ```bash
+        chmod +x Linux_run_tests.sh
+        ```
+    *   Run the script from the project root:
+        ```bash
+        ./Linux_run_tests.sh
+        ```
+    * This script activates the Python virtual environment and then runs the `run_tests.py` script.
+
+
+
 ## Git Workflow
 
 ### Push to main from branch
