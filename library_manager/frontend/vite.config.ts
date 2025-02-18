@@ -16,4 +16,10 @@ export default defineConfig({
       },
     },
   },
+  test: { // Add this test configuration
+    globals: true, // Important for using Jest-like globals (describe, it, expect)
+    environment: 'jsdom', // Simulate a browser environment for React testing
+    include: ['tests/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'], // Include test files
+    setupFiles: [], // Optional: Add setup files if needed (e.g., for global mocks)
+  },
 })
