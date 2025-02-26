@@ -4,7 +4,7 @@ from django.urls import reverse
 class MyViewTests(TestCase):
     def setUp(self):
         self.client = Client()
-        self.index_url = reverse('index')  # Assuming you have a URL named 'index'
+        self.index_url = reverse('')  # Assuming you have a URL named 'index'
 
     def test_index_view(self):
         """Test that the index view returns a 200 status code and uses the correct template."""

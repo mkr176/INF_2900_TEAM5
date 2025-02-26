@@ -31,19 +31,43 @@ You will also need to install the following python packages:
 #### Automatic Routine
 ##### Windows
 
-1.  **`Windows_start_backend.bat`**: Starts the Django backend server.
+1.  **`Windows_RUN_ALL.bat`**: Starts the Django backend, React frontend, and runs tests.
+    *   Double-click `Windows_RUN_ALL.bat` or run it from the command prompt in the project root:
+        ```bash
+        Windows_RUN_ALL.bat
+        ```
+    * This script will:
+        * Activate the Python virtual environment.
+        * Start the Django backend server in a new command prompt window.
+        * Start the React frontend server in another new command prompt window.
+        * Run the backend and frontend tests in the current command prompt window.
+
+2.  **`Windows_start_backend.bat`**: Starts the Django backend server.
     *   Double-click `Windows_start_backend.bat` or run it from the command prompt in the project root by typing `Windows_start_backend.bat` and pressing Enter.
 
-2.  **`Windows_start_frontend.bat`**: Starts the React frontend server in a **new terminal**.
+3.  **`Windows_start_frontend.bat`**: Starts the React frontend server in a **new terminal**.
     *   Open a **new Command Prompt or PowerShell window**, navigate to the project root, and run the script by typing `Windows_start_frontend.bat` and pressing Enter.
 
 ##### Linux/Mac
+1.  **`Linux_RUN_ALL.sh`**: Starts the Django backend, React frontend, and runs tests.
+    *   Make the script executable:
+        ```bash
+        chmod +x Linux_RUN_ALL.sh
+        ```
+    *   Run the script from the project root:
+        ```bash
+        ./Linux_RUN_ALL.sh
+        ```
+    * This script will:
+        * Start the Django backend server in the background.
+        * Start the React frontend server in the background.
+        * Run the backend and frontend tests in the foreground in the current terminal.
 
-1.  **`Linux_start_backend.sh`**: Starts the Django backend server.
+2.  **`Linux_start_backend.sh`**: Starts the Django backend server.
     *   Make the script executable: `chmod +x Linux_start_backend.sh`
     *   Run the script from the project root: `./Linux_start_backend.sh`
 
-2.  **`Linux_start_frontend.sh`**: Starts the React frontend server in a **new terminal**.
+3.  **`Linux_start_frontend.sh`**: Starts the React frontend server in a **new terminal**.
     *   Make the script executable: `chmod +x Linux_start_frontend.sh`
     *   Open a **new terminal window**, navigate to the project root, and run the script: `./Linux_start_frontend.sh`
 
