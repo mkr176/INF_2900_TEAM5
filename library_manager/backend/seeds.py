@@ -15,6 +15,8 @@ with connection.cursor() as cursor:
 
 def seed_database():
     # Crear usuarios
+    User.objects.all().delete()
+    Libro.objects.all().delete()
     users = [
         User.objects.create(name="Admin User", numberbooks=0, type='AD'),
         User.objects.create(name="Regular User", numberbooks=2, type='US'),
