@@ -30,6 +30,10 @@ urlpatterns = [
     path("api/logout/", LogoutView.as_view(), name="logout"),
     re_path(r"^favicon\.ico$", favicon_view),
     # Catch-all for React routing
-    re_path(r"^(?!api/).*$", TemplateView.as_view(template_name="startpage.html")),
+    re_path(
+        r"^(?!api/).*$",
+        TemplateView.as_view(template_name="startpage.html"),
+        name="index",
+    ),  # Name the index view
     path("api/users/", ListUsersView.as_view(), name="list-users"),
 ]
