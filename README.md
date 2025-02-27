@@ -99,7 +99,7 @@ To run the project and install these python packages, it is recommended to use a
 3. Change directory to `library_manager` and Run Database Migration
 
    ```bash
-   python manage.py makemigrations
+   python manage.py makemigrations backend
    python manage.py migrate
    ```
 

@@ -13,9 +13,9 @@ class User(models.Model):
     type = models.CharField(max_length=10, choices=TYPES)
 
     def __str__(self):
-        return self.nombre
+        return self.name
 
-class Libro(models.Model):
+class Book(models.Model):
     CATEGORIES = [
         ('CK', 'Cooking'),
         ('CR', 'Crime'),
