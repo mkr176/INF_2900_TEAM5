@@ -14,20 +14,22 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+
 from django.urls import path, re_path
 from django.views.generic import TemplateView
 from .views import RegisterView, LoginView, LogoutView, ListUsersView
+from django.views.generic.base import RedirectView
 
-app_name = 'frontend'
+app_name = "frontend"
+
+favicon_view = RedirectView.as_view(url="/static/favicon.ico", permanent=True)
 
 urlpatterns = [
-    path('api/signup/', RegisterView.as_view(), name='signup'),
-    path('api/login/', LoginView.as_view(), name='login'),
-    path('api/logout/', LogoutView.as_view(), name='logout'),
-
-    # Catch-all for React routing 
-    re_path(r'^(?!api/).*$', TemplateView.as_view(template_name="startpage.html")),
-
-    path('api/users/', ListUsersView.as_view(), name='list-users'),
-    
+    path("api/signup/", RegisterView.as_view(), name="signup"),
+    path("api/login/", LoginView.as_view(), name="login"),
+    path("api/logout/", LogoutView.as_view(), name="logout"),
+    re_path(r"^favicon\.ico$", favicon_view),
+    # Catch-all for React routing
+    re_path(r"^(?!api/).*$", TemplateView.as_view(template_name="startpage.html")),
+    path("api/users/", ListUsersView.as_view(), name="list-users"),
 ]
