@@ -7,12 +7,27 @@
 
 body {
   background-color: #8c96ae;
+  background-image: url("/image2vector.svg");
+  background-repeat: repeat;
+  background-size: 50px 50px; /* Ajusta el tamaño del patrón */
+  animation: moveBackground 10s linear infinite; /* Opción para animación */
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
   margin: 0;
 }
+
+/* (Opcional) Animación de desplazamiento */
+@keyframes moveBackground {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: 50px 50px;
+  }
+}
+
 
 /* Login Container */
 .login-container {
