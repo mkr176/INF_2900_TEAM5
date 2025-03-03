@@ -1,14 +1,17 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import "./LoginPage.css";
 
 const LoginPage = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate();
 
   const handleLogin = () => {
     if (username && password) {
       alert("Logging in...");
+      navigate("/principal");
     } else {
       alert("Both username and password are required");
     }
@@ -18,7 +21,7 @@ const LoginPage = () => {
     window.location.href = "/signup";
   };
 
-  return (
+  return ( 
     <div className="relative flex items-center justify-center h-screen bg-gradient-to-r from-purple-500 to-pink-500 overflow-hidden">
       <motion.div
         className="absolute inset-0 flex items-center justify-center overflow-hidden"
@@ -27,7 +30,7 @@ const LoginPage = () => {
         transition={{ duration: 1 }}
       >
         <motion.img
-          src="/static/books_background.jpg" //need an image of books in the background
+          src="/image2vector.svg" //need an image of books in the background
           alt="Floating Books"
           className="absolute w-full h-full object-cover opacity-30"
           animate={{ y: [0, -10, 0] }}
