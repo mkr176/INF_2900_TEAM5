@@ -1,68 +1,36 @@
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-
-
-const Card = ({ children, className = '' }) => (
-  <div className={`p-4 bg-white rounded-lg shadow-md ${className}`}>
-    {children}
-  </div>
-);
-
-const CardHeader = ({ children }) => (
-  <div className="mb-2 font-bold text-lg">{children}</div>
-);
-
-const CardContent = ({ children }) => (
-  <div className="flex flex-col gap-2">{children}</div>
-);
-
-const Button = ({ variant = 'default', children, className = '', ...props }) => {
-  const baseStyles = 'px-4 py-2 rounded-md font-medium transition';
-  const variants = {
-    default: 'bg-blue-600 text-white hover:bg-blue-700',
-    outline: 'border border-blue-600 text-blue-600 hover:bg-blue-50',
-  };
-
-  return (
-    <button
-      className={`${baseStyles} ${variants[variant]} ${className}`}
-      {...props}
-    >
-      {children}
-    </button>
-  );
-};
-
+import React, { useState } from "react";
+import { motion } from "framer-motion";
+import "./PrincipalPage.css"; 
 
 const books = [
   {
     id: 1,
-    title: 'En Familia con Karlos Arguiñano',
-    summary: 'Delicious recipes for home cooking by Karlos Arguiñano.',
-    image: '/mnt/data/libroCocina.jpg',
+    title: "En Familia con Karlos Arguiñano",
+    summary: "Delicious recipes for home cooking by Karlos Arguiñano.",
+    image: "static/images/libroCocina.jpg",
     reserved: false,
   },
   {
     id: 2,
-    title: 'The Hound of the Baskervilles',
-    summary: 'A classic Sherlock Holmes mystery by Arthur Conan Doyle.',
-    image: '/mnt/data/libroMisterio.jpg',
+    title: "The Hound of the Baskervilles",
+    summary: "A classic Sherlock Holmes mystery by Arthur Conan Doyle.",
+    image: "static/images/libroMisterio.jpg",
     reserved: false,
   },
   {
     id: 3,
-    title: 'Diez Negritos',
-    summary: 'A thrilling mystery novel by Agatha Christie.',
-    image: '/mnt/data/libroCrimen.jpg',
+    title: "Diez Negritos",
+    summary: "A thrilling mystery novel by Agatha Christie.",
+    image: "static/images/libroCrimen.jpg",
     reserved: false,
   },
 ];
 
-
-const BookDisplayPage = () => {
+const BookDisplayPage: React.FC = () => {
   const [bookList, setBookList] = useState(books);
+  const [searchQuery, setSearchQuery] = useState("");
 
-  const handleReserve = (id) => {
+  const handleReserve = (id: number) => {
     setBookList((prevBooks) =>
       prevBooks.map((book) =>
         book.id === id && !book.reserved ? { ...book, reserved: true } : book
@@ -70,49 +38,70 @@ const BookDisplayPage = () => {
     );
   };
 
-  const handleViewDetails = (book) => {
+  const handleViewDetails = (book: any) => {
     alert(`${book.title}: ${book.summary}`);
   };
 
+  // 🔎 Filtrar libros según la búsqueda
+  const filteredBooks = bookList.filter((book) =>
+    book.title.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4">
-      {bookList.map((book) => (
-        <motion.div
-          key={book.id}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-        >
-          <Card className="rounded-2xl shadow-lg overflow-hidden">
-            <motion.img
-              src={book.image}
-              alt={book.title}
-              width="150"
-              className="mb-6 rounded-full shadow-lg border-4 border-yellow-700"
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.5 }}
-            />
-            <CardHeader>
-              <h2 className="text-xl font-bold">{book.title}</h2>
-            </CardHeader>
-            <CardContent>
-              <Button
-                onClick={() => handleViewDetails(book)}
-                variant="outline"
-              >
-                View Details
-              </Button>
-              <Button
-                onClick={() => handleReserve(book.id)}
-                disabled={book.reserved}
-                variant="default"
-              >
-                {book.reserved ? 'Reserved' : 'Reserve'}
-              </Button>
-            </CardContent>
-          </Card>
-        </motion.div>
-      ))}
+    <div>
+      {/* 🔎 Barra de búsqueda */}
+      <div className="search-container">
+        <input
+          type="text"
+          placeholder="Search books..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="search-bar"
+        />
+      </div>
+
+      <div className="book-grid">
+        {filteredBooks.length > 0 ? (
+          filteredBooks.map((book) => (
+            <motion.div
+              key={book.id}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <div className="book-card">
+                <motion.img
+                  src={book.image}
+                  alt={book.title}
+                  className="book-image"
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.5 }}
+                />
+                <h2 className="book-title">{book.title}</h2>
+                <div>
+                  <button
+                    onClick={() => handleViewDetails(book)}
+                    className="button button-outline"
+                  >
+                    View Details
+                  </button>
+                  <button
+                    onClick={() => handleReserve(book.id)}
+                    className={`button button-default ${
+                      book.reserved ? "opacity-50 cursor-not-allowed" : ""
+                    }`}
+                    disabled={book.reserved}
+                  >
+                    {book.reserved ? "Reserved" : "Reserve"}
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          ))
+        ) : (
+          <p className="no-results">No books found</p>
+        )}
+      </div>
     </div>
   );
 };
