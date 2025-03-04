@@ -28,22 +28,22 @@ def seed_database():
         Book.objects.create(
             title="Cooking Book", author="Author 1", due_date=datetime.date(2025, 3, 1),
             isbn="1234567890123", category='CK', language="English", 
-            user=users[1], condition='NW', available=True, image='images/library_seal.jpg'
+            user=users[1], condition='NW', available=True, image='static/images/library_seal.jpg'
         ),
         Book.objects.create(
             title="Crime Book", author="Author 2", due_date=datetime.date(2025, 4, 1),
             isbn="1234567890124", category='CR', language="English", 
-            user=users[2], condition='GD', available=True, image='images/library_seal.jpg'
+            user=users[2], condition='GD', available=True, image='static/images/library_seal.jpg'
         ),
         Book.objects.create(
             title="Mistery Book", author="Author 3", due_date=datetime.date(2025, 5, 1),
             isbn="1234567890125", category='MY', language="English",
-            user=users[0], condition='FR', available=False, image='images/library_seal.jpg'
+            user=users[0], condition='FR', available=False, image='static/images/library_seal.jpg'
         ),
         Book.objects.create(
             title="Banda Municipal de Sangüesa", author="Juan Cruz Labeaga Mendiola", due_date=datetime.date(2025, 6, 1),
             isbn="84-87120-27-X", category='HIS', language="Spanish",
-            user=users[1], condition='NW', available=True, image='images/library_seal.jpg'
+            user=users[1], condition='NW', available=True, image='static/images/library_seal.jpg'
         )
     ]
 

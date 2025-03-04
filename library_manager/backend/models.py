@@ -45,7 +45,7 @@ class Book(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     condition = models.CharField(max_length=4, choices=CONDITIONS)
     available = models.BooleanField(default=True)
-    image = models.ImageField(upload_to='images/', default='images/library_seal.jpg')
+    image = models.ImageField(upload_to='images/', default='static/images/library_seal.jpg')
 
 
     def __str__(self):
