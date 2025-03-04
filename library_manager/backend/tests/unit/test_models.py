@@ -43,9 +43,12 @@ class UserModelTest(TestCase):
         with self.assertRaises(
             ValidationError
         ):  # Expect ValidationError because full_clean is used
-            User.objects.create(
+            user = User.objects.create(
                 name="Invalid Type User", numberbooks=0, type="XX"
             )  # XX is not a valid choice
+            user.full_clean()
+            # user.save() # No need to save, validation should fail before save
+
 
 
 class BookModelTest(TestCase):
