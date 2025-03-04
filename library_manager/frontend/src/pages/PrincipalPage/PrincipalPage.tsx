@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 
-// Componentes Card y Button definidos localmente
+
 const Card = ({ children, className = '' }) => (
   <div className={`p-4 bg-white rounded-lg shadow-md ${className}`}>
     {children}
@@ -33,7 +33,7 @@ const Button = ({ variant = 'default', children, className = '', ...props }) => 
   );
 };
 
-// Información de los libros
+
 const books = [
   {
     id: 1,
@@ -58,7 +58,7 @@ const books = [
   },
 ];
 
-// Página Principal con toda la lógica
+
 const BookDisplayPage = () => {
   const [bookList, setBookList] = useState(books);
 

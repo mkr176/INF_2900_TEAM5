@@ -187,6 +187,14 @@ When you start MySQL you should run and create a database called:
 
 Then connect to the database.
 
+To see the books in SQL use this command:
+
+- SELECT * FROM backend_book
+
+To see the users in SQL use this command:
+
+- SELECT * FROM backend_user
+
 When it finish all the instalation and after you install the `requirements.txt` in the terminal you should enter while you are in `library_manager`:
 
 - python manage.py makemigrations
