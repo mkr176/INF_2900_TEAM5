@@ -207,6 +207,11 @@ And then finally you can run the server:
 
 - python manage.py runserver
 
+If the following error appear:  (1146, "Table 'library.backend_user' doesn't exist") follow this steps:
+Delete the migration
+Delete the database
+Then redo the 3 commands above
+
 ## Running Tests
 
 This project includes automated tests for the backend (Django) and frontend (React and Cypress).  Here's how to run them:

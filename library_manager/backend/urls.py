@@ -17,8 +17,9 @@ Including another URLconf
 
 from django.urls import path, re_path
 from django.views.generic import TemplateView
-from .views import RegisterView, LoginView, LogoutView, ListUsersView
+from .views import RegisterView, LoginView, LogoutView, ListUsersView, CreateBookView, DeleteBookView, CreateUserView
 from django.views.generic.base import RedirectView
+from . import views
 
 app_name = "frontend"
 
@@ -28,6 +29,10 @@ urlpatterns = [
     path("api/signup/", RegisterView.as_view(), name="signup"),
     path("api/login/", LoginView.as_view(), name="login"),
     path("api/logout/", LogoutView.as_view(), name="logout"),
+    path("api/create_book/", CreateBookView.as_view(), name="create-book"),
+    path("api/delete_book/", DeleteBookView.as_view(), name="delete-book"),
+    path("api/create_users/", CreateUserView.as_view(), name="create-users"),
+    path("api/get_books/", views.list_books, name="list-books"),
     re_path(r"^favicon\.ico$", favicon_view),
     # Catch-all for React routing
     re_path(

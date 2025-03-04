@@ -11,6 +11,9 @@ class User(models.Model):
     name = models.CharField(max_length=200)
     numberbooks = models.IntegerField()
     type = models.CharField(max_length=10, choices=TYPES)
+    age = models.IntegerField()
+    email = models.CharField(max_length=200)
+    password = models.CharField(max_length=200)
 
     def __str__(self):
         return self.name
@@ -42,6 +45,7 @@ class Book(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     condition = models.CharField(max_length=4, choices=CONDITIONS)
     available = models.BooleanField(default=True)
+    image = models.ImageField(upload_to='images/', default='images/library_seal.jpg')
 
 
     def __str__(self):

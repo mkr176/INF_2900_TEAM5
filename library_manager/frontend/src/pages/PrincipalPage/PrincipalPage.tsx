@@ -1,49 +1,39 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import { motion } from "framer-motion";
 import "./PrincipalPage.css"; 
 
-const books = [
-  {
-    id: 1,
-    title: "En Familia con Karlos Arguiñano",
-    summary: "Delicious recipes for home cooking by Karlos Arguiñano.",
-    image: "static/images/libroCocina.jpg",
-    reserved: false,
-  },
-  {
-    id: 2,
-    title: "The Hound of the Baskervilles",
-    summary: "A classic Sherlock Holmes mystery by Arthur Conan Doyle.",
-    image: "static/images/libroMisterio.jpg",
-    reserved: false,
-  },
-  {
-    id: 3,
-    title: "Diez Negritos",
-    summary: "A thrilling mystery novel by Agatha Christie.",
-    image: "static/images/libroCrimen.jpg",
-    reserved: false,
-  },
-];
+
+interface Book {
+  id: number;
+  title: string;
+  author: string;
+  isbn: string;
+  category: string;
+  language: string;
+  user_id: number;
+  condition: string;
+  available: boolean;
+  image?: string;
+}
 
 const BookDisplayPage: React.FC = () => {
-  const [bookList, setBookList] = useState(books);
+  const [bookList, setBookList] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
 
-  const handleReserve = (id: number) => {
-    setBookList((prevBooks) =>
-      prevBooks.map((book) =>
-        book.id === id && !book.reserved ? { ...book, reserved: true } : book
-      )
-    );
-  };
 
-  const handleViewDetails = (book: any) => {
-    alert(`${book.title}: ${book.summary}`);
+useEffect(() => {
+    fetch("/api/get_books/")
+      .then((response) => response.json())
+      .then((data) => setBookList(data))
+      .catch((error) => console.error("Error fetching books:", error));
+  }, []);
+
+  const handleViewDetails = (book: Book) => {
+    alert(`${book.title}`);
   };
 
   // 🔎 Filtrar libros según la búsqueda
-  const filteredBooks = bookList.filter((book) =>
+  const filteredBooks = bookList.filter((book:Book) =>
     book.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
@@ -62,7 +52,7 @@ const BookDisplayPage: React.FC = () => {
 
       <div className="book-grid">
         {filteredBooks.length > 0 ? (
-          filteredBooks.map((book) => (
+          filteredBooks.map((book:Book) => (
             <motion.div
               key={book.id}
               whileHover={{ scale: 1.05 }}
@@ -84,15 +74,6 @@ const BookDisplayPage: React.FC = () => {
                     className="button button-outline"
                   >
                     View Details
-                  </button>
-                  <button
-                    onClick={() => handleReserve(book.id)}
-                    className={`button button-default ${
-                      book.reserved ? "opacity-50 cursor-not-allowed" : ""
-                    }`}
-                    disabled={book.reserved}
-                  >
-                    {book.reserved ? "Reserved" : "Reserve"}
                   </button>
                 </div>
               </div>
