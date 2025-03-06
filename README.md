@@ -43,17 +43,19 @@ You will also need to install the following python packages:
 
 `Linux_start_backend.sh`: Starts the Django backend server.
 Run the script for the project from the Team5/Linux_Start folder:
-`bash
-    chmod +x Linux_start_backend.sh
-    ./Linux_start_backend.sh
-    `
+
+```bash
+ chmod +x Linux_start_backend.sh
+ ./Linux_start_backend.sh
+```
 
 `Linux_start_frontend.sh`: Starts the React frontend server in a **new terminal**.
 Open a **new terminal window**, navigate to the same folder, and run the script:
-`bash
-    chmod +x Linux_start_frontend.sh
-    ./Linux_start_frontend.sh
-    `
+
+```bash
+ chmod +x Linux_start_frontend.sh
+ ./Linux_start_frontend.sh
+```
 
 #### Manual Routine
 
@@ -63,32 +65,32 @@ To run the project and install these python packages, it is recommended to use a
    Navigate to INF_2900_TEAM5:
    For Linux/Mac:
 
-   ```bash
-    python3 -m venv venv
-    source venv/bin/activate
-   ```
+```bash
+   python3 -m venv venv
+   source venv/bin/activate
+```
 
-   For Windows:
+For Windows:
 
-   ```bash
+```bash
    python -m venv venv
    venv\Scripts\activate
 
-   ```
+```
 
 2. To install the required python packages, run the following command:
 
-   ```bash
-    pip install -r requirements.txt
+```bash
+   pip install -r requirements.txt
 
-   ```
+```
 
 3. Change directory to `library_manager` and Run Database Migration
 
-   ```bash
+```bash
    python manage.py makemigrations
    python manage.py migrate
-   ```
+```
 
 4. If Any error occurs, Check if MySQL Server is Running
 
@@ -97,13 +99,13 @@ Run the following command to check if MySQL is running inside WSL:
 Linux:
 
 ```bash
-sudo service mysql status
+   sudo service mysql status
 ```
 
 Windows:
 
-```
-Get-Service -Name MySQL*
+```bash
+   Get-Service -Name MySQL*
 ```
 
 5. If MySQL is Not Running, start it and run step 3 again.
@@ -111,48 +113,48 @@ Get-Service -Name MySQL*
 Start it with:
 
 ```bash
-sudo service mysql start
+   sudo service mysql start
 ```
 
 Windows:
 If you don’t know the exact MySQL service name, you can list all services:
 
 ```bash
-Get-Service | Select-String "MySQL"
+   Get-Service | Select-String "MySQL"
 ```
 
 ```bash
-Start-Service -Name MySQL80  # Change "MySQL80" if your service has a different name
+   Start-Service -Name MySQL80  # Change "MySQL80" if your service has a different name
 ```
 
 6. To start the Django server. run the following command:
 
-   ```bash
+```bash
    python manage.py runserver
-   ```
+```
 
 ## Running the Frontend
 
 To run the frontend , you will need to run the following commands in NEW terminal:
 
 1. NOTE: Continue the rest in your second termnial:  
-    To install all requierd npm packages, navigate to the `library_manager/frontend` folder and run the following:
+   To install all requierd npm packages, navigate to the `library_manager/frontend` folder and run the following:
 
-   ```bash
+```bash
    npm install
-   ```
+```
 
 2. Before run it, add npm package for react motion and movement
 
-   ```bash
+```bash
    npm install framer-motion
-   ```
+```
 
 3. To start the React server, in the same folder run the command:. Note: The listed server does not serve static files managed by Django. It's specifically for developing the React frontend.
 
-   ```bash
+```bash
    npm run dev
-   ```
+```
 
 4. Open your browser and navigate to [http://localhost:8000/](http://localhost:8000/)
 
