@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import os
 import subprocess
 import sys
@@ -15,8 +16,8 @@ def run_django_backend_tests(project_root):
             capture_output=True,
             text=True
         )
-        print(result_all.stdout)
-        print(result_all.stderr)  # Print stderr as well
+        print(result_all.stdout, flush=True) # Added flush=True here
+        print(result_all.stderr, flush=True)  # Added flush=True here
         return result_all.returncode == 0
     except Exception as e:
         print(f"Error running Django tests: {e}")
