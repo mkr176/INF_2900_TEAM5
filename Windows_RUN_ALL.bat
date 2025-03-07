@@ -47,6 +47,10 @@ start cmd /k "call Windows_start_backend.bat"
 echo Starting Frontend in a new window...
 start cmd /k "call Windows_start_frontend.bat"
 
+REM --- Open Browser ---
+echo Opening browser to http://localhost:8000...
+start http://localhost:8000/
+
 echo Running Tests in this window...
 call Windows_run_tests.bat
 
