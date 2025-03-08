@@ -148,6 +148,8 @@ To run the frontend , you will need to run the following commands in NEW termina
 
 ```bash
    npm install framer-motion
+   npm install react-slick
+   npm install react-slick slick-carousel
 ```
 
 3. To start the React server, in the same folder run the command:. Note: The listed server does not serve static files managed by Django. It's specifically for developing the React frontend.
