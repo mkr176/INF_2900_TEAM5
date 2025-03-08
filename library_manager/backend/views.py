@@ -1,16 +1,18 @@
 from django.shortcuts import render
 from django.views import View
 from django.http import JsonResponse
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User as AuthUser # Alias Django's User model to avoid confusion
 from django.views.generic import TemplateView
 from django.contrib.auth import authenticate, login, logout
 import json
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
-from django.contrib.auth.models import User
 from rest_framework import generics
-from .serializers import UserSerializer
+from .serializers import UserSerializer, CustomUserSerializer, BookSerializer 
 from .validations import validate_username, validate_password, validate_email, validate_birth_date
+from .models import User as CustomUser # Import your custom User model
+from .models import Book
+
 
 # Landing Page View
 def front(request, *args, **kwargs):
@@ -34,12 +36,12 @@ class RegisterView(View):
             email = data.get('email', '')
             birth_date = data.get('birthDate', '')
 
-            # Check if user already exists
-            if User.objects.filter(username=username).exists():
+            # Check if user already exists - use Django's AuthUser here
+            if AuthUser.objects.filter(username=username).exists():
                 return JsonResponse({'error': 'Username already exists'}, status=400)
 
-            # Create user
-            User.objects.create_user(username=username, password=password, email=email)
+            # Create user - use Django's AuthUser here
+            AuthUser.objects.create_user(username=username, password=password, email=email)
             return JsonResponse({'message': 'User registered successfully'}, status=201)
 
         except json.JSONDecodeError:
@@ -74,5 +76,10 @@ class LogoutView(View):
 
 
 class ListUsersView(generics.ListAPIView):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
+    queryset = CustomUser.objects.all() # Use your custom User model here
+    serializer_class = CustomUserSerializer # Use CustomUserSerializer
+
+
+class ListBooksView(generics.ListAPIView): # Create ListBooksView
+    queryset = Book.objects.all()
+    serializer_class = BookSerializer

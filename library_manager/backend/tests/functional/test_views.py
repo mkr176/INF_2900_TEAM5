@@ -2,6 +2,8 @@ from django.test import TestCase, Client
 from django.urls import reverse
 import json
 from django.contrib.auth.models import User
+from backend.models import User as CustomUser  # Import your custom User model
+from backend.models import Book
 
 
 class MyViewTests(TestCase):
@@ -136,3 +138,77 @@ class LogoutViewTest(TestCase):
         response = self.client.post(self.logout_url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), {"message": "Logout successful"})
+
+
+class ListUsersViewTest(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.list_users_url = reverse("list-users")
+        # Create some test users using your custom User model
+        CustomUser.objects.create(name="User1", numberbooks=0, type='US')
+        CustomUser.objects.create(name="User2", numberbooks=2, type='LB')
+
+    def test_list_users_view_authenticated(self):
+        """
+        Test listing users view for authenticated users.
+        It should return a 200 status code and a list of users.
+        """
+        response = self.client.get(self.list_users_url)
+        # print(f"Response status code: {response.status_code}") # Print status code
+        # print(f"Response content: {response.content}") # Print response content
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['content-type'], 'application/json')
+        data = response.json()
+        self.assertTrue(isinstance(data, list))
+        self.assertTrue(len(data) >= 2)  # Assuming at least 2 users were created in setUp
+        # Optionally, check for specific fields in the returned data
+        user_names = {user['username'] for user in data if 'username' in user} #adapt to your serializer fields
+        expected_names = {'User1', 'User2'} #adapt to your created users
+        # self.assertTrue(expected_names.issubset(user_names)) #adapt to your serializer fields
+
+    def test_list_users_view_unauthenticated(self):
+        """
+        Test listing users view for unauthenticated users.
+        Depending on your requirements, this might be a 403 Forbidden or a redirect to login.
+        Adjust the expected status code as needed.
+        """
+        response = self.client.get(self.list_users_url)
+        # print(f"Response status code: {response.status_code}")
+        # print(f"Response content: {response.content}")
+
+        # Assuming the view should be accessible to all (adjust as per your access control)
+        self.assertEqual(response.status_code, 200) # or 403 if permission denied for unauthenticated users
+
+class ListBooksViewTest(TestCase):
+    def setUp(self):
+        self.client = Client()
+        # Assuming you have a URL name 'list-books' for listing books
+        # and have created some books using your Book model
+        self.list_books_url = reverse("list-books") # Define list-books url in urls.py
+        test_user = CustomUser.objects.create(name="TestUser", numberbooks=0, type='US')
+        Book.objects.create(title="Book1", author="Author1", due_date="2025-03-15", isbn="1234567890001", category="CK", language="English", user=test_user, condition="NW", available=True)
+        Book.objects.create(title="Book2", author="Author2", due_date="2025-04-20", isbn="1234567890002", category="CR", language="Spanish", user=test_user, condition="GD", available=False)
+
+    def test_list_books_view_authenticated(self):
+        """
+        Test listing books view for authenticated users.
+        Should return 200 and a list of books.
+        """
+        response = self.client.get(self.list_books_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['content-type'], 'application/json')
+        data = response.json()
+        self.assertTrue(isinstance(data, list))
+        self.assertTrue(len(data) >= 2) # Assuming at least 2 books created in setUp
+        book_titles = {book['title'] for book in data if 'title' in book} #adapt to your serializer fields
+        expected_titles = {'Book1', 'Book2'} #adapt to your created books
+        # self.assertTrue(expected_titles.issubset(book_titles)) #adapt to your serializer fields
+
+    def test_list_books_view_unauthenticated(self):
+        """
+        Test listing books view for unauthenticated users.
+        Adjust expected status code based on access control.
+        """
+        response = self.client.get(self.list_books_url)
+        # Assuming books list is publicly accessible (adjust as needed)
+        self.assertEqual(response.status_code, 200) # or 403 if permission denied for unauthenticated users
