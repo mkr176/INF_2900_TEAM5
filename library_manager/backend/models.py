@@ -1,7 +1,7 @@
 from django.db import models
 
 # Create your models here.
-class User(models.Model):
+class People(models.Model):
     TYPES = [
         ('AD','Admin'),
         ('US','User'),
@@ -42,7 +42,7 @@ class Book(models.Model):
     isbn = models.CharField(max_length=13, unique=True)
     category = models.CharField(max_length=3, choices=CATEGORIES)
     language = models.CharField(max_length=50)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(People, on_delete=models.CASCADE)
     condition = models.CharField(max_length=4, choices=CONDITIONS)
     available = models.BooleanField(default=True)
     image = models.ImageField(upload_to='images/', default='static/images/library_seal.jpg')

@@ -22,7 +22,7 @@ const BookDisplayPage: React.FC = () => {
 
 
 useEffect(() => {
-    fetch("/api/get_books/")
+    fetch("/api/principal/")
       .then((response) => response.json())
       .then((data) => setBookList(data))
       .catch((error) => console.error("Error fetching books:", error));
