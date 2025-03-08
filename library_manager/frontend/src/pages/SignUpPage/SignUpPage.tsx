@@ -30,10 +30,11 @@ const SignUpPage = () => {
     return age;
   };
 
-  const handleSignUp = () => {
-    const { fullName, username, birthDate, email, password } = formData;
 
-    if (!fullName || !username || !birthDate || !email || !password) {
+  const handleSignUp = async() => {
+    const { username, birthDate, email, password } = formData;
+
+    if ( !username || !birthDate || !email || !password) {
       alert("All fields are required!");
       return;
     }
@@ -47,9 +48,34 @@ const SignUpPage = () => {
       alert("You must be at least 16 years old to register.");
       return;
     }
+    try{
+     const response = await fetch("/api/signup/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        username:username,
+        birthDate:birthDate,
+        email:email,
+        password:password,
+      }),
+    });
+      
 
-    alert("Sign-up successful!");
     window.location.href = "/login";
+    if (response.ok) {
+      alert("Sign-up successful!");
+      window.location.href = "/login";
+    } else {
+      const data = await response.json();
+      alert(data.error || "Sign-up failed!");
+    }
+  } catch (error) {
+    console.error("Error during sign-up:", error);
+    alert("An error occurred. Please try again.");
+  }
+  
   };
 
   return (
@@ -61,15 +87,8 @@ const SignUpPage = () => {
         transition={{ duration: 0.5 }}
       >
         <h1 className="text-3xl font-bold text-teal-900 mb-6">Create Account</h1>
-        <motion.input
-          whileFocus={{ scale: 1.05 }}
-          type="text"
-          name="fullName"
-          placeholder="Full Name"
-          value={formData.fullName}
-          onChange={handleChange}
-          className="w-full p-3 mb-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 transition-all"
-        />
+      
+      
         <motion.input
           whileFocus={{ scale: 1.05 }}
           type="text"

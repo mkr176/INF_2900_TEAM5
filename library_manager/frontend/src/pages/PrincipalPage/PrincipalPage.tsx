@@ -17,23 +17,38 @@ interface Book {
   available: boolean;
   image?: string;
 }
-
+interface People {
+  id: number;
+  username: string;
+  email: string;
+  type: string;
+  numberofbooks: number;
+}
 const BookDisplayPage: React.FC = () => {
   const [bookList, setBookList] = useState<Book[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [currentUser, setCurrentUser] = useState<People | null>(null);
+ 
 
   useEffect(() => {
-    fetch("/api/get_books/")
+    fetch("/api/principal/")
       .then((response) => response.json())
       .then((data) => setBookList(data))
       .catch((error) => console.error("Error fetching books:", error));
+      fetch("/api/current_user/")
+      .then((response) => response.json())
+      .then((data) => setCurrentUser(data))
+      .catch((error) => console.error("Error fetching current user:", error));
   }, []);
 
   const handleViewDetails = (book: Book) => {
     alert(`${book.title}`);
   };
 
-
+  const handleCreateBook = () => {
+    // Lógica para crear un libro
+    alert("Create Book button clicked");
+  };
   const filteredBooks = bookList.filter((book: Book) =>
     book.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -72,7 +87,14 @@ const BookDisplayPage: React.FC = () => {
           className="search-bar"
         />
       </div>
-
+  {/* Botón para crear libros */}
+  {currentUser && (currentUser.type === "AD" || currentUser.type === "LB") && (
+        <div className="create-book-container">
+          <button onClick={handleCreateBook} className="button button-primary">
+            Create Book
+          </button>
+        </div>
+      )}
       {/* 🎠 Carrusel de libros */}
       <div className="carousel-container">
         {filteredBooks.length > 1 ? (

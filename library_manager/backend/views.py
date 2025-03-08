@@ -5,20 +5,21 @@ from django.contrib.auth.models import User as AuthUser # Alias Django's User mo
 from django.views.generic import TemplateView
 from django.contrib.auth import authenticate, login, logout
 import json
+from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from rest_framework import generics
-from .serializers import UserSerializer, CustomUserSerializer, BookSerializer 
+from .serializers import UserSerializer 
 from .validations import validate_username, validate_password, validate_email, validate_birth_date
 
-from .models import Book
+from .models import Book,People
 from django.shortcuts import get_object_or_404
 from datetime import datetime
 from datetime import timedelta
 
-from .models import User as CustomUser # Import your custom User model
-from .models import Book
 
+
+from django.contrib.auth.models import User
 
 # Landing Page View
 def front(request, *args, **kwargs):
@@ -40,7 +41,9 @@ class RegisterView(View):
             username = data.get('username')
             password = data.get('password')
             email = data.get('email', '')
-            birth_date = data.get('birthDate', '')
+            birth_date = datetime.strptime(data.get('birthDate', ''), "%Y-%m-%d")
+            today=datetime.today()
+            age = today.year - birth_date.year - ((today.month, today.day) < (birth_date.month, birth_date.day))
 
             # Check if user already exists - use Django's AuthUser here
             if AuthUser.objects.filter(username=username).exists():
@@ -48,6 +51,8 @@ class RegisterView(View):
 
             # Create user - use Django's AuthUser here
             AuthUser.objects.create_user(username=username, password=password, email=email)
+            People.objects.create(name=username, numberbooks=0, type='US', age=25, email=email, password=password)
+            
             return JsonResponse({'message': 'User registered successfully'}, status=201)
 
         except json.JSONDecodeError:
@@ -150,8 +155,10 @@ class CreateUserView(View):
             if not validate_email(type):
                 return JsonResponse({'error': 'Invalid type'}, status=400)
 
+        
             # Create user
-            User.objects.create(name=name, numberbooks=numberbooks, type=type, age=age, email=email, password=password)
+            People.objects.create(name=name, numberbooks=numberbooks, type=type, age=age, email=email, password=password)
+            User.objects.create_user(username=name, password=password, email=email)
             return JsonResponse({'message': 'User created successfully'}, status=201)
 
         except json.JSONDecodeError:
@@ -161,17 +168,25 @@ class CreateUserView(View):
 class DeleteUserView(View):
     def delete(self, request ,user_id):
         try:
-            user = get_object_or_404(User, id=user_id)
+            user = get_object_or_404(People, id=user_id)
+            user2= get_object_or_404(User, id=user_id)
+            user2.delete()
             user.delete()
             return JsonResponse({'message': 'User deleted successfully'}, status=200)
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
         
+@method_decorator(login_required, name='dispatch')
+class CurrentUserView(View):
+    def get(self, request):
+        user = request.user
+        people = People.objects.get(name=user.username)
+        user_data = {
+            'id': user.id,
+            'username': user.username,
+            'type': people.type  # Asumiendo que tienes una relación OneToOne entre User y People
+        }
+        return JsonResponse(user_data)      
 class ListUsersView(generics.ListAPIView):
-    queryset = CustomUser.objects.all() # Use your custom User model here
-    serializer_class = CustomUserSerializer # Use CustomUserSerializer
-
-
-class ListBooksView(generics.ListAPIView): # Create ListBooksView
-    queryset = Book.objects.all()
-    serializer_class = BookSerializer
+    queryset = People.objects.all()
+    serializer_class = UserSerializer

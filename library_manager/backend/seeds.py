@@ -5,24 +5,29 @@ import datetime
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'backend.settings')
 django.setup()
-from backend.models import User, Book
+from backend.models import People, Book
 from django.db import connection
 
+from django.contrib.auth.models import User
 with connection.cursor() as cursor:
     cursor.execute("SELECT 1")
     print("Database connected successfully!")
 
-
 def seed_database():
     # Crear usuarios
-    User.objects.all().delete()
+    People.objects.all().delete()
     Book.objects.all().delete()
     users = [
-        User.objects.create(name="Admin User", numberbooks=0, type='AD', age=30, email="a@gmail.com", password="admin123"),
-        User.objects.create(name="Regular User", numberbooks=2, type='US', age=25, email="b@gmail.com", password="user123"),
-        User.objects.create(name="Librarian User", numberbooks=5, type='LB', age=35, email="c@gmail.com", password="librarian123"),
+        People.objects.create(name="Admin User", numberbooks=0, type='AD', age=30, email="a@gmail.com", password="admin123"),
+        People.objects.create(name="Regular User", numberbooks=2, type='US', age=25, email="b@gmail.com", password="user123"),
+        People.objects.create(name="Librarian User", numberbooks=5, type='LB', age=35, email="c@gmail.com", password="librarian123"),
     ]
 
+    users2 = [
+                User.objects.create_user(username="Admin User", password="admin123", email="a@gmail.com", first_name="Admin", last_name="User"),
+                User.objects.create_user(username="Regular User", password="user123", email="b@gmail.com", first_name="Regular", last_name="User"),
+                User.objects.create_user(username="Librarian User", password="librarian123", email="c@gmai.com", first_name="Librarian", last_name="User"),
+    ]            
     # Crear libros
     books = [
         Book.objects.create(
@@ -45,6 +50,7 @@ def seed_database():
             isbn="84-87120-27-X", category='HIS', language="Spanish",
             user=users[1], condition='NW', available=True, image='static/images/library_seal.jpg'
         )
+        
     ]
 
     print("initialized correctly!")
