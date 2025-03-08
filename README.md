@@ -29,79 +29,68 @@ You will also need to install the following python packages:
 ### Python Virtual Environment
 
 #### Automatic Routine
+
 ##### Windows
 
-1.  **`Windows_RUN_ALL.bat`**: Starts the Django backend, React frontend, and runs tests.
-    *   Double-click `Windows_RUN_ALL.bat` or run it from the command prompt in the project root:
-        ```bash
-        Windows_RUN_ALL.bat
-        ```
-    * This script will:
-        * Activate the Python virtual environment.
-        * Start the Django backend server in a new command prompt window.
-        * Start the React frontend server in another new command prompt window.
-        * Run the backend and frontend tests in the current command prompt window.
+1.  **`Windows_start_backend.bat`**: Starts the Django backend server.
 
-2.  **`Windows_start_backend.bat`**: Starts the Django backend server.
-    *   Double-click `Windows_start_backend.bat` or run it from the command prompt in the project root by typing `Windows_start_backend.bat` and pressing Enter.
+    - Double-click `Windows_start_backend.bat` or run it from the command prompt in the project root by typing `Windows_start_backend.bat` and pressing Enter.
 
-3.  **`Windows_start_frontend.bat`**: Starts the React frontend server in a **new terminal**.
-    *   Open a **new Command Prompt or PowerShell window**, navigate to the project root, and run the script by typing `Windows_start_frontend.bat` and pressing Enter.
+2.  **`Windows_start_frontend.bat`**: Starts the React frontend server in a **new terminal**.
+    - Open a **new Command Prompt or PowerShell window**, navigate to the project root, and run the script by typing `Windows_start_frontend.bat` and pressing Enter.
 
 ##### Linux/Mac
-1.  **`Linux_RUN_ALL.sh`**: Starts the Django backend, React frontend, and runs tests.
-    *   Make the script executable:
-        ```bash
-        chmod +x Linux_RUN_ALL.sh
-        ```
-    *   Run the script from the project root:
-        ```bash
-        ./Linux_RUN_ALL.sh
-        ```
-    * This script will:
-        * Start the Django backend server in the background.
-        * Start the React frontend server in the background.
-        * Run the backend and frontend tests in the foreground in the current terminal.
 
-2.  **`Linux_start_backend.sh`**: Starts the Django backend server.
-    *   Make the script executable: `chmod +x Linux_start_backend.sh`
-    *   Run the script from the project root: `./Linux_start_backend.sh`
+`Linux_start_backend.sh`: Starts the Django backend server.
+Run the script for the project from the Team5/Linux_Start folder:
 
-3.  **`Linux_start_frontend.sh`**: Starts the React frontend server in a **new terminal**.
-    *   Make the script executable: `chmod +x Linux_start_frontend.sh`
-    *   Open a **new terminal window**, navigate to the project root, and run the script: `./Linux_start_frontend.sh`
+```bash
+ chmod +x Linux_start_backend.sh
+ ./Linux_start_backend.sh
+```
 
+`Linux_start_frontend.sh`: Starts the React frontend server in a **new terminal**.
+Open a **new terminal window**, navigate to the same folder, and run the script:
+
+```bash
+ chmod +x Linux_start_frontend.sh
+ ./Linux_start_frontend.sh
+```
 
 #### Manual Routine
+
 To run the project and install these python packages, it is recommended to use a virtual environment. Follow the steps below to create and activate a virtual environment.
 
 1. Create & Activate Virtual Environment:
    Navigate to INF_2900_TEAM5:
    For Linux/Mac:
-   ```bash
-    python3 -m venv venv
-    source venv/bin/activate
-   ```
 
-   For Windows:
-   ```bash
+```bash
+   python3 -m venv venv
+   source venv/bin/activate
+```
+
+For Windows:
+
+```bash
    python -m venv venv
    venv\Scripts\activate
 
-   ```
+```
 
 2. To install the required python packages, run the following command:
 
-   ```bash
+```bash
    pip install -r requirements.txt
-   ```
+
+```
 
 3. Change directory to `library_manager` and Run Database Migration
 
-   ```bash
-   python manage.py makemigrations backend
+```bash
+   python manage.py makemigrations
    python manage.py migrate
-   ```
+```
 
 4. If Any error occurs, Check if MySQL Server is Running
 
@@ -110,13 +99,13 @@ Run the following command to check if MySQL is running inside WSL:
 Linux:
 
 ```bash
-sudo service mysql status
+   sudo service mysql status
 ```
 
 Windows:
 
-```
-Get-Service -Name MySQL*
+```bash
+   Get-Service -Name MySQL*
 ```
 
 5. If MySQL is Not Running, start it and run step 3 again.
@@ -124,50 +113,48 @@ Get-Service -Name MySQL*
 Start it with:
 
 ```bash
-sudo service mysql start
+   sudo service mysql start
 ```
 
 Windows:
 If you don’t know the exact MySQL service name, you can list all services:
 
 ```bash
-Get-Service | Select-String "MySQL"
+   Get-Service | Select-String "MySQL"
 ```
 
 ```bash
-Start-Service -Name MySQL80  # Change "MySQL80" if your service has a different name
+   Start-Service -Name MySQL80  # Change "MySQL80" if your service has a different name
 ```
 
 6. To start the Django server. run the following command:
 
-   ```bash
+```bash
    python manage.py runserver
-   ```
+```
 
 ## Running the Frontend
 
 To run the frontend , you will need to run the following commands in NEW terminal:
 
 1. NOTE: Continue the rest in your second termnial:  
-    To install all requierd npm packages, navigate to the `library_manager/frontend` folder and run the following:
+   To install all requierd npm packages, navigate to the `library_manager/frontend` folder and run the following:
 
-   ```bash
+```bash
    npm install
-   ```
+```
 
 2. Before run it, add npm package for react motion and movement
 
-   ```bash
+```bash
    npm install framer-motion
-   npm install @shadcn/ui
-   npm install react-router-dom@6
-   ```
+```
 
 3. To start the React server, in the same folder run the command:. Note: The listed server does not serve static files managed by Django. It's specifically for developing the React frontend.
 
-   ```bash
+```bash
    npm run dev
-   ```
+```
 
 4. Open your browser and navigate to [http://localhost:8000/](http://localhost:8000/)
 
@@ -186,14 +173,6 @@ When you start MySQL you should run and create a database called:
 - CREATE DATABASE library
 
 Then connect to the database.
-
-To see the books in SQL use this command:
-
-- SELECT * FROM backend_book
-
-To see the users in SQL use this command:
-
-- SELECT * FROM backend_user
 
 When it finish all the instalation and after you install the `requirements.txt` in the terminal you should enter while you are in `library_manager`:
 
@@ -214,35 +193,33 @@ Then redo the 3 commands above
 
 ## Running Tests
 
-This project includes automated tests for the backend (Django) and frontend (React and Cypress).  Here's how to run them:
+This project includes automated tests for the backend (Django) and frontend (React and Cypress). Here's how to run them:
 
 ### Automated Test Scripts
 
-We provide scripts for running tests on both Windows and Linux/macOS.  These scripts handle activating the virtual environment and executing the tests.
+We provide scripts for running tests on both Windows and Linux/macOS. These scripts handle activating the virtual environment and executing the tests.
 
 #### Windows
 
 1.  **Activate Virtual Environment and Run Tests:**
-    *   Double-click `Windows_run_tests.bat` or run it from the command prompt in the project root:
-        ```bash
-        Windows_run_tests.bat
-        ```
-    * This script activates the Python virtual environment and then runs the `run_tests.py` script.
+    - Double-click `Windows_run_tests.bat` or run it from the command prompt in the project root:
+      ```bash
+      Windows_run_tests.bat
+      ```
+    - This script activates the Python virtual environment and then runs the `run_tests.py` script.
 
 #### Linux/macOS
 
 1.  **Activate Virtual Environment and Run Tests:**
-    *   Make the script executable:
-        ```bash
-        chmod +x Linux_run_tests.sh
-        ```
-    *   Run the script from the project root:
-        ```bash
-        ./Linux_run_tests.sh
-        ```
-    * This script activates the Python virtual environment and then runs the `run_tests.py` script.
-
-
+    - Make the script executable:
+      ```bash
+      chmod +x Linux_run_tests.sh
+      ```
+    - Run the script from the project root:
+      ```bash
+      ./Linux_run_tests.sh
+      ```
+    - This script activates the Python virtual environment and then runs the `run_tests.py` script.
 
 ## Git Workflow
 

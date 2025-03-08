@@ -18,6 +18,7 @@ Including another URLconf
 from django.urls import path, re_path
 from django.views.generic import TemplateView
 from .views import RegisterView, LoginView, LogoutView, ListUsersView, CreateBookView, DeleteBookView, CreateUserView
+from .views import RegisterView, LoginView, LogoutView, ListUsersView, ListBooksView
 from django.views.generic.base import RedirectView
 from . import views
 
@@ -41,4 +42,5 @@ urlpatterns = [
         name="index",
     ),  # Name the index view
     path("api/users/", ListUsersView.as_view(), name="list-users"),
+    path("api/books/", ListBooksView.as_view(), name="list-books")
 ]
