@@ -2,7 +2,7 @@ from django.test import TestCase, Client
 from django.urls import reverse
 import json
 from django.contrib.auth.models import User
-from backend.models import User as CustomUser  # Import your custom User model
+from backend.models import People as CustomUser  # Import your custom User model
 from backend.models import Book
 
 
@@ -145,8 +145,8 @@ class ListUsersViewTest(TestCase):
         self.client = Client()
         self.list_users_url = reverse("list-users")
         # Create some test users using your custom User model
-        CustomUser.objects.create(name="User1", numberbooks=0, type='US')
-        CustomUser.objects.create(name="User2", numberbooks=2, type='LB')
+        CustomUser.objects.create(name="User1", numberbooks=0, type='US', age=25) # Added age=25
+        CustomUser.objects.create(name="User2", numberbooks=2, type='LB', age=30) # Added age=30
 
     def test_list_users_view_authenticated(self):
         """
@@ -185,7 +185,7 @@ class ListBooksViewTest(TestCase):
         # Assuming you have a URL name 'list-books' for listing books
         # and have created some books using your Book model
         self.list_books_url = reverse("list-books") # Define list-books url in urls.py
-        test_user = CustomUser.objects.create(name="TestUser", numberbooks=0, type='US')
+        test_user = CustomUser.objects.create(name="TestUser", numberbooks=0, type='US', age=28) # Added age=28
         Book.objects.create(title="Book1", author="Author1", due_date="2025-03-15", isbn="1234567890001", category="CK", language="English", user=test_user, condition="NW", available=True)
         Book.objects.create(title="Book2", author="Author2", due_date="2025-04-20", isbn="1234567890002", category="CR", language="Spanish", user=test_user, condition="GD", available=False)
 

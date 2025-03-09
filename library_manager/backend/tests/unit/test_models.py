@@ -1,5 +1,5 @@
 from django.test import TestCase
-from backend.models import User, Book
+from backend.models import People, Book
 from django.db import IntegrityError
 from datetime import date
 from django.core.exceptions import ValidationError
@@ -14,7 +14,7 @@ class UserModelTest(TestCase):
         """
         Test successful creation of a User instance.
         """
-        user = User.objects.create(name="Test User", numberbooks=3, type="US")
+        user = People.objects.create(name="Test User", numberbooks=3, type="US", age=25) # Added age=25
         self.assertEqual(user.name, "Test User")
         self.assertEqual(user.numberbooks, 3)
         self.assertEqual(user.type, "US")
@@ -24,7 +24,7 @@ class UserModelTest(TestCase):
         """
         Test the data types of User model fields.
         """
-        user = User.objects.create(name="Field Test User", numberbooks=1, type="AD")
+        user = People.objects.create(name="Field Test User", numberbooks=1, type="AD", age=30) # Added age=30
         self.assertIsInstance(user.id, int)
         self.assertIsInstance(user.name, str)
         self.assertIsInstance(user.numberbooks, int)
@@ -36,15 +36,15 @@ class UserModelTest(TestCase):
         """
         valid_types = ["AD", "US", "LB"]
         for user_type in valid_types:
-            User.objects.create(
-                name=f"Valid Type User {user_type}", numberbooks=0, type=user_type
+            People.objects.create(
+                name=f"Valid Type User {user_type}", numberbooks=0, type=user_type, age=35 # Added age=35
             )
 
         with self.assertRaises(
             ValidationError
         ):  # Expect ValidationError because full_clean is used
-            user = User.objects.create(
-                name="Invalid Type User", numberbooks=0, type="XX"
+            user = People.objects.create(
+                name="Invalid Type User", numberbooks=0, type="XX", age=40 # Added age=40
             )  # XX is not a valid choice
             user.full_clean()
             # user.save() # No need to save, validation should fail before save
@@ -60,7 +60,7 @@ class BookModelTest(TestCase):
         """
         Set up a user instance for creating book instances.
         """
-        self.user = User.objects.create(name="Test User", numberbooks=0, type="US")
+        self.user = People.objects.create(name="Test User", numberbooks=0, type="US", age=22) # Added age=22
 
     def test_book_creation(self):
         """

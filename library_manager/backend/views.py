@@ -9,7 +9,7 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from rest_framework import generics
-from .serializers import UserSerializer 
+from .serializers import UserSerializer, PeopleSerializer
 from .validations import validate_username, validate_password, validate_email, validate_birth_date
 
 from .models import Book,People
@@ -41,7 +41,14 @@ class RegisterView(View):
             username = data.get('username')
             password = data.get('password')
             email = data.get('email', '')
-            birth_date = datetime.strptime(data.get('birthDate', ''), "%Y-%m-%d")
+            birth_date_str = data.get('birthDate', '') # Get birthDate as string
+
+            birth_date = None # Initialize birth_date to None
+            if birth_date_str: # Only try to parse if birth_date_str is not empty
+                birth_date = datetime.strptime(birth_date_str, "%Y-%m-%d")
+            else:
+                birth_date = datetime.now().date() # Or handle empty date as needed, e.g., set to today's date
+
             today=datetime.today()
             age = today.year - birth_date.year - ((today.month, today.day) < (birth_date.month, birth_date.day))
 
@@ -57,6 +64,9 @@ class RegisterView(View):
 
         except json.JSONDecodeError:
             return JsonResponse({'error': 'Invalid JSON'}, status=400)
+        except ValueError as e: # Catch datetime parsing errors
+            return JsonResponse({'error': str(e)}, status=400)
+
 
 # Login View
 class LoginView(View):
@@ -189,4 +199,4 @@ class CurrentUserView(View):
         return JsonResponse(user_data)      
 class ListUsersView(generics.ListAPIView):
     queryset = People.objects.all()
-    serializer_class = UserSerializer
+    serializer_class = PeopleSerializer
