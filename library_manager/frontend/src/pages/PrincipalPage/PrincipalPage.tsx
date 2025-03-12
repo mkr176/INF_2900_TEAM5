@@ -70,26 +70,31 @@ const BookDisplayPage: React.FC = () => {
       },
       body: JSON.stringify({ book_id: book.id, user_id: currentUser.id }),
     })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log("Borrow/Return API response:", data); // Log API response
-        if (data.success) {
-          // Update book availability in the local state
-          setBookList((prevBooks) => {
-            const updatedBooks = prevBooks.map((b) =>
-              b.id === book.id ? { ...b, available: data.book.available, borrower_id: data.book.borrower_id } : b
-            );
-            console.log("Updated bookList:", updatedBooks); // Log updated bookList
-            return updatedBooks;
+      .then((response) => {
+        if (!response.ok) { // Check response.ok here
+          return response.json().then(err => { // Parse error response as JSON
+            throw new Error(err.message || 'Failed to borrow/return book'); // Throw error with message
           });
-          alert(data.message); // Show success or return message
-        } else {
-          alert(`Error: ${data.error}`); // Show error message
         }
+        return response.json(); // Proceed to parse JSON if response is ok
       })
-      .catch((error) => console.error("Error borrowing/returning book:", error));
+      .then((data) => {
+        console.log("Borrow/Return API response:", data);
+        // Update book availability in the local state
+        setBookList((prevBooks) => {
+          const updatedBooks = prevBooks.map((b) =>
+            b.id === book.id ? { ...b, available: data.book.available, borrower_id: data.book.borrower_id } : b
+          );
+          console.log("Updated bookList:", updatedBooks); // Log updated bookList
+          return updatedBooks;
+        });
+        alert(data.message); // Show success or return message
+      })
+      .catch((error) => {
+        console.error("Error borrowing/returning book:", error);
+        alert(`Error: ${error.message}`); // Display error message from catch
+      });
   };
-
 
   const filteredBooks = bookList.filter((book: Book) =>
     book.title.toLowerCase().includes(searchQuery.toLowerCase())
@@ -118,16 +123,15 @@ const BookDisplayPage: React.FC = () => {
   };
 
   const getBorrowButtonText = (book: Book): string => {
-    if (!book.available) {
+    if (book.available) {
+      return "Borrow Book";
+    } else {
       if (currentUser && book.borrower_id === currentUser.id) {
-        return "Return Book"; // Current user is the borrower
+        return "Return Book";
       } else {
-        // Book is borrowed by someone else or unavailable
-        const dueDate = new Date(book.due_date).toLocaleDateString(); // Format due date
+        const dueDate = new Date(book.due_date).toLocaleDateString();
         return `Unavailable until ${dueDate}`;
       }
-    } else {
-      return "Borrow Book"; // Book is available
     }
   };
 
