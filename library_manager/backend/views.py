@@ -102,8 +102,9 @@ def list_books(request):
 
 # Borrow book view
 @method_decorator(csrf_exempt, name='dispatch')
-def borrow_book(request):
-    if request.method == 'POST':
+
+class BorrowBookView(View): # Changed to Class-based view
+    def post(self, request):
         try:
             data = json.loads(request.body)
             book_id = data.get('book_id')
@@ -114,8 +115,16 @@ def borrow_book(request):
             if not user_id:
                 return JsonResponse({'error': 'User ID is required'}, status=400) # Ensure user_id is provided
 
-            book = get_object_or_404(Book, id=book_id)
-            user = get_object_or_404(People, id=user_id) # Get People object for borrower
+            try:
+                book = Book.objects.get(id=book_id)
+            except Book.DoesNotExist:
+                return JsonResponse({'error': 'Book not found'}, status=404)
+
+            try:
+                user = People.objects.get(id=user_id) # Get People object for borrower
+            except People.DoesNotExist:
+                return JsonResponse({'error': 'User not found'}, status=404)
+
 
             if not book.available:
                 return JsonResponse({'error': 'Book is not available'}, status=400)
@@ -140,16 +149,11 @@ def borrow_book(request):
             }
             return JsonResponse({'message': 'Book borrowed successfully', 'book': book_data}, status=200) # Include book data in response
 
-        except Book.DoesNotExist:
-            return JsonResponse({'error': 'Book not found'}, status=404)
-        except People.DoesNotExist: # Catch if user not found
-            return JsonResponse({'error': 'User not found'}, status=404)
+
         except json.JSONDecodeError:
             return JsonResponse({'error': 'Invalid JSON'}, status=400)
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
-    else:
-        return JsonResponse({'error': 'Invalid request method'}, status=405)
 
 
 # Create book view

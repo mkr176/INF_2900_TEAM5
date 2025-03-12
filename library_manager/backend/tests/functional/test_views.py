@@ -4,6 +4,7 @@ import json
 from django.contrib.auth.models import User
 from backend.models import People as CustomUser  # Import your custom User model
 from backend.models import Book
+from datetime import date
 
 
 class MyViewTests(TestCase):
@@ -212,3 +213,111 @@ class ListBooksViewTest(TestCase):
         response = self.client.get(self.list_books_url)
         # Assuming books list is publicly accessible (adjust as needed)
         self.assertEqual(response.status_code, 200) # or 403 if permission denied for unauthenticated users
+        
+class BorrowBookViewTest(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.borrow_book_url = reverse("borrow-book")
+        # Create a test user
+        self.test_user = CustomUser.objects.create(name="TestBorrowUser", numberbooks=0, type='US', age=25, email="borrow@example.com", password="password123")
+        # Create another test user for borrowing attempts by different users
+        self.test_user2 = CustomUser.objects.create(name="TestBorrowUser2", numberbooks=0, type='US', age=26, email="borrow2@example.com", password="password123")
+        # Create a test book and ensure it's available initially
+        self.test_book = Book.objects.create(
+            title="Test Book for Borrowing",
+            author="Test Author",
+            due_date=date.today(),
+            isbn="1234567890999",
+            category="MY",
+            language="English",
+            user=self.test_user,
+            condition="GD",
+            available=True
+        )
+
+    def test_borrow_book_successful(self):
+        """Test successful book borrowing."""
+        response = self.client.post(
+            self.borrow_book_url,
+            json.dumps({"book_id": self.test_book.id, "user_id": self.test_user.id}),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()['message'], "Book borrowed successfully")
+        # Check if the book is now marked as not available and borrower is set
+        updated_book = Book.objects.get(id=self.test_book.id)
+        self.assertFalse(updated_book.available)
+        self.assertEqual(updated_book.borrower, self.test_user)
+        self.assertEqual(updated_book.borrow_date, date.today())
+
+    def test_borrow_book_unavailable(self):
+        """Test attempting to borrow an already borrowed book."""
+        # First, borrow the book to make it unavailable
+        self.client.post(
+            self.borrow_book_url,
+            json.dumps({"book_id": self.test_book.id, "user_id": self.test_user.id}),
+            content_type="application/json",
+        )
+        # Attempt to borrow the same book again
+        response = self.client.post(
+            self.borrow_book_url,
+            json.dumps({"book_id": self.test_book.id, "user_id": self.test_user2.id}), # Different user attempts to borrow
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json()['error'], "Book is not available")
+        # Check if the book is still marked as not available
+        updated_book = Book.objects.get(id=self.test_book.id)
+        self.assertFalse(updated_book.available)
+        # Optionally check if the borrower is still the original borrower
+        self.assertEqual(updated_book.borrower, self.test_user)
+
+    def test_borrow_book_not_found(self):
+        """Test attempting to borrow a book that does not exist."""
+        response = self.client.post(
+            self.borrow_book_url,
+            json.dumps({"book_id": 999, "user_id": self.test_user.id}), # Non-existent book id
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.json()['error'], "Book not found")
+
+    def test_borrow_book_user_not_found(self):
+        """Test attempting to borrow a book with a user that does not exist."""
+        response = self.client.post(
+            self.borrow_book_url,
+            json.dumps({"book_id": self.test_book.id, "user_id": 999}), # Non-existent user id
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.json()['error'], "User not found")
+
+    def test_borrow_book_missing_book_id(self):
+        """Test borrow book with missing book_id."""
+        response = self.client.post(
+            self.borrow_book_url,
+            json.dumps({"user_id": self.test_user.id}), # Missing book_id
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json()['error'], "Book ID is required")
+
+    def test_borrow_book_missing_user_id(self):
+        """Test borrow book with missing user_id."""
+        response = self.client.post(
+            self.borrow_book_url,
+            json.dumps({"book_id": self.test_book.id}), # Missing user_id
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json()['error'], "User ID is required")
+
+    def test_borrow_book_invalid_json(self):
+        """Test borrow book with invalid JSON."""
+        response = self.client.post(
+            self.borrow_book_url,
+            "invalid json data",
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json()['error'], "Invalid JSON")        
