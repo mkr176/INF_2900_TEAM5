@@ -33,6 +33,7 @@
   transition: transform 0.2s ease-in-out, box-shadow 0.3s ease-in-out;
 }
 
+
 .book-card:hover {
   transform: scale(1.05);
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
@@ -77,6 +78,37 @@
 
 .button-outline:hover {
   background: rgba(37, 99, 235, 0.1);
+}
+
+.book-actions {
+  display: flex;
+  gap: 10px; /* Spacing between buttons */
+  justify-content: space-around; /* Distribute buttons evenly */
+  margin-top: 15px; /* Space between title and buttons */
+  width: 100%; /* Make sure buttons take full width of book-card */
+}
+
+.view-details-button {
+  /* Inherits styles from button-outline */
+  /* Add any specific styles for view-details-button if needed */
+  flex-grow: 1; /* Allow button to grow and take available space */
+  padding: 10px; /* Slightly reduce padding to match visually with borrow button */
+  font-size: 0.9rem; /* Adjust font size if needed */
+}
+
+.borrow-button {
+  /* Inherits styles from button (and potentially button-primary if you define it) */
+  /* Add any specific styles for borrow-button if needed */
+  flex-grow: 1; /* Allow button to grow and take available space */
+  padding: 10px; /* Slightly reduce padding to match visually with view details button */
+  font-size: 0.9rem; /* Adjust font size if needed */
+  background-color: #2563eb; /* Example primary color, adjust to your theme */
+  color: white;
+  border: none;
+}
+
+.borrow-button:hover {
+  background-color: #1e40af; /* Darker shade for hover effect */
 }
 
 .slick-prev, .slick-next {
@@ -126,6 +158,7 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   transition: box-shadow 0.3s ease-in-out;
 }
+
 
 .search-bar:focus {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
