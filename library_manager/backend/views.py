@@ -97,7 +97,7 @@ class LogoutView(View):
 
 # List books view
 def list_books(request):
-    books = Book.objects.all().values('id', 'title', 'author', 'isbn', 'category', 'language', 'user_id', 'condition', 'available', 'image', 'due_date') # added due_date
+    books = Book.objects.all().values('id', 'title', 'author', 'isbn', 'category', 'language', 'user_id', 'condition', 'available', 'image', 'due_date', 'borrower_id', 'borrow_date') # added due_date, borrower_id, borrow_date
     return JsonResponse(list(books), safe=False)
 
 # Borrow book view
@@ -125,6 +125,7 @@ class BorrowBookView(View): # Changed to Class-based view
             except People.DoesNotExist:
                 return JsonResponse({'error': 'User not found'}, status=404)
 
+            borrowed_by_current_user = book.borrower == user
 
             if book.available: # Book is available, so borrow it
                 book.available = False
@@ -132,14 +133,18 @@ class BorrowBookView(View): # Changed to Class-based view
                 book.borrow_date = datetime.now().date() # Record borrow date
                 book.save()
                 message = 'Book borrowed successfully' # Set success message
-            elif book.borrower == user: # Book is borrowed by the current user, so return it
+                status_code = 200 # OK
+            elif borrowed_by_current_user: # Book is borrowed by the current user, so return it
                 book.available = True
                 book.borrower = None # Clear borrower
                 book.borrow_date = None # Clear borrow date
                 book.save()
                 message = 'Book returned successfully' # Set return message
+                status_code = 200 # OK
             else: # Book is borrowed by another user
-                message = f'Book is currently borrowed by another user and will be available on {book.due_date.strftime("%Y-%m-%d")}' # Message for borrowed by others
+                availability_date = book.due_date.strftime("%Y-%m-%d")
+                message = f'Book is currently unavailable. It will be available from {availability_date}' # Message for borrowed by others
+                status_code = 400 # Bad Request - client error
 
 
             book_data = { # Prepare book data for response
@@ -157,7 +162,7 @@ class BorrowBookView(View): # Changed to Class-based view
                 'borrow_date': book.borrow_date.isoformat() if book.borrow_date else None, # Include borrow date
                 'due_date': book.due_date.isoformat() # Include due_date in response
             }
-            return JsonResponse({'message': message, 'book': book_data}, status=200) # Return success with appropriate message and book data
+            return JsonResponse({'message': message, 'book': book_data}, status=status_code) # Return success with appropriate message and book data
 
 
         except json.JSONDecodeError:

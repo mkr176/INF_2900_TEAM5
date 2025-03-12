@@ -4,7 +4,7 @@ import json
 from django.contrib.auth.models import User
 from backend.models import People as CustomUser  # Import your custom User model
 from backend.models import Book
-from datetime import date
+from datetime import date, timedelta
 
 
 class MyViewTests(TestCase):
@@ -226,7 +226,7 @@ class BorrowBookViewTest(TestCase):
         self.test_book = Book.objects.create(
             title="Test Book for Borrowing",
             author="Test Author",
-            due_date=date.today(),
+            due_date=date.today() + timedelta(days=7), # Due date in the future
             isbn="1234567890999",
             category="MY",
             language="English",
@@ -258,19 +258,46 @@ class BorrowBookViewTest(TestCase):
             json.dumps({"book_id": self.test_book.id, "user_id": self.test_user.id}),
             content_type="application/json",
         )
-        # Attempt to borrow the same book again
+        # Attempt to borrow the same book again with a different user
         response = self.client.post(
             self.borrow_book_url,
             json.dumps({"book_id": self.test_book.id, "user_id": self.test_user2.id}), # Different user attempts to borrow
             content_type="application/json",
         )
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.json()['error'], "Book is not available")
-        # Check if the book is still marked as not available
+        expected_message_start = "Book is currently unavailable. It will be available from" # Start of the expected message
+        actual_message = response.json()['message']
+        self.assertTrue(actual_message.startswith(expected_message_start)) # Check if message starts as expected
+
+        # Check if the book is still marked as not available and borrower is still the original user
         updated_book = Book.objects.get(id=self.test_book.id)
         self.assertFalse(updated_book.available)
         # Optionally check if the borrower is still the original borrower
         self.assertEqual(updated_book.borrower, self.test_user)
+
+    def test_borrow_book_return_successful(self):
+        """Test successful book return by borrower."""
+        # First, borrow the book
+        self.client.post(
+            self.borrow_book_url,
+            json.dumps({"book_id": self.test_book.id, "user_id": self.test_user.id}),
+            content_type="application/json",
+        )
+        # Now, return the book (borrow it again with the same user)
+        response = self.client.post(
+            self.borrow_book_url,
+            json.dumps({"book_id": self.test_book.id, "user_id": self.test_user.id}), # Same user borrows again to simulate return
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()['message'], "Book returned successfully") # Updated message for return
+
+        # Check if the book is now marked as available and borrower is cleared
+        updated_book = Book.objects.get(id=self.test_book.id)
+        self.assertTrue(updated_book.available)
+        self.assertIsNone(updated_book.borrower)
+        self.assertIsNone(updated_book.borrow_date)
+
 
     def test_borrow_book_not_found(self):
         """Test attempting to borrow a book that does not exist."""
