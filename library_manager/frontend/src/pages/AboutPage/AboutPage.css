@@ -1,0 +1,98 @@
+/* About Page Styling */
+.about-container {
+    text-align: center;
+    padding: 60px 20px;
+
+    color: white;
+  
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  /* Title */
+  .about-title {
+    font-size: 2.8rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  
+  /* Subtitle */
+  .about-subtitle {
+    font-size: 1.5rem;
+    max-width: 600px;
+    margin-bottom: 30px;
+    opacity: 0.9;
+  }
+  
+  /* Content */
+  .about-content {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    padding: 30px;
+    max-width: 800px;
+    text-align: left;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+  }
+  
+  /* Section Headings */
+  .about-content h2 {
+    color: #ffcc80;
+    font-size: 1.8rem;
+    margin-bottom: 10px;
+  }
+  
+  /* Paragraphs */
+  .about-content p {
+    font-size: 1.2rem;
+    line-height: 1.6;
+  }
+  
+  /* List */
+  .about-content ul {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .about-content li {
+    font-size: 1.2rem;
+    padding: 5px 0;
+    position: relative;
+  }
+  
+  /* Custom Bullet Points */
+  .about-content li::before {
+    content: "✔";
+    color: #ffcc80;
+    margin-right: 8px;
+  }
+  
+  /* Footer Text */
+  .about-footer {
+    font-style: italic;
+    margin-top: 20px;
+    opacity: 0.85;
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .about-title {
+      font-size: 2.4rem;
+    }
+  
+    .about-content {
+      padding: 20px;
+    }
+  
+    .about-content h2 {
+      font-size: 1.5rem;
+    }
+  
+    .about-content p, .about-content li {
+      font-size: 1rem;
+    }
+  }
+  
