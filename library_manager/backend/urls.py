@@ -17,7 +17,7 @@ Including another URLconf
 
 from django.urls import path, re_path
 from django.views.generic import TemplateView
-from .views import RegisterView, LoginView, LogoutView, ListUsersView, CreateBookView, CurrentUserView, DeleteBookView, CreateUserView
+from .views import RegisterView, LoginView, LogoutView, ListUsersView, CreateBookView, CurrentUserView, DeleteBookView, CreateUserView, borrow_book
 from django.views.generic.base import RedirectView
 from . import views
 
@@ -33,6 +33,7 @@ urlpatterns = [
     path("api/delete_book/", DeleteBookView.as_view(), name="delete-book"),
     path("api/create_users/", CreateUserView.as_view(), name="create-users"),
     path("api/principal/", views.list_books, name="list-books"),
+    path("api/borrow_book/", views.borrow_book, name="borrow-book"), 
     path("api/current_user/", CurrentUserView.as_view(), name="current-user"),
     re_path(r"^favicon\.ico$", favicon_view),
     # Catch-all for React routing

@@ -46,6 +46,8 @@ class Book(models.Model):
     condition = models.CharField(max_length=4, choices=CONDITIONS)
     available = models.BooleanField(default=True)
     image = models.ImageField(upload_to='images/', default='static/images/library_seal.jpg')
+    borrower = models.ForeignKey(People, on_delete=models.SET_NULL, null=True, blank=True, related_name='borrowed_books') 
+    borrow_date = models.DateField(null=True, blank=True) 
 
 
     def __str__(self):

@@ -59,7 +59,7 @@ class RegisterView(View):
             # Create user - use Django's AuthUser here
             AuthUser.objects.create_user(username=username, password=password, email=email)
             People.objects.create(name=username, numberbooks=0, type='US', age=25, email=email, password=password)
-            
+
             return JsonResponse({'message': 'User registered successfully'}, status=201)
 
         except json.JSONDecodeError:
@@ -94,11 +94,64 @@ class LogoutView(View):
     def post(self, request):
         logout(request)
         return JsonResponse({'message': 'Logout successful'}, status=200)
-    
+
 # List books view
 def list_books(request):
     books = Book.objects.all().values('id', 'title', 'author', 'isbn', 'category', 'language', 'user_id', 'condition', 'available', 'image')
     return JsonResponse(list(books), safe=False)
+
+# Borrow book view
+@method_decorator(csrf_exempt, name='dispatch')
+def borrow_book(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            book_id = data.get('book_id')
+            user_id = data.get('user_id') # Get user_id from request
+
+            if not book_id:
+                return JsonResponse({'error': 'Book ID is required'}, status=400)
+            if not user_id:
+                return JsonResponse({'error': 'User ID is required'}, status=400) # Ensure user_id is provided
+
+            book = get_object_or_404(Book, id=book_id)
+            user = get_object_or_404(People, id=user_id) # Get People object for borrower
+
+            if not book.available:
+                return JsonResponse({'error': 'Book is not available'}, status=400)
+
+            book.available = False
+            book.borrower = user # Assign the borrower
+            book.borrow_date = datetime.now().date() # Record borrow date
+            book.save()
+            book_data = { # Prepare book data for response
+                'id': book.id,
+                'title': book.title,
+                'author': book.author,
+                'isbn': book.isbn,
+                'category': book.category,
+                'language': book.language,
+                'user_id': book.user_id, # keep user_id for consistency if needed on frontend
+                'condition': book.condition,
+                'available': book.available,
+                'image': str(book.image), # serialize ImageField to string
+                'borrower_id': book.borrower.id if book.borrower else None, # Include borrower id
+                'borrow_date': book.borrow_date.isoformat() if book.borrow_date else None # Include borrow date
+            }
+            return JsonResponse({'message': 'Book borrowed successfully', 'book': book_data}, status=200) # Include book data in response
+
+        except Book.DoesNotExist:
+            return JsonResponse({'error': 'Book not found'}, status=404)
+        except People.DoesNotExist: # Catch if user not found
+            return JsonResponse({'error': 'User not found'}, status=404)
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON'}, status=400)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+    else:
+        return JsonResponse({'error': 'Invalid request method'}, status=405)
+
+
 # Create book view
 @method_decorator(csrf_exempt, name='dispatch')
 class CreateBookView(View):
