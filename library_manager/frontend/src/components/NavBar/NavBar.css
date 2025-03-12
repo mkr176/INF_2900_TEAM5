@@ -1,0 +1,108 @@
+/* Navbar Container - Glassmorphism Effect */
+.navbar {
+    width: 100%;
+    background: rgba(255, 204, 128, 0.15); /* Slightly transparent */
+    backdrop-filter: blur(10px); /* Frosted glass effect */
+    padding: 10px 20px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease-in-out;
+}
+
+/* Navbar Content */
+.nav-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Logo / Home Button */
+.nav-logo {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: white;
+    text-decoration: none;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+/* Cool hover effect for logo */
+.nav-logo:hover {
+    transform: scale(1.1);
+    opacity: 0.85;
+}
+
+/* Navigation Links */
+.nav-links {
+    display: flex;
+    list-style: none;
+    gap: 25px;
+    padding: 0;
+    margin: 0;
+}
+
+.nav-links li {
+    display: inline;
+}
+
+/* Navbar Link Styling */
+.nav-links a {
+    color: white;
+    text-decoration: none;
+    font-size: 1rem;
+    font-weight: bold;
+    position: relative;
+    transition: color 0.3s ease, transform 0.2s ease;
+}
+
+/* Animated Underline on Hover */
+.nav-links a::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: -3px;
+    width: 0%;
+    height: 2px;
+    background: white;
+    transition: all 0.3s ease;
+    transform: translateX(-50%);
+}
+
+/* Hover Effect */
+.nav-links a:hover {
+    color: #ffcc80;
+    transform: scale(1.05);
+}
+
+/* Underline Expands on Hover */
+.nav-links a:hover::after {
+    width: 100%;
+}
+
+/* Navbar Glow Effect on Scroll */
+.navbar.scrolled {
+    background: rgba(255, 204, 128, 0.3);
+    box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .nav-container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .nav-links {
+        margin-top: 10px;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .nav-links a {
+        font-size: 1.1rem;
+    }
+}

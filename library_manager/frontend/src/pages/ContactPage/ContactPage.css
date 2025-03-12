@@ -1,0 +1,90 @@
+
+  
+  /* Title with Gradient Text */
+  .contact-title {
+    font-size: 2.8rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+    background: linear-gradient(to right,rgb(71, 44, 4), #5a3e2b);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  
+  /* Subtitle with Fading Effect */
+  .contact-subtitle {
+    font-size: 1.3rem;
+    color: rgba(0, 0, 0, 0.85);
+    margin-bottom: 40px;
+    max-width: 600px;
+    line-height: 1.5;
+    text-shadow: 1px 1px 10px rgba(0, 0, 0, 0.2);
+  }
+  
+  /* Grid Layout */
+  .contact-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 25px;
+    max-width: 1000px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 10px;
+  }
+  
+  /* Individual Contact Card with Gradient */
+  .contact-card {
+    background: linear-gradient(135deg, #003366, #0055aa); /* Gradient effect */
+    color: #ffcc80; /* Light Orange */
+    padding: 25px;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.5s ease;
+    cursor: pointer;
+  }
+  
+  /* Hover Effect with Color Shift */
+  .contact-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.3);
+    background: linear-gradient(135deg, #004488, #0077cc);
+  }
+  
+  /* Contact Card Icons */
+  .contact-icon {
+    font-size: 2.5rem;
+    color: #ffcc80;
+    margin-bottom: 15px;
+  }
+  
+  /* Email Links */
+  .contact-card a {
+    color: #ffcc80;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1.1rem;
+    transition: color 0.3s ease;
+  }
+  
+  .contact-card a:hover {
+    text-decoration: underline;
+    color: #ffb74d;
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .contact-title {
+      font-size: 2.4rem;
+    }
+  
+    .contact-subtitle {
+      font-size: 1.2rem;
+    }
+  
+    .contact-card {
+      padding: 20px;
+    }
+  }
+  

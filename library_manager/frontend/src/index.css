@@ -13,21 +13,46 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Ensures the header is visible and not hidden behind Chrome's UI */
+body {
+  margin: 0;
+  padding-top: 100px; /* Adjust based on your header height */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+/* Ensure header stays on top */
+header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background: rgba(36, 36, 36, 0.95); /* Slight transparency */
+  padding: 15px 20px;
+  z-index: 1000; /* Ensures it stays above other content */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Push main content further down */
+main {
+  margin-top: 80px; /* Adjust so content does not overlap header */
+  width: 100%;
+  max-width: 1200px;
+  padding: 20px;
+}
+
+/* Other elements */
 a {
   font-weight: 500;
   color: #646cff;
   text-decoration: inherit;
 }
+
 a:hover {
   color: #535bf2;
-}
-
-body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
 }
 
 h1 {
@@ -35,6 +60,7 @@ h1 {
   line-height: 1.1;
 }
 
+/* Button Styling */
 button {
   border-radius: 8px;
   border: 1px solid transparent;
@@ -46,23 +72,47 @@ button {
   cursor: pointer;
   transition: border-color 0.25s;
 }
+
 button:hover {
   border-color: #646cff;
 }
+
 button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
+/* Light Mode Adjustments */
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;
     background-color: #ffffff;
   }
+  
   a:hover {
     color: #747bff;
   }
+
   button {
     background-color: #f9f9f9;
+  }
+
+  header {
+    background: rgba(255, 255, 255, 0.95);
+  }
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  body {
+    padding-top: 70px; /* Ensures proper spacing on mobile */
+  }
+
+  main {
+    margin-top: 100px;
+  }
+
+  header {
+    padding: 12px 16px;
   }
 }
