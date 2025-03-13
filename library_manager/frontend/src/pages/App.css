@@ -12,7 +12,7 @@ body, html {
 #root, .app-container {
   min-height: 100vh; /* Minimum height to fill screen */
   width: 100%;
-  display: flex;
+
   flex-direction: column;
   align-items: center;
   justify-content: flex-start; /* Allow content to grow naturally */
