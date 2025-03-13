@@ -15,45 +15,80 @@ with connection.cursor() as cursor:
 
 def seed_database():
     # Crear usuarios
-    People.objects.all().delete()
-    Book.objects.all().delete()
-    users = [
-        People.objects.create(name="Admin User", numberbooks=0, type='AD', age=30, email="a@gmail.com", password="admin123"),
-        People.objects.create(name="Regular User", numberbooks=2, type='US', age=25, email="b@gmail.com", password="user123"),
-        People.objects.create(name="Librarian User", numberbooks=5, type='LB', age=35, email="c@gmail.com", password="librarian123"),
+    users_data = [
+        {"name": "Admin User", "numberbooks": 0, "type": 'AD', "age": 30, "email": "a@gmail.com", "password": "admin123"},
+        {"name": "Regular User", "numberbooks": 2, "type": 'US', "age": 25, "email": "b@gmail.com", "password": "user123"},
+        {"name": "Librarian User", "numberbooks": 5, "type": 'LB', "age": 35, "email": "c@gmail.com", "password": "librarian123"},
     ]
 
-    users2 = [
-                User.objects.create_user(username="Admin User", password="admin123", email="a@gmail.com", first_name="Admin", last_name="User"),
-                User.objects.create_user(username="Regular User", password="user123", email="b@gmail.com", first_name="Regular", last_name="User"),
-                User.objects.create_user(username="Librarian User", password="librarian123", email="c@gmai.com", first_name="Librarian", last_name="User"),
-    ]            
-    # Crear libros
-    books = [
-        Book.objects.create(
-            title="Cooking Book", author="Author 1", due_date=datetime.date(2025, 3, 1),
-            isbn="1234567890123", category='CK', language="English", 
-            user=users[1], condition='NW', available=True, image='static/images/library_seal.jpg'
-        ),
-        Book.objects.create(
-            title="Crime Book", author="Author 2", due_date=datetime.date(2025, 4, 1),
-            isbn="1234567890124", category='CR', language="English", 
-            user=users[2], condition='GD', available=True, image='static/images/library_seal.jpg'
-        ),
-        Book.objects.create(
-            title="Mistery Book", author="Author 3", due_date=datetime.date(2025, 5, 1),
-            isbn="1234567890125", category='MY', language="English",
-            user=users[0], condition='FR', available=False, image='static/images/library_seal.jpg'
-        ),
-        Book.objects.create(
-            title="Banda Municipal de Sangüesa", author="Juan Cruz Labeaga Mendiola", due_date=datetime.date(2025, 6, 1),
-            isbn="84-87120-27-X", category='HIS', language="Spanish",
-            user=users[1], condition='NW', available=True, image='static/images/library_seal.jpg'
+    users = []
+    for user_data in users_data:
+        user, created = People.objects.update_or_create(
+            email=user_data["email"],
+            defaults=user_data
         )
-        
+        users.append(user)
+
+    # Crear usuarios User (Django Auth User)
+    users2_data = [
+        {"username": "AdminUser", "password": "admin123", "email": "a@gmail.com", "first_name": "Admin", "last_name": "User"},
+        {"username": "RegularUser", "password": "user123", "email": "b@gmail.com", "first_name": "Regular", "last_name": "User"},
+        {"username": "LibrarianUser", "password": "librarian123", "email": "c@gmail.com", "first_name": "Librarian", "last_name": "User"},
     ]
+
+    users2 = []
+    for user2_data in users2_data:
+        user2, created = User.objects.update_or_create(
+            username=user2_data["username"],
+            defaults={
+                'password': user2_data["password"], # password needs to be handled separately
+                'email': user2_data["email"],
+                'first_name': user2_data["first_name"],
+                'last_name': user2_data["last_name"],
+            }
+        )
+        if created: # if user was created, set the password
+            user2.set_password(user2_data["password"])
+            user2.save()
+        users2.append(user2)
+
+
+    books_data = [
+        {
+            "title": "Cooking Book", "author": "Author 1", "due_date": datetime.date(2025, 3, 1),
+            "isbn": "1234567890123", "category": 'CK', "language": "English",
+            "user": users[1], "condition": 'NW', "available": True, "image": 'static/images/library_seal.jpg'
+        },
+        {
+            "title": "Crime Book", "author": "Author 2", "due_date": datetime.date(2025, 4, 1),
+            "isbn": "1234567890124", "category": 'CR', "language": "English",
+            "user": users[2], "condition": 'GD', "available": True, "image": 'static/images/library_seal.jpg'
+        },
+        {
+            "title": "Mistery Book", "author": "Author 3", "due_date": datetime.date(2025, 5, 1),
+            "isbn": "1234567890125", "category": 'MY', "language": "English",
+            "user": users[0], "condition": 'FR', "available": False, "image": 'static/images/library_seal.jpg'
+        },
+        {
+            "title": "Banda Municipal de Sangüesa", "author": "Juan Cruz Labeaga Mendiola", "due_date": datetime.date(2025, 6, 1),
+            "isbn": "84-87120-27-X", "category": 'HIS', "language": "Spanish",
+            "user": users[1], "condition": 'NW', "available": True, "image": 'static/images/library_seal.jpg'
+        }
+
+    ]
+    books = []
+    for book_data in books_data:
+        book, created = Book.objects.update_or_create(
+            isbn=book_data["isbn"],
+            defaults=book_data
+        )
+        books.append(book)
+
 
     print("initialized correctly!")
 
 if __name__ == "__main__":
-    seed_database()
+    try:
+        seed_database()
+    except Exception as e:
+        print("An error occurred: ", e)        
