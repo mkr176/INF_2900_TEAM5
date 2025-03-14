@@ -1,10 +1,19 @@
 {
   "compilerOptions": {
-    "composite": true,
-    "skipLibCheck": true,
+    "target": "ES6",  // Supports modern JS features
     "module": "ESNext",
     "moduleResolution": "bundler",
+    "jsx": "react-jsx",  // ✅ Enables JSX for React
+    "strict": true,  // ✅ Enforces strict TypeScript checks
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true
   },
-  "include": ["vite.config.ts"]
+  "include": [
+    "src",  // ✅ Include all TypeScript files inside the src folder
+    "vite.config.ts"
+  ],
+  "exclude": ["node_modules", "dist"]  // ✅ Exclude unnecessary folders
 }

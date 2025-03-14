@@ -17,9 +17,17 @@ from django.shortcuts import get_object_or_404
 from datetime import datetime
 from datetime import timedelta
 
-
-
 from django.contrib.auth.models import User
+from django.middleware.csrf import get_token
+
+from django.contrib.auth.hashers import make_password
+from django.contrib.auth import get_user_model, logout
+from django.core.exceptions import ObjectDoesNotExist
+
+
+User = get_user_model()
+
+
 
 # Landing Page View
 def front(request, *args, **kwargs):
@@ -90,10 +98,11 @@ class LoginView(View):
             return JsonResponse({'error': 'Invalid JSON'}, status=400)
 
 # Logout View
+@method_decorator(csrf_exempt, name="dispatch")
 class LogoutView(View):
     def post(self, request):
-        logout(request)
-        return JsonResponse({'message': 'Logout successful'}, status=200)
+        logout(request)  # Clears session
+        return JsonResponse({"message": "Logged out successfully"}, status=200)
 
 # List books view
 def list_books(request):
@@ -262,13 +271,125 @@ class DeleteUserView(View):
 class CurrentUserView(View):
     def get(self, request):
         user = request.user
-        people = People.objects.get(name=user.username)
-        user_data = {
-            'id': user.id,
-            'username': user.username,
-            'type': people.type  # Asumiendo que tienes una relación OneToOne entre User y People
-        }
-        return JsonResponse(user_data)      
+        try:
+            people = People.objects.get(name=user.username)
+            user_data = {
+                'id': user.id,
+                'username': user.username,
+                'type': people.type
+            }
+        except People.DoesNotExist:
+            # ✅ Return user details even if "People" entry is missing
+            user_data = {
+                'id': user.id,
+                'username': user.username,
+                'type': "Unknown"
+            }
+
+        return JsonResponse(user_data)
+
+
 class ListUsersView(generics.ListAPIView):
     queryset = People.objects.all()
     serializer_class = PeopleSerializer
+
+
+# Get User Profile
+@method_decorator(csrf_exempt, name='dispatch')
+class UserProfileView(View):
+    def get(self, request, user_id):
+        try:
+            user = People.objects.get(id=user_id)
+            user_data = {
+                'id': user.id,
+                'name': user.name,
+                'email': user.email,
+                'age': user.age,
+                'avatar': user.avatar,
+                'type': user.type
+            }
+            return JsonResponse(user_data, status=200)
+        except People.DoesNotExist:
+            return JsonResponse({'error': 'User not found'}, status=404)
+
+# Update User Profile
+@method_decorator(csrf_exempt, name='dispatch')
+class UpdateUserProfileView(View):
+    def post(self, request, user_id):
+        try:
+            data = json.loads(request.body)
+            user = People.objects.get(id=user_id)
+
+            user.name = data.get('name', user.name)
+            user.email = data.get('email', user.email)
+            user.age = data.get('age', user.age)
+            user.avatar = data.get('avatar', user.avatar)  # Update avatar
+
+            user.save()
+            return JsonResponse({'message': 'Profile updated successfully'}, status=200)
+        except People.DoesNotExist:
+            return JsonResponse({'error': 'User not found'}, status=404)
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON'}, status=400)
+
+
+
+def csrf_token_view(request):
+    return JsonResponse({"csrfToken": get_token(request)})
+
+
+@login_required
+def get_user_info(request):
+    if request.user.is_authenticated:
+        return JsonResponse({
+            "username": request.user.username,
+            "email": request.user.email,
+        })
+    else:
+        return JsonResponse({"error": "Not authenticated"}, status=401)
+
+
+@csrf_exempt
+def update_profile(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            print("Received Data:", data)  # 🔍 Debug incoming request body
+
+            user = request.user  # Assuming user is authenticated
+
+            # Update username, email, password, and avatar
+            if "username" in data:
+                user.username = data["username"]
+            if "email" in data:
+                user.email = data["email"]
+            if "password" in data and data["password"] != "":
+                user.password = make_password(data["password"])
+            if "avatar" in data:
+                user.avatar = data["avatar"]
+
+            user.save()
+            return JsonResponse({"message": "Profile updated successfully"}, status=200)
+
+        except json.JSONDecodeError:
+            return JsonResponse({"error": "Invalid JSON format"}, status=400)
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=400)
+
+    return JsonResponse({"error": "Invalid request method"}, status=405)
+
+def get_current_user(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({"error": "User not authenticated"}, status=401)
+
+    try:
+        people = People.objects.get(name=request.user.username)
+        return JsonResponse({
+            "id": people.id,
+            "username": people.name,
+            "email": people.email,
+            "avatar": people.avatar,
+            "role": people.type,
+        })
+    except ObjectDoesNotExist:
+        return JsonResponse({"error": "User not found in database"}, status=404)

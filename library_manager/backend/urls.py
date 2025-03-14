@@ -17,7 +17,7 @@ Including another URLconf
 
 from django.urls import path, re_path
 from django.views.generic import TemplateView
-from .views import RegisterView, LoginView, LogoutView, ListUsersView, CreateBookView, CurrentUserView, DeleteBookView, CreateUserView, list_books, BorrowBookView
+from .views import RegisterView, LoginView, LogoutView, ListUsersView, CreateBookView, CurrentUserView, DeleteBookView, CreateUserView, list_books, BorrowBookView, UserProfileView, UpdateUserProfileView, csrf_token_view,  get_user_info, update_profile
 from django.views.generic.base import RedirectView
 
 app_name = "frontend"
@@ -42,4 +42,9 @@ urlpatterns = [
         name="index",
     ),  # Name the index view
     path("api/users/", ListUsersView.as_view(), name="list-users"),
+    path("api/user/", get_user_info),
+    path("api/user/<int:user_id>/", UserProfileView.as_view(), name="user-profile"),
+    path("api/user/<int:user_id>/update/", UpdateUserProfileView.as_view(), name="update-user-profile"),
+    path("api/csrf/", csrf_token_view),
+    path("api/update-profile/", update_profile, name="update-profile"),
 ]

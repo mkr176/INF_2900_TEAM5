@@ -6,9 +6,12 @@ import WelcomePage from "./WelcomePage/WelcomePage";
 import PrincipalPage from "./PrincipalPage/PrincipalPage";
 import ContactPage from "./ContactPage/ContactPage";
 import AboutPage from "./AboutPage/AboutPage";
+import ProfilePage from "./ProfilePage/ProfilePage"
 
 import Footer from "../components/Footer/Footer"; // Import the Footer component
 import NavBar from "../components/NavBar/NavBar";
+
+
 import "./App.css";
 
 const App = () => {
@@ -23,6 +26,7 @@ const App = () => {
           <Route path="/principal" element={<PrincipalPage />} />
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/about" element={<AboutPage />} />
+          <Route path="/profile" element={<ProfilePage />} />
         </Routes>
       </div>
       <Footer /> {/* Footer always at bottom */}
