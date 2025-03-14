@@ -141,3 +141,11 @@ INTERNAL_IPS = [
     'localhost',
     '127.0.0.1',
 ]
+
+
+CSRF_COOKIE_HTTPONLY = True
+CSRF_COOKIE_SECURE = True  # If using HTTPS
+
+SESSION_COOKIE_SECURE = True  # Ensures cookies are only sent over HTTPS
+SESSION_COOKIE_HTTPONLY = True  # Prevents JS access to session cookie
+SESSION_COOKIE_SAMESITE = 'Lax'  # Controls cross-site request behavior

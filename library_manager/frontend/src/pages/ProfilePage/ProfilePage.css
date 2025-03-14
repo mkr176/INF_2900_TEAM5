@@ -1,0 +1,143 @@
+/* Profile Page Styling */
+.profile-container {
+  text-align: center;
+  padding: 40px;
+  background: linear-gradient(to right, #5a3e2b, #ffcc80);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.3s ease-in-out;
+}
+
+/* Profile Card */
+.profile-card {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  border-radius: 15px;
+  padding: 30px;
+  text-align: center;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* Profile Avatar */
+.profile-avatar {
+  width: 80px; /* Reduced size */
+  height: 80px;
+  border-radius: 50%;
+  margin-bottom: 15px;
+  border: 2px solid white;
+  object-fit: cover;
+}
+
+/* Input Fields */
+.profile-input {
+  width: 80%;
+  padding: 10px;
+  font-size: 1rem;
+  border: none;
+  border-radius: 5px;
+  margin: 5px 0;
+  text-align: center;
+}
+
+.profile-input:focus {
+  outline: 2px solid #ffcc80;
+}
+
+/* Avatar Grid */
+.avatar-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(40px, 1fr));
+  gap: 5px; /* Reduce spacing */
+  max-width: 300px;
+  margin: 10px auto;
+}
+
+/* Avatar Selection */
+.avatar-option {
+  width: 40px; /* Reduced avatar size */
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: transform 0.2s ease-in-out;
+}
+
+.avatar-option:hover {
+  transform: scale(1.1);
+}
+
+.selected {
+  border: 3px solid #ffcc80;
+}
+
+/* Buttons */
+.profile-actions {
+  margin-top: 20px;
+  display: flex;
+  gap: 10px;
+}
+
+.save-button,
+.edit-button,
+.logout-button {
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: 0.3s ease-in-out;
+}
+
+.save-button {
+  background: #008000;
+  color: white;
+}
+
+.edit-button {
+  background: #0066cc;
+  color: white;
+}
+
+.save-button:hover {
+  background: #006600;
+}
+
+.edit-button:hover {
+  background: #0044aa;
+}
+
+.logout-button {
+  background: #cc0000;
+  color: white;
+}
+
+.logout-button:hover {
+  background: #990000;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .profile-container {
+    padding: 20px;
+  }
+
+  .profile-card {
+    width: 90%;
+    padding: 20px;
+  }
+
+  .avatar-grid {
+    grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
+  }
+
+  .avatar-option {
+    width: 50px;
+    height: 50px;
+  }
+
+  .profile-actions {
+    flex-direction: column;
+  }
+}
