@@ -9,8 +9,11 @@ const LoginPage = () => {
   const [password, setPassword] = useState("");
   const [csrfToken, setCsrfToken] = useState<string | null>(null);
   const navigate = useNavigate();
-  const { fetchUser } = useAuth(); // ✅ Use AuthContext
+  const { isLoggedIn, fetchUser } = useAuth(); // ✅ Use AuthContext
 
+ 
+
+  // ✅ Fetch CSRF token
   useEffect(() => {
     const fetchCsrfToken = async () => {
       try {
@@ -40,7 +43,7 @@ const LoginPage = () => {
     try {
       const response = await fetch("/api/login/", {
         method: "POST",
-        headers: { 
+        headers: {
           "Content-Type": "application/json",
           "X-CSRFToken": csrfToken,
         },
@@ -50,7 +53,7 @@ const LoginPage = () => {
 
       if (response.ok) {
         alert("Logging in...");
-        await fetchUser();  // ✅ Update authentication state
+        await fetchUser(); // ✅ Update authentication state
         navigate("/principal");
       } else {
         alert("Invalid username or password");
@@ -61,29 +64,44 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="relative flex items-center justify-center h-screen bg-gradient-to-r from-purple-500 to-pink-500">
-      <motion.div className="bg-white p-8 rounded-2xl shadow-xl w-96 text-center">
-        <h1 className="text-3xl font-bold text-indigo-900 mb-6">Library Login</h1>
-        <motion.input
-          type="text"
-          placeholder="Username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          className="w-full p-3 mb-4 border border-gray-300 rounded-lg"
-        />
-        <motion.input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="w-full p-3 mb-4 border border-gray-300 rounded-lg"
-        />
-        <motion.button
-          onClick={handleLogin}
-          className="w-full bg-indigo-700 text-white py-3 rounded-lg"
-        >
-          Login
-        </motion.button>
+    <div className="login-container">
+      <motion.div
+        className="login-card"
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.5 }}
+      >
+        <h1 className="login-title">Library Login</h1>
+        {isLoggedIn ? (
+          <p className="login-message">You're already logged in.</p>
+        ) : (
+          <>
+            <motion.input
+              type="text"
+              placeholder="Username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              className="login-input"
+              whileFocus={{ scale: 1.05 }}
+            />
+            <motion.input
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="login-input"
+              whileFocus={{ scale: 1.05 }}
+            />
+            <motion.button
+              onClick={handleLogin}
+              className="login-button"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              Login
+            </motion.button>
+          </>
+        )}
       </motion.div>
     </div>
   );

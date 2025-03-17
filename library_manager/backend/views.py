@@ -354,21 +354,26 @@ def update_profile(request):
     if request.method == "POST":
         try:
             data = json.loads(request.body)
-            print("Received Data:", data)  # 🔍 Debug incoming request body
+            user = request.user
 
-            user = request.user  # Assuming user is authenticated
+            if not request.user.is_authenticated:
+                return JsonResponse({"error": "User not authenticated"}, status=401)
 
-            # Update username, email, password, and avatar
+            # Update fields
             if "username" in data:
                 user.username = data["username"]
             if "email" in data:
                 user.email = data["email"]
             if "password" in data and data["password"] != "":
-                user.password = make_password(data["password"])
+                user.set_password(data["password"])  # Use Django's hashing
             if "avatar" in data:
                 user.avatar = data["avatar"]
 
             user.save()
+
+            # ✅ Refresh session to ensure the user remains logged in
+            request.session.modified = True
+
             return JsonResponse({"message": "Profile updated successfully"}, status=200)
 
         except json.JSONDecodeError:
@@ -377,6 +382,7 @@ def update_profile(request):
             return JsonResponse({"error": str(e)}, status=400)
 
     return JsonResponse({"error": "Invalid request method"}, status=405)
+
 
 def get_current_user(request):
     if not request.user.is_authenticated:

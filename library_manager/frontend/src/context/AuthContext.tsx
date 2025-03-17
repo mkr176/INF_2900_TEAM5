@@ -4,7 +4,7 @@ interface AuthContextType {
   isLoggedIn: boolean;
   username: string;
   avatar: string;
-  fetchUser: () => void;  // Function to refresh user data
+  fetchUser: () => void;
   logout: () => void;
 }
 
@@ -15,7 +15,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [username, setUsername] = useState("Not logged in");
   const [avatar, setAvatar] = useState("default.svg");
 
-  // ✅ Fetch user details when the app starts or after login/logout
+  // ✅ Fetch user details when app starts
   const fetchUser = async () => {
     try {
       const response = await fetch("/api/user/", { credentials: "include" });
@@ -35,7 +35,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  // ✅ Logout function
+  // ✅ Global Logout (Ensures all components update)
   const logout = async () => {
     try {
       const csrfResponse = await fetch("/api/csrf/", { credentials: "include" });
@@ -52,19 +52,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       });
 
       if (response.ok) {
-        alert("Logged out successfully!");
         setIsLoggedIn(false);
         setUsername("Not logged in");
         setAvatar("default.svg");
+        fetchUser(); // 🔄 Ensures all components update!
       } else {
-        alert("Logout failed.");
+        console.error("Logout failed.");
       }
     } catch (error) {
       console.error("Error during logout:", error);
     }
   };
 
-  // Fetch user on app start
+  // ✅ Run on app start
   useEffect(() => {
     fetchUser();
   }, []);
@@ -76,7 +76,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   );
 };
 
-// ✅ Hook to use authentication state in components
 export const useAuth = (): AuthContextType => {
   const context = useContext(AuthContext);
   if (!context) {

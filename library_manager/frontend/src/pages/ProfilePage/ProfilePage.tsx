@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useAuth } from "../../context/AuthContext"; // ✅ Import AuthContext
 import { useNavigate } from "react-router-dom";
 import "./ProfilePage.css";
 
@@ -23,25 +24,21 @@ const avatars = [
 
 const ProfilePage: React.FC = () => {
   const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(true);
+  const { username, avatar, logout, fetchUser } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
-  const [selectedAvatar, setSelectedAvatar] = useState("default.svg");
-  const [username, setUsername] = useState("");
+  const [newUsername, setNewUsername] = useState(username);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [selectedAvatar, setSelectedAvatar] = useState(avatar || "default.svg");
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Fetch user data securely
   useEffect(() => {
-    const fetchUserData = async () => {
+    const fetchProfile = async () => {
       try {
-        const response = await fetch("/api/user/", {
-          method: "GET",
-          credentials: "include",
-        });
-
+        const response = await fetch("/api/user/", { credentials: "include" });
         if (response.ok) {
           const user = await response.json();
-          setUsername(user.username);
+          setNewUsername(user.username);
           setEmail(user.email);
           setSelectedAvatar(user.avatar || "default.svg");
         } else {
@@ -55,22 +52,20 @@ const ProfilePage: React.FC = () => {
       }
     };
 
-    fetchUserData();
+    fetchProfile();
   }, [navigate]);
 
-  // Update user profile
+  // ✅ Update user profile
   const saveProfile = async () => {
     try {
       const response = await fetch("/api/update-profile/", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          username,
-          email,
-          password: password || undefined, // Only send password if changed
-          avatar: selectedAvatar,
+          username: newUsername !== username ? newUsername : undefined,
+          email: email || undefined,
+          password: password || undefined,
+          avatar: selectedAvatar !== avatar ? selectedAvatar : undefined,
         }),
         credentials: "include",
       });
@@ -78,6 +73,7 @@ const ProfilePage: React.FC = () => {
       if (response.ok) {
         alert("Profile updated successfully!");
         setIsEditing(false);
+        fetchUser(); // ✅ Update global auth state
       } else {
         alert("Error updating profile.");
       }
@@ -86,18 +82,12 @@ const ProfilePage: React.FC = () => {
     }
   };
 
-  // Logout function
-  const logout = async () => {
-    await fetch("/api/logout/", { method: "POST", credentials: "include" });
-    navigate("/login");
-  };
-
   return (
     <div className="profile-container">
       <h1 className="profile-title">User Profile</h1>
 
       {isLoading ? (
-        <p>Loading...</p>
+        <p className="loading-text">Loading...</p>
       ) : (
         <>
           <div className="profile-card">
@@ -111,8 +101,8 @@ const ProfilePage: React.FC = () => {
                 <input
                   type="text"
                   className="profile-input"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
+                  value={newUsername}
+                  onChange={(e) => setNewUsername(e.target.value)}
                   placeholder="Username"
                 />
                 <input
@@ -127,7 +117,7 @@ const ProfilePage: React.FC = () => {
                   className="profile-input"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="New Password (leave blank to keep current)"
+                  placeholder="New Password (optional)"
                 />
               </>
             ) : (
