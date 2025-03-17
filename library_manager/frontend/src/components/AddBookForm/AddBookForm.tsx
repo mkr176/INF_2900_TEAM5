@@ -3,8 +3,6 @@ import "./AddBookForm.css"; // ✅ Import CSS for styling
 
 interface AddBookFormProps {
     onBookCreated?: () => void; // Optional callback after book creation
-    userId?: string; // ✅ Add userId as an optional prop
-
 }
 
 const bookCategories = [ // Define category choices
@@ -25,7 +23,7 @@ const bookConditions = [ // Define condition choices
     { value: 'PO', label: 'Poor' },
 ];
 
-const AddBookForm: React.FC<AddBookFormProps> = ({ onBookCreated, userId: propUserId }) => { // ✅ Destructure userId as propUserId
+const AddBookForm: React.FC<AddBookFormProps> = ({ onBookCreated }) => {
     const [title, setTitle] = useState('');
     const [author, setAuthor] = useState('Henrik Ibsen');
     const [isbn, setIsbn] = useState('');
@@ -37,13 +35,7 @@ const AddBookForm: React.FC<AddBookFormProps> = ({ onBookCreated, userId: propUs
     const [publicationYear, setPublicationYear] = useState('2025');
     const [copyNumber, setCopyNumber] = useState('1');
     const [available, setAvailable] = useState(true);
-    const [userId, setUserId] = useState(propUserId || ''); // ✅ Initialize userId state with prop or empty string if prop is not provided
 
-    useEffect(() => {
-        if (propUserId) {
-            setUserId(propUserId); // Update state if prop changes after initial render
-        }
-    }, [propUserId]);
 
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
@@ -56,7 +48,6 @@ const AddBookForm: React.FC<AddBookFormProps> = ({ onBookCreated, userId: propUs
             language,
             condition,
             available,
-            userId, // Make sure to set this dynamically
             storageLocation,
             publisher,
             publicationYear,
@@ -82,7 +73,6 @@ const AddBookForm: React.FC<AddBookFormProps> = ({ onBookCreated, userId: propUs
                 setLanguage('English');
                 setCondition(bookConditions[0].value);
                 setAvailable(true);
-                setUserId('');
                 setStorageLocation('Shelf A1');
                 setPublisher('');
                 setPublicationYear('');
@@ -141,13 +131,6 @@ const AddBookForm: React.FC<AddBookFormProps> = ({ onBookCreated, userId: propUs
             <label htmlFor="copyNumber">Copy Number:</label>
             <input type="number" id="copyNumber" value={copyNumber} onChange={(e) => setCopyNumber(e.target.value)} />
 
-            <label htmlFor="userId">User ID:</label>
-            <input
-                type="number"
-                id="userId"
-                value={userId}
-                readOnly // ✅ Make input read-only
-            />
 
             <label htmlFor="available">Available:</label>
             <input type="checkbox" id="available" checked={available} onChange={(e) => setAvailable(e.target.checked)} />

@@ -171,7 +171,7 @@ const BookDisplayPage: React.FC = () => {
       )}
       {/* Conditionally render AddBookForm */}
       {showAddBookForm && currentUser && ( // ✅ Ensure currentUser is available
-        <AddBookForm onBookCreated={handleBookCreated} userId={currentUser.id.toString()} /> // ✅ Pass currentUser.id as prop
+        <AddBookForm onBookCreated={handleBookCreated} /> // ✅ Pass currentUser.id as prop - userId prop removed
       )}
       {/* Book carousel */}
       <div className="carousel-container">

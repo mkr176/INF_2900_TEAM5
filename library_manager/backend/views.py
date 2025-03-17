@@ -192,7 +192,6 @@ class CreateBookView(View):
             isbn = data.get('isbn')
             category = data.get('category')
             language = data.get('language')
-            user_id = data.get('userId')
             condition = data.get('condition')
             available = data.get('available')
             storage_location = data.get('storageLocation') 
@@ -200,19 +199,25 @@ class CreateBookView(View):
             publication_year = data.get('publicationYear') 
             copy_number = data.get('copyNumber') 
 
+            # Get current user from request
+            current_user_auth = request.user
+            if not current_user_auth.is_authenticated:
+                return JsonResponse({'error': 'User not authenticated'}, status=401)
 
-            # Check if user exists
-            if not People.objects.filter(id=user_id).exists(): # Changed to People.objects
-                return JsonResponse({'error': 'User does not exist'}, status=400)
+            # Fetch the People object associated with the authenticated user
+            try:
+                current_user_people = People.objects.get(name=current_user_auth.username)
+            except People.DoesNotExist:
+                return JsonResponse({'error': 'People object not found for current user'}, status=404)
 
-            # Create book
+
+            # Create book, assigning the current user
             due_date = datetime.now() + timedelta(weeks=2)
-            user = People.objects.get(id=user_id) # Changed to People.objects.get
             Book.objects.create(
                 title=title, author=author, isbn=isbn,due_date=due_date,
-                category=category, language=language, user=user, condition=condition,
-                available=available, storage_location=storage_location, 
-                publisher=publisher, publication_year=publication_year, copy_number=copy_number 
+                category=category, language=language, user=current_user_people, condition=condition, # Assign current_user_people
+                available=available, storage_location=storage_location,
+                publisher=publisher, publication_year=publication_year, copy_number=copy_number
             )
             return JsonResponse({'message': 'Book created successfully'}, status=201)
 
