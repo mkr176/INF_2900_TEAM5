@@ -1,0 +1,41 @@
+.add-book-form {
+    display: flex;
+    flex-direction: column;
+    width: 300px; /* Adjust as needed */
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    gap: 10px;
+    background-color: white;
+    color: black;
+}
+
+.add-book-form label {
+    text-align: left;
+    margin-bottom: 5px;
+    display: block; /* Ensure labels take full width and are above inputs */
+}
+
+.add-book-form input[type="text"],
+.add-book-form input[type="number"],
+.add-book-form select { /* Apply styles to select elements as well */
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    width: 100%; /* Make inputs and selects take full width */
+    box-sizing: border-box; /* Include padding and border in element's total width */
+}
+
+.add-book-form button[type="submit"] {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    background-color: #007bff; /* Example button color */
+    color: white;
+    cursor: pointer;
+}
+
+.add-book-form button[type="submit"]:hover {
+    background-color: #0056b3;
+}

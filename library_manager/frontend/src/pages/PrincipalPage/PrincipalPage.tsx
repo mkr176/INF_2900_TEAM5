@@ -4,6 +4,7 @@ import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import "./PrincipalPage.css";
+import AddBookForm from "../../components/AddBookForm/AddBookForm"; // ✅ Import AddBookForm
 
 interface Book {
   id: number;
@@ -32,6 +33,7 @@ const BookDisplayPage: React.FC = () => {
   const [bookList, setBookList] = useState<Book[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [currentUser, setCurrentUser] = useState<People | null>(null);
+  const [showAddBookForm, setShowAddBookForm] = useState(false); // State to control form visibility
 
 
   useEffect(() => {
@@ -53,9 +55,20 @@ const BookDisplayPage: React.FC = () => {
   };
 
   const handleCreateBook = () => {
-    // Lógica para crear un libro
-    alert("Create Book button clicked");
+    setShowAddBookForm(!showAddBookForm); // Toggle form visibility
   };
+
+  const handleBookCreated = () => {
+    // Callback function to refresh book list after book creation
+    fetch("/api/principal/")
+      .then((response) => response.json())
+      .then((data) => {
+        setBookList(data); // Update book list
+      })
+      .catch((error) => console.error("Error fetching books:", error));
+    setShowAddBookForm(false); // Optionally hide the form after successful creation
+  };
+
 
   const handleBorrowReturn = (book: Book) => {
     if (!currentUser) {
@@ -114,7 +127,7 @@ const BookDisplayPage: React.FC = () => {
         },
       },
       {
-        breakpoint: 900, // Para pantallas más pequeñas
+        breakpoint: 900, // For smaller screens
         settings: {
           slidesToShow: 2,
         },
@@ -152,9 +165,13 @@ const BookDisplayPage: React.FC = () => {
       {currentUser && (currentUser.type === "AD" || currentUser.type === "LB") && (
         <div className="create-book-container">
           <button onClick={handleCreateBook} className="button button-primary">
-            Create Book
+            {showAddBookForm ? "Hide Book Form" : "Create Book"} {/* Toggle button text */}
           </button>
         </div>
+      )}
+      {/* Conditionally render AddBookForm */}
+      {showAddBookForm && currentUser && ( // ✅ Ensure currentUser is available
+        <AddBookForm onBookCreated={handleBookCreated} userId={currentUser.id.toString()} /> // ✅ Pass currentUser.id as prop
       )}
       {/* Book carousel */}
       <div className="carousel-container">

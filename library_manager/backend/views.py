@@ -202,12 +202,12 @@ class CreateBookView(View):
 
 
             # Check if user exists
-            if not User.objects.filter(id=user_id).exists():
+            if not People.objects.filter(id=user_id).exists(): # Changed to People.objects
                 return JsonResponse({'error': 'User does not exist'}, status=400)
 
             # Create book
-            due_date = datetime.now() + timedelta(weeks=2) 
-            user = User.objects.get(id=user_id)
+            due_date = datetime.now() + timedelta(weeks=2)
+            user = People.objects.get(id=user_id) # Changed to People.objects.get
             Book.objects.create(
                 title=title, author=author, isbn=isbn,due_date=due_date,
                 category=category, language=language, user=user, condition=condition,
