@@ -138,7 +138,7 @@ class LogoutViewTest(TestCase):
         )  # Check user is logged in before logout
         response = self.client.post(self.logout_url)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json(), {"message": "Logout successful"})
+        self.assertEqual(response.json(), {"message": "Logged out successfully"})
 
 
 class ListUsersViewTest(TestCase):
