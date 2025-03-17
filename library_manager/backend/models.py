@@ -48,6 +48,11 @@ class Book(models.Model):
     image = models.ImageField(upload_to='images/', default='static/images/library_seal.jpg')
     borrower = models.ForeignKey(People, on_delete=models.SET_NULL, null=True, blank=True, related_name='borrowed_books') 
     borrow_date = models.DateField(null=True, blank=True) 
+    storage_location = models.CharField(max_length=200, blank=True, null=True)
+    publisher = models.CharField(max_length=200, blank=True, null=True)
+    publication_year = models.IntegerField(blank=True, null=True)
+    copy_number = models.IntegerField(blank=True, null=True)
+
 
 
     def __str__(self):

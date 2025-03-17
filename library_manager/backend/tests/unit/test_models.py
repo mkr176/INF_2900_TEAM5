@@ -77,6 +77,10 @@ class BookModelTest(TestCase):
             user=self.user,
             condition="GD",
             available=False,
+            storage_location="Shelf Z5", 
+            publisher="Test Publisher", 
+            publication_year=2023, 
+            copy_number=5 
         )
         self.assertEqual(book.title, "Test Book")
         self.assertEqual(book.author, "Test Author")
@@ -87,6 +91,10 @@ class BookModelTest(TestCase):
         self.assertEqual(book.user, self.user)
         self.assertEqual(book.condition, "GD")
         self.assertEqual(book.available, False)
+        self.assertEqual(book.storage_location, "Shelf Z5")
+        self.assertEqual(book.publisher, "Test Publisher")
+        self.assertEqual(book.publication_year, 2023)
+        self.assertEqual(book.copy_number, 5)
         self.assertEqual(str(book), "Test Book")  # Test __str__ method
 
     def test_book_fields_types(self):
@@ -104,6 +112,10 @@ class BookModelTest(TestCase):
             user=self.user,
             condition="NW",
             available=True,
+            storage_location="Shelf Y6", 
+            publisher="Another Publisher", 
+            publication_year=2024, 
+            copy_number=10 
         )
         self.assertIsInstance(book.id, int)
         self.assertIsInstance(book.title, str)
@@ -115,6 +127,10 @@ class BookModelTest(TestCase):
         self.assertIsInstance(book.user.id, int)  # Foreign key to User
         self.assertIsInstance(book.condition, str)
         self.assertIsInstance(book.available, bool)
+        self.assertIsInstance(book.storage_location, str) 
+        self.assertIsInstance(book.publisher, str) 
+        self.assertIsInstance(book.publication_year, int) 
+        self.assertIsInstance(book.copy_number, int) 
 
     def test_book_category_choices(self):
         """
@@ -133,6 +149,10 @@ class BookModelTest(TestCase):
                 user=self.user,
                 condition="GD",
                 available=True,
+                storage_location="Shelf X7", 
+                publisher="Yet Another Publisher", 
+                publication_year=2021, 
+                copy_number=15 
             )
 
         with self.assertRaises(
@@ -148,6 +168,10 @@ class BookModelTest(TestCase):
                 user=self.user,
                 condition="GD",
                 available=True,
+                storage_location="Shelf W8", 
+                publisher="Invalid Category Publisher", 
+                publication_year=2000, 
+                copy_number=20 
             )
             book.full_clean()  # Explicitly call full_clean to trigger validation
             # book.save() # No need to save, validation should fail before save
@@ -169,6 +193,10 @@ class BookModelTest(TestCase):
                 user=self.user,
                 condition=condition,
                 available=True,
+                storage_location="Shelf V9", 
+                publisher="Condition Publisher", 
+                publication_year=2019, 
+                copy_number=25 
             )
 
         with self.assertRaises(
@@ -184,6 +212,10 @@ class BookModelTest(TestCase):
                 user=self.user,
                 condition="BAD",
                 available=True,  # BAD is not a valid choice
+                storage_location="Shelf U10", 
+                publisher="Invalid Condition Publisher", 
+                publication_year=2010, 
+                copy_number=30 
             )
             book.full_clean()
 
@@ -202,6 +234,10 @@ class BookModelTest(TestCase):
             user=self.user,
             condition="NW",
             available=True,
+            storage_location="Shelf T11", 
+            publisher="Unique ISBN Publisher", 
+            publication_year=2005, 
+            copy_number=35 
         )
         with self.assertRaises(
             IntegrityError
@@ -216,4 +252,8 @@ class BookModelTest(TestCase):
                 user=self.user,
                 condition="GD",
                 available=True,
+                storage_location="Shelf S12", 
+                publisher="Duplicate ISBN Publisher", 
+                publication_year=2008, 
+                copy_number=40 
             )

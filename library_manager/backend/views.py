@@ -107,7 +107,7 @@ class LogoutView(View):
 
 # List books view
 def list_books(request):
-    books = Book.objects.all().values('id', 'title', 'author', 'isbn', 'category', 'language', 'user_id', 'condition', 'available', 'image', 'due_date', 'borrower_id', 'borrow_date') # added due_date, borrower_id, borrow_date
+    books = Book.objects.all().values('id', 'title', 'author', 'isbn', 'category', 'language', 'user_id', 'condition', 'available', 'image', 'due_date', 'borrower_id', 'borrow_date', 'storage_location', 'publisher', 'publication_year', 'copy_number') # added due_date, borrower_id, borrow_date, storage_location, publisher, publication_year, copy_number
     return JsonResponse(list(books), safe=False)
 
 # Borrow book view
@@ -195,18 +195,24 @@ class CreateBookView(View):
             user_id = data.get('userId')
             condition = data.get('condition')
             available = data.get('available')
+            storage_location = data.get('storageLocation') 
+            publisher = data.get('publisher') 
+            publication_year = data.get('publicationYear') 
+            copy_number = data.get('copyNumber') 
+
 
             # Check if user exists
             if not User.objects.filter(id=user_id).exists():
                 return JsonResponse({'error': 'User does not exist'}, status=400)
 
             # Create book
-            due_date = datetime.now + timedelta(weeks=2)
+            due_date = datetime.now() + timedelta(weeks=2) 
             user = User.objects.get(id=user_id)
             Book.objects.create(
                 title=title, author=author, isbn=isbn,due_date=due_date,
                 category=category, language=language, user=user, condition=condition,
-                available=available
+                available=available, storage_location=storage_location, 
+                publisher=publisher, publication_year=publication_year, copy_number=copy_number 
             )
             return JsonResponse({'message': 'Book created successfully'}, status=201)
 
