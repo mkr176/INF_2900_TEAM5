@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../../context/AuthContext"; // ✅ Import AuthContext
+import AvatarSelector from "../../components/AvatarSelector/AvatarSelector";
+import UserCard from "../../components/UserCard/UserCard";
 import { useNavigate } from "react-router-dom";
 import "./ProfilePage.css";
 
@@ -55,7 +57,6 @@ const ProfilePage: React.FC = () => {
     fetchProfile();
   }, [navigate]);
 
-  // ✅ Update user profile
   const saveProfile = async () => {
     try {
       const response = await fetch("/api/update-profile/", {
@@ -69,11 +70,13 @@ const ProfilePage: React.FC = () => {
         }),
         credentials: "include",
       });
-
+  
       if (response.ok) {
+        const data = await response.json();
         alert("Profile updated successfully!");
+  
         setIsEditing(false);
-        fetchUser(); // ✅ Update global auth state
+        fetchUser(); // ✅ Refresh auth state to reflect new username
       } else {
         alert("Error updating profile.");
       }
@@ -81,6 +84,8 @@ const ProfilePage: React.FC = () => {
       console.error("Error updating profile:", error);
     }
   };
+  
+
 
   return (
     <div className="profile-container">
@@ -128,24 +133,12 @@ const ProfilePage: React.FC = () => {
             )}
           </div>
 
-          {isEditing && (
-            <>
-              <h3 className="avatar-selection-title">Choose Your Avatar</h3>
-              <div className="avatar-grid">
-                {avatars.map((avatar, index) => (
-                  <img
-                    key={index}
-                    src={`/static/images/avatars/${avatar}`}
-                    alt="Avatar Option"
-                    className={`avatar-option ${
-                      selectedAvatar === avatar ? "selected" : ""
-                    }`}
-                    onClick={() => setSelectedAvatar(avatar)}
-                  />
-                ))}
-              </div>
-            </>
-          )}
+            {isEditing && (
+              <>
+                <h3 className="avatar-selection-title">Choose Your Avatar</h3>
+                <AvatarSelector selectedAvatar={selectedAvatar} onSelectAvatar={setSelectedAvatar} />
+              </>
+            )}
 
           <div className="profile-actions">
             {isEditing ? (

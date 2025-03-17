@@ -23,6 +23,7 @@ from django.middleware.csrf import get_token
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth import get_user_model, logout
 from django.core.exceptions import ObjectDoesNotExist
+from django.contrib.auth import update_session_auth_hash
 
 
 User = get_user_model()
@@ -348,7 +349,6 @@ def get_user_info(request):
     else:
         return JsonResponse({"error": "Not authenticated"}, status=401)
 
-
 @csrf_exempt
 def update_profile(request):
     if request.method == "POST":
@@ -356,25 +356,38 @@ def update_profile(request):
             data = json.loads(request.body)
             user = request.user
 
-            if not request.user.is_authenticated:
+            if not user.is_authenticated:
                 return JsonResponse({"error": "User not authenticated"}, status=401)
 
+            # Store old username for debugging
+            old_username = user.username  
+
             # Update fields
-            if "username" in data:
+            if "username" in data and data["username"] != user.username:
                 user.username = data["username"]
+
             if "email" in data:
                 user.email = data["email"]
+
             if "password" in data and data["password"] != "":
-                user.set_password(data["password"])  # Use Django's hashing
+                user.set_password(data["password"])  # Django's hashing
+
             if "avatar" in data:
                 user.avatar = data["avatar"]
 
             user.save()
 
-            # ✅ Refresh session to ensure the user remains logged in
+            # ✅ Prevent logout by updating session authentication hash
+            update_session_auth_hash(request, user)  
+
+            # ✅ Ensure session is modified so Django doesn't invalidate it
             request.session.modified = True
 
-            return JsonResponse({"message": "Profile updated successfully"}, status=200)
+            return JsonResponse({
+                "message": "Profile updated successfully",
+                "new_username": user.username,
+                "old_username": old_username
+            }, status=200)
 
         except json.JSONDecodeError:
             return JsonResponse({"error": "Invalid JSON format"}, status=400)
@@ -382,6 +395,7 @@ def update_profile(request):
             return JsonResponse({"error": str(e)}, status=400)
 
     return JsonResponse({"error": "Invalid request method"}, status=405)
+
 
 
 def get_current_user(request):
