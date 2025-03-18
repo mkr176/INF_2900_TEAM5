@@ -4,18 +4,45 @@ import { useAuth } from "../../context/AuthContext";  // ✅ Import AuthContext
 import "./NavBar.css";
 
 const Navbar: React.FC = () => {
-  const { isLoggedIn, username, avatar, logout, fetchUser } = useAuth();
+  const { isLoggedIn, username, avatar, logout,fetchUser } = useAuth();
   const navigate = useNavigate();
 
   
   React.useEffect(() => {
     fetchUser();
-  }, []);
+  }, [fetchUser]);
+ 
+  React.useEffect(() => {
+    const handlePopState = () => {
+      if (!isLoggedIn) {
+        navigate("/");
+      }
+    };
+
+    window.addEventListener("popstate", handlePopState);
+
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
+    };
+  }, [isLoggedIn, navigate]);
+  const handleHomepageClick = () => {
+    if (isLoggedIn) {
+      navigate("/principal");
+    } else {
+      navigate("/");
+    }
+  };
+  const handleLogout = () => {
+    logout();
+    navigate("/");
+    window.history.pushState(null, "", "/");
+  };
 
   return (
     <nav className="navbar">
-      <Link to="/" className="nav-logo">Homepage</Link>
-      <ul className="nav-links">
+    <div className="nav-logo" onClick={handleHomepageClick} style={{ cursor: "pointer" }}>
+        Homepage
+      </div>      <ul className="nav-links">
         <li><Link to="/contact">Contact</Link></li>
         <li><Link to="/about">About</Link></li>
       </ul>
@@ -38,7 +65,7 @@ const Navbar: React.FC = () => {
             >
               {username}
             </span>
-            <button onClick={logout} className="nav-logout">Logout</button>
+            <button onClick={handleLogout} className="nav-logout">Logout</button>
           </>
         ) : (
           <span className="nav-username">Not logged in</span>
