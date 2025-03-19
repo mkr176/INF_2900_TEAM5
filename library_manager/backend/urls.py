@@ -20,7 +20,7 @@ from django.views.generic import TemplateView
 from .views import( 
     RegisterView, LoginView, LogoutView, ListUsersView, 
     CreateBookView, CurrentUserView, DeleteBookView, CreateUserView, 
-    list_books, BorrowBookView, UserProfileView, UpdateUserProfileView, UpdateBookView,
+    list_books, BorrowBookView, UserProfileView, UpdateUserProfileView, UpdateBookView, BookDetailView,
     csrf_token_view,  get_user_info, update_profile
 )
 
@@ -59,7 +59,8 @@ urlpatterns = [
     path("api/create_book/", CreateBookView.as_view(), name="create-book"),
     path("api/delete_book/", DeleteBookView.as_view(), name="delete-book"),
     path("api/borrow_book/", BorrowBookView.as_view(), name="borrow-book"),
-    path("api/update_book/", UpdateBookView.as_view(), name="update-book"),
+    path("api/update_book/<int:book_id>/", UpdateBookView.as_view(), name="update-book"),
+    path("api/book/<int:book_id>/", BookDetailView.as_view(), name="book-detail"),
 
 
     # ============================== #

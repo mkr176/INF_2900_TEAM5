@@ -426,6 +426,38 @@ class UpdateBookView(View):
             return JsonResponse({'error': 'Invalid JSON'}, status=400)
 
 
+@method_decorator(csrf_exempt, name='dispatch')
+class BookDetailView(View):
+    def get(self, request, book_id):
+        try:
+            book = get_object_or_404(Book, id=book_id)
+            book_data = {
+                "id": book.id,
+                "title": book.title,
+                "author": book.author,
+                "isbn": book.isbn,
+                "category": book.category,
+                "language": book.language,
+                "user_id": book.user.id,  # Owner of the book
+                "condition": book.condition,
+                "available": book.available,
+                "image": str(book.image),  # Convert ImageField to string
+                "borrower_id": book.borrower.id if book.borrower else None,
+                "borrow_date": book.borrow_date.isoformat() if book.borrow_date else None,
+                "due_date": book.due_date.isoformat(),
+                "storage_location": book.storage_location,
+                "publisher": book.publisher,
+                "publication_year": book.publication_year,
+                "copy_number": book.copy_number,
+            }
+            return JsonResponse(book_data, status=200)
+
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+
+
+
+
 # ============================== #
 # 4️ SECURITY & CSRF ROUTES       #
 # ============================== #
