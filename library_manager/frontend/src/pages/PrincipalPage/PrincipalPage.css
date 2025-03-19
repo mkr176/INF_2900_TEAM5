@@ -50,7 +50,7 @@
 .book-title {
   font-size: 1.3rem;
   font-weight: bold;
-  color: #1f2937;
+  color: #ffffff;
   margin: 12px 0;
   flex-grow: 1;
   display: flex;
@@ -170,3 +170,23 @@
   color: #d32f2f;
   margin-top: 20px;
 }
+
+.borrow-button.available {
+  background-color: #28a745; 
+  color: white;
+}
+
+.borrow-button.available:hover {
+  background-color: #218838; 
+}
+
+.borrow-button.unavailable {
+  background-color: #d32f2f; 
+  color: white;
+}
+
+.borrow-button.unavailable:hover {
+  background-color: #b71c1c; 
+}
+
+

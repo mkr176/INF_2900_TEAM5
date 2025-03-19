@@ -195,10 +195,11 @@ const BookDisplayPage: React.FC = () => {
                     </button>
                     <button
                       onClick={() => handleBorrowReturn(book)}
-                      className="button button-primary borrow-button"
+                      className={`button borrow-button ${book.available ? "available" : "unavailable"}`}
                     >
                       {getBorrowButtonText(book)}
                     </button>
+
                   </div>
                 </div>
               </motion.div>
