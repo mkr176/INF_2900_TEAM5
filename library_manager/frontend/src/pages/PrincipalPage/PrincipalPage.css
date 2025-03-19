@@ -12,33 +12,60 @@
   margin: 20px auto;
 }
 
-
 .slick-slide {
   display: flex;
   justify-content: center;
 }
 
 .book-card {
-  width: 250px;
+  position: relative;
+  width: 100%;
   height: 450px;
   border-radius: 16px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  perspective: 1000px; /* Enables 3D effect */
+}
+
+.book-card-inner {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  transform-style: preserve-3d;
+  transition: transform 0.6s;
+}
+
+.book-card.flipped .book-card-inner {
+  transform: rotateY(180deg);
+}
+
+/* Front Side */
+.book-card-front, .book-card-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border-radius: 16px;
+}
+
+.book-card-front {
   background: linear-gradient(135deg, #94abc2, #588bbe);
   padding: 20px;
   text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-between;
-  transition: transform 0.2s ease-in-out, box-shadow 0.3s ease-in-out;
 }
 
-
-.book-card:hover {
-  transform: scale(1.05);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+.book-card-back {
+  background: white;
+  color: black;
+  transform: rotateY(180deg);
+  padding: 20px;
+  text-align: center;
 }
 
+/* Image */
 .book-image {
   width: 100%;
   height: 200px;
@@ -47,6 +74,7 @@
   background: #f3f4f6;
 }
 
+/* Title */
 .book-title {
   font-size: 1.3rem;
   font-weight: bold;
@@ -59,9 +87,11 @@
   text-align: center;
 }
 
+/* Buttons */
 .button {
   padding: 12px;
   font-weight: bold;
+  justify-content: center;
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.3s ease-in-out;
@@ -80,97 +110,7 @@
   background: rgba(37, 99, 235, 0.1);
 }
 
-.book-actions {
-  display: flex;
-  gap: 10px; /* Spacing between buttons */
-  justify-content: space-around; /* Distribute buttons evenly */
-  margin-top: 15px; /* Space between title and buttons */
-  width: 100%; /* Make sure buttons take full width of book-card */
-}
-
-.view-details-button {
-  /* Inherits styles from button-outline */
-  /* Add any specific styles for view-details-button if needed */
-  flex-grow: 1; /* Allow button to grow and take available space */
-  padding: 10px; /* Slightly reduce padding to match visually with borrow button */
-  font-size: 0.9rem; /* Adjust font size if needed */
-}
-
-.borrow-button {
-  /* Inherits styles from button (and potentially button-primary if you define it) */
-  /* Add any specific styles for borrow-button if needed */
-  flex-grow: 1; /* Allow button to grow and take available space */
-  padding: 10px; /* Slightly reduce padding to match visually with view details button */
-  font-size: 0.9rem; /* Adjust font size if needed */
-  background-color: #2563eb; /* Example primary color, adjust to your theme */
-  color: white;
-  border: none;
-}
-
-.borrow-button:hover {
-  background-color: #1e40af; /* Darker shade for hover effect */
-}
-
-.slick-prev, .slick-next {
-  width: 50px;
-  height: 50px;
-  background-color: rgba(37, 99, 235, 0.8); /* Azul con opacidad */
-  border-radius: 50%;
-  display: flex !important;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-  transition: background 0.3s ease-in-out;
-}
-
-.slick-prev:hover, .slick-next:hover {
-  background-color: rgba(37, 99, 235, 1); /* Azul sólido en hover */
-}
-
-.slick-prev:before, .slick-next:before {
-  font-size: 24px; /* Aumenta el tamaño de la flecha */
-  color: white !important;
-  opacity: 1;
-}
-
-.slick-prev {
-  left: -60px; /* Ajusta la posición del botón */
-}
-
-.slick-next {
-  right: -60px;
-}
-
-.search-container {
-  display: flex;
-  justify-content: center;
-  padding: 20px;
-}
-
-.search-bar {
-  width: 50%;
-  max-width: 400px;
-  padding: 12px;
-  font-size: 16px;
-  border: none;
-  border-radius: 20px;
-  outline: none;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  transition: box-shadow 0.3s ease-in-out;
-}
-
-
-.search-bar:focus {
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-}
-
-.no-results {
-  text-align: center;
-  font-size: 18px;
-  color: #d32f2f;
-  margin-top: 20px;
-}
-
+/* Borrow Button - Green for Available, Red for Unavailable */
 .borrow-button.available {
   background-color: #28a745; 
   color: white;
@@ -189,4 +129,110 @@
   background-color: #b71c1c; 
 }
 
+/* Book Actions */
+.book-actions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin-top: auto; 
+}
 
+.view-details-button {
+  flex-grow: 1;
+  padding: 10px;
+  font-size: 0.9rem;
+}
+
+/* Borrow Button */
+.borrow-button {
+  width: 100%; 
+  padding: 12px;
+  font-size: 14px;
+  text-align: center;
+  font-weight: bold;
+  white-space: normal;
+  word-wrap: break-word;
+  border-radius: 16px;
+  cursor: pointer;
+  text-transform: uppercase;
+  transition: all 0.3s ease-in-out;
+  min-height: 50px; 
+  
+}
+
+.borrow-button:hover {
+  background-color: #1e40af;
+}
+
+.book-card-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  
+  
+  
+}
+
+/* Navigation Buttons */
+.slick-prev, .slick-next {
+  width: 50px;
+  height: 50px;
+  background-color: rgba(37, 99, 235, 0.8);
+  border-radius: 50%;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  transition: background 0.3s ease-in-out;
+}
+
+.slick-prev:hover, .slick-next:hover {
+  background-color: rgba(37, 99, 235, 1);
+}
+
+.slick-prev:before, .slick-next:before {
+  font-size: 24px;
+  color: white !important;
+  opacity: 1;
+}
+
+.slick-prev {
+  left: -60px;
+}
+
+.slick-next {
+  right: -60px;
+}
+
+/* Search Bar */
+.search-container {
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+}
+
+.search-bar {
+  width: 50%;
+  max-width: 400px;
+  padding: 12px;
+  font-size: 16px;
+  border: none;
+  border-radius: 20px;
+  outline: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: box-shadow 0.3s ease-in-out;
+}
+
+.search-bar:focus {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* No Results Message */
+.no-results {
+  text-align: center;
+  font-size: 18px;
+  color: #d32f2f;
+  margin-top: 20px;
+}

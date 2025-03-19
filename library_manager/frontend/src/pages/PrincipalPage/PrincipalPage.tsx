@@ -19,6 +19,8 @@ interface Book {
   image?: string;
   borrower_id: number | null; // Add borrower_id to Book interface
   due_date: string; // Ensure due_date is a string to handle date format from backend
+  publisher: string;       
+  publication_year: number;
 }
 interface People {
   id: number;
@@ -34,6 +36,7 @@ const BookDisplayPage: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [currentUser, setCurrentUser] = useState<People | null>(null);
   const [showAddBookForm, setShowAddBookForm] = useState(false); // State to control form visibility
+  const [flippedBooks, setFlippedBooks] = useState<{ [key: number]: boolean }>({});
 
 
   useEffect(() => {
@@ -149,6 +152,21 @@ const BookDisplayPage: React.FC = () => {
   };
 
 
+
+  const handleMouseEnter = (bookId: number) => {
+    setTimeout(() => {
+      setFlippedBooks((prev) => ({ ...prev, [bookId]: true }));
+    }, 150); 
+  };
+  
+  const handleMouseLeave = (bookId: number) => {
+    setTimeout(() => {
+      setFlippedBooks((prev) => ({ ...prev, [bookId]: false }));
+    }, 150);
+  };
+  
+
+
   return (
     <div>
       {/* Search bar */}
@@ -178,31 +196,59 @@ const BookDisplayPage: React.FC = () => {
         {filteredBooks.length > 1 ? (
           <Slider {...settings}>
             {filteredBooks.map((book: Book) => (
-              <motion.div key={book.id} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                <div className="book-card">
-                  <motion.img
-                    src={book.image}
-                    alt={book.title}
-                    className="book-image"
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.5 }}
-                  />
-                  <h2 className="book-title">{book.title}</h2>
-                  <div className="book-actions"> {/* Container for buttons */}
-                    <button onClick={() => handleViewDetails(book)} className="button button-outline view-details-button">
-                      View Details
-                    </button>
-                    <button
-                      onClick={() => handleBorrowReturn(book)}
-                      className={`button borrow-button ${book.available ? "available" : "unavailable"}`}
-                    >
-                      {getBorrowButtonText(book)}
-                    </button>
+              <motion.div
+                key={book.id}
+                className="book-card-container"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                {/* Flipping Book Card */}
+                <div
+                  className={`book-card ${flippedBooks[book.id] ? "flipped" : ""}`}
+                  onMouseEnter={() => handleMouseEnter(book.id)}
+                  onMouseLeave={() => handleMouseLeave(book.id)}
+                >
+                  <div className="book-card-inner">
+                    {/* Front Side */}
+                    <div className="book-card-front">
+                      <motion.img
+                        src={book.image}
+                        alt={book.title}
+                        className="book-image"
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ duration: 0.5 }}
+                      />
+                      <h2 className="book-title">{book.title}</h2>
+                    </div>
 
+                    {/* Back Side (Details) */}
+                    <div className="book-card-back">
+                      <h3>{book.title}</h3>
+                      <p><strong>Author:</strong> {book.author}</p>
+                      <p><strong>Category:</strong> {book.category}</p>
+                      <p><strong>Condition:</strong> {book.condition}</p>
+                      <p><strong>Language:</strong> {book.language}</p>
+                      <p><strong>ISBN:</strong> {book.isbn}</p>
+                      <p><strong>Publisher:</strong> {book.publisher}</p>
+                      <p><strong>Year:</strong> {book.publication_year}</p>
+                      <p><strong>Available:</strong> {book.available ? "Yes" : "No"}</p>
+                    </div>
                   </div>
                 </div>
+                {/*Borrow Button Always Below Book Card */}
+                <div className="book-actions">
+                  <button
+                    onClick={() => handleBorrowReturn(book)}
+                    className={`button borrow-button ${book.available ? "available" : "unavailable"}`}
+                  >
+                    {getBorrowButtonText(book)}
+                  </button>
+                </div>
               </motion.div>
+
+
+
             ))}
           </Slider>
         ) : filteredBooks.length === 1 ? (
