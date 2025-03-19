@@ -407,7 +407,23 @@ class BorrowBookView(View): # Changed to Class-based view
             return JsonResponse({'error': str(e)}, status=500)
 
 
+# Update Book
+@method_decorator(csrf_exempt, name='dispatch')
+class UpdateBookView(View):
+    def post(self, request, book_id):
+        try:
+            data = json.loads(request.body)
+            book = get_object_or_404(Book, id=book_id)
 
+            for field in ['title', 'author', 'isbn', 'category', 'language', 'condition', 'available', 'storage_location', 'publisher', 'publication_year', 'copy_number']:
+                if field in data:
+                    setattr(book, field, data[field])
+
+            book.save()
+            return JsonResponse({'message': 'Book updated successfully'}, status=200)
+
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON'}, status=400)
 
 
 # ============================== #
