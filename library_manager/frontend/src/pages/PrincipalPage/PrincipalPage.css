@@ -1,5 +1,5 @@
 .carousel-container {
-  width: 90%;
+  width: 95%;
   margin: 0 auto;
   padding: 20px;
 }
@@ -19,7 +19,7 @@
 
 .book-card {
   position: relative;
-  width: 100%;
+  width: 90%;
   height: 450px;
   border-radius: 16px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -134,7 +134,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 100%;
+  width: 90%;
   margin-top: auto; 
 }
 
