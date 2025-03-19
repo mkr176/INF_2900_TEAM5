@@ -7,6 +7,8 @@ import PrincipalPage from "./PrincipalPage/PrincipalPage";
 import ContactPage from "./ContactPage/ContactPage";
 import AboutPage from "./AboutPage/AboutPage";
 import ProfilePage from "./ProfilePage/ProfilePage"
+import PolicyPage from "./PrivacyPolicyPage/PolicyPage";
+import ServicePage from "./TermsofServicePage/ServicePage";
 
 import Footer from "../components/Footer/Footer"; // Import the Footer component
 import NavBar from "../components/NavBar/NavBar";
@@ -26,6 +28,8 @@ const App = () => {
           <Route path="/principal" element={<PrincipalPage />} />
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/about" element={<AboutPage />} />
+          <Route path="/policy" element={<PolicyPage />} />
+          <Route path="/terms" element={<ServicePage />} />
           <Route path="/profile" element={<ProfilePage />} />
         </Routes>
       </div>
