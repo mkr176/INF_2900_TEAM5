@@ -16,6 +16,9 @@
   display: flex;
   justify-content: center;
 }
+.single-book-container .book-card-container {
+  width: 250px; /* Match carousel width */
+}
 
 .book-card {
   position: relative;
