@@ -286,7 +286,7 @@ class CurrentUserView(View):
         try:
             people = People.objects.get(name=user.username)
             user_data = {
-                'id': user.id,
+                'id': people.id, 
                 'username': user.username,
                 'type': people.type
             }
