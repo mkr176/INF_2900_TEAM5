@@ -1,32 +1,22 @@
-from django.shortcuts import render
+import json
+from django.shortcuts import render, get_object_or_404
 from django.views import View
 from django.http import JsonResponse
-from django.contrib.auth.models import User as AuthUser # Alias Django's User model to avoid confusion
 from django.views.generic import TemplateView
-from django.contrib.auth import authenticate, login, logout
-import json
+from django.contrib.auth.models import User as AuthUser # Alias Django's User model to avoid confusion
+from django.contrib.auth import authenticate, login, logout, update_session_auth_hash, get_user_model, logout
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from rest_framework import generics
-from .serializers import UserSerializer, PeopleSerializer
-from .validations import validate_username, validate_password, validate_email, validate_birth_date
-
-from .models import Book,People
-from django.shortcuts import get_object_or_404
-from datetime import datetime
-from datetime import timedelta
-
-from django.contrib.auth.models import User
+from datetime import datetime, timedelta
 from django.middleware.csrf import get_token
-
-from django.contrib.auth.hashers import make_password
-from django.contrib.auth import get_user_model, logout
 from django.core.exceptions import ObjectDoesNotExist
-from django.contrib.auth import update_session_auth_hash
 
+from .serializers import PeopleSerializer
+from .validations import validate_username, validate_password, validate_email, validate_birth_date
+from .models import Book,People
 
-User = get_user_model()
 
 
 
@@ -40,6 +30,10 @@ class FrontendAppView(TemplateView):
 
     def get(self, request, *args, **kwargs):
         return super().get(request, *args, **kwargs)
+
+# ============================== #
+# 1️ AUTHENTICATION ROUTES        #
+# ============================== #
 
 # Register View
 @method_decorator(csrf_exempt, name='dispatch')
@@ -75,7 +69,7 @@ class RegisterView(View):
             return JsonResponse({'error': 'Invalid JSON'}, status=400)
         except ValueError as e: # Catch datetime parsing errors
             return JsonResponse({'error': str(e)}, status=400)
-
+        
 
 # Login View
 class LoginView(View):
@@ -98,6 +92,7 @@ class LoginView(View):
         except json.JSONDecodeError:
             return JsonResponse({'error': 'Invalid JSON'}, status=400)
 
+
 # Logout View
 @method_decorator(csrf_exempt, name="dispatch")
 class LogoutView(View):
@@ -105,14 +100,245 @@ class LogoutView(View):
         logout(request)  # Clears session
         return JsonResponse({"message": "Logged out successfully"}, status=200)
 
+
+# ============================== #
+# 2️ USER MANAGEMENT ROUTES       #
+# ============================== #
+
+class ListUsersView(generics.ListAPIView):
+    queryset = People.objects.all()
+    serializer_class = PeopleSerializer
+
+
+@method_decorator(login_required, name='dispatch')
+class CurrentUserView(View):
+    def get(self, request):
+        user = request.user
+        try:
+            people = People.objects.get(name=user.username)
+            user_data = {
+                'id': user.id,
+                'username': user.username,
+                'type': people.type
+            }
+        except People.DoesNotExist:
+            # ✅ Return user details even if "People" entry is missing
+            user_data = {
+                'id': user.id,
+                'username': user.username,
+                'type': "Unknown"
+            }
+
+        return JsonResponse(user_data)
+    
+
+@login_required
+def get_user_info(request):
+    if request.user.is_authenticated:
+        return JsonResponse({
+            "username": request.user.username,
+            "email": request.user.email,
+        })
+    else:
+        return JsonResponse({"error": "Not authenticated"}, status=401)
+    
+
+# Get User Profile
+@method_decorator(csrf_exempt, name='dispatch')
+class UserProfileView(View):
+    def get(self, request, user_id):
+        try:
+            user = People.objects.get(id=user_id)
+            user_data = {
+                'id': user.id,
+                'name': user.name,
+                'email': user.email,
+                'age': user.age,
+                'avatar': user.avatar,
+                'type': user.type
+            }
+            return JsonResponse(user_data, status=200)
+        except People.DoesNotExist:
+            return JsonResponse({'error': 'User not found'}, status=404)
+
+
+# Update User Profile
+@method_decorator(csrf_exempt, name='dispatch')
+class UpdateUserProfileView(View):
+    def post(self, request, user_id):
+        try:
+            data = json.loads(request.body)
+            user = People.objects.get(id=user_id)
+
+            user.name = data.get('name', user.name)
+            user.email = data.get('email', user.email)
+            user.age = data.get('age', user.age)
+            user.avatar = data.get('avatar', user.avatar)  # Update avatar
+
+            user.save()
+            return JsonResponse({'message': 'Profile updated successfully'}, status=200)
+        except People.DoesNotExist:
+            return JsonResponse({'error': 'User not found'}, status=404)
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON'}, status=400)
+        
+
+@csrf_exempt
+def update_profile(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            user = request.user
+
+            if not user.is_authenticated:
+                return JsonResponse({"error": "User not authenticated"}, status=401)
+
+            # Store old username for debugging
+            old_username = user.username  
+
+            # Update fields
+            if "username" in data and data["username"] != user.username:
+                user.username = data["username"]
+
+            if "email" in data:
+                user.email = data["email"]
+
+            if "password" in data and data["password"] != "":
+                user.set_password(data["password"])  # Django's hashing
+
+            if "avatar" in data:
+                user.avatar = data["avatar"]
+
+            user.save()
+
+            # ✅ Prevent logout by updating session authentication hash
+            update_session_auth_hash(request, user)  
+
+            # ✅ Ensure session is modified so Django doesn't invalidate it
+            request.session.modified = True
+
+            return JsonResponse({
+                "message": "Profile updated successfully",
+                "new_username": user.username,
+                "old_username": old_username
+            }, status=200)
+
+        except json.JSONDecodeError:
+            return JsonResponse({"error": "Invalid JSON format"}, status=400)
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=400)
+
+    return JsonResponse({"error": "Invalid request method"}, status=405)
+
+        
+
+# Create user view
+@method_decorator(csrf_exempt, name='dispatch')
+class CreateUserView(View):
+    def post(self, request):
+        try:
+            data = json.loads(request.body)
+            name = data.get('name')
+            age = data.get('age')
+            email= data.get('email')
+            password = data.get('password')
+            numberbooks = 0
+            type = data.get('type')
+            # Validate fields
+            if not name or not type:
+                return JsonResponse({'error': 'All fields are required'}, status=400)
+
+            if not validate_username(name):
+                return JsonResponse({'error': 'Invalid name'}, status=400)
+
+            if not validate_password(numberbooks):
+                return JsonResponse({'error': 'Invalid number of books'}, status=400)
+
+            if not validate_email(type):
+                return JsonResponse({'error': 'Invalid type'}, status=400)
+
+        
+            # Create user
+            People.objects.create(name=name, numberbooks=numberbooks, type=type, age=age, email=email, password=password)
+            AuthUser.objects.create_user(username=name, password=password, email=email)
+            return JsonResponse({'message': 'User created successfully'}, status=201)
+
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON'}, status=400)
+
+
+
+
+# ============================== #
+# 3️ BOOK MANAGEMENT ROUTES       #
+# ============================== #
+
 # List books view
 def list_books(request):
     books = Book.objects.all().values('id', 'title', 'author', 'isbn', 'category', 'language', 'user_id', 'condition', 'available', 'image', 'due_date', 'borrower_id', 'borrow_date', 'storage_location', 'publisher', 'publication_year', 'copy_number') # added due_date, borrower_id, borrow_date, storage_location, publisher, publication_year, copy_number
     return JsonResponse(list(books), safe=False)
 
+
+# Create book view
+@method_decorator(csrf_exempt, name='dispatch')
+class CreateBookView(View):
+    def post(self, request):
+        try:
+            data = json.loads(request.body)
+            title = data.get('title')
+            author = data.get('author')
+            isbn = data.get('isbn')
+            category = data.get('category')
+            language = data.get('language')
+            condition = data.get('condition')
+            available = data.get('available')
+            storage_location = data.get('storageLocation') 
+            publisher = data.get('publisher') 
+            publication_year = data.get('publicationYear') 
+            copy_number = data.get('copyNumber') 
+
+            # Get current user from request
+            current_user_auth = request.user
+            if not current_user_auth.is_authenticated:
+                return JsonResponse({'error': 'User not authenticated'}, status=401)
+
+            # Fetch the People object associated with the authenticated user
+            try:
+                current_user_people = People.objects.get(name=current_user_auth.username)
+            except People.DoesNotExist:
+                return JsonResponse({'error': 'People object not found for current user'}, status=404)
+
+
+            # Create book, assigning the current user
+            due_date = datetime.now() + timedelta(weeks=2)
+            Book.objects.create(
+                title=title, author=author, isbn=isbn,due_date=due_date,
+                category=category, language=language, user=current_user_people, condition=condition, # Assign current_user_people
+                available=available, storage_location=storage_location,
+                publisher=publisher, publication_year=publication_year, copy_number=copy_number
+            )
+            return JsonResponse({'message': 'Book created successfully'}, status=201)
+
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON'}, status=400)
+        
+        
+#Delete book view
+@method_decorator(csrf_exempt, name='dispatch')
+class DeleteBookView(View):
+    def delete(self, request ,book_id):
+        try:
+            book = get_object_or_404(Book, id=book_id)
+            book.delete()
+            return JsonResponse({'message': 'Book deleted successfully'}, status=200)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+        
+
+
+
 # Borrow book view
 @method_decorator(csrf_exempt, name='dispatch')
-
 class BorrowBookView(View): # Changed to Class-based view
     def post(self, request):
         try:
@@ -181,231 +407,37 @@ class BorrowBookView(View): # Changed to Class-based view
             return JsonResponse({'error': str(e)}, status=500)
 
 
-# Create book view
-@method_decorator(csrf_exempt, name='dispatch')
-class CreateBookView(View):
-    def post(self, request):
-        try:
-            data = json.loads(request.body)
-            title = data.get('title')
-            author = data.get('author')
-            isbn = data.get('isbn')
-            category = data.get('category')
-            language = data.get('language')
-            condition = data.get('condition')
-            available = data.get('available')
-            storage_location = data.get('storageLocation') 
-            publisher = data.get('publisher') 
-            publication_year = data.get('publicationYear') 
-            copy_number = data.get('copyNumber') 
-
-            # Get current user from request
-            current_user_auth = request.user
-            if not current_user_auth.is_authenticated:
-                return JsonResponse({'error': 'User not authenticated'}, status=401)
-
-            # Fetch the People object associated with the authenticated user
-            try:
-                current_user_people = People.objects.get(name=current_user_auth.username)
-            except People.DoesNotExist:
-                return JsonResponse({'error': 'People object not found for current user'}, status=404)
 
 
-            # Create book, assigning the current user
-            due_date = datetime.now() + timedelta(weeks=2)
-            Book.objects.create(
-                title=title, author=author, isbn=isbn,due_date=due_date,
-                category=category, language=language, user=current_user_people, condition=condition, # Assign current_user_people
-                available=available, storage_location=storage_location,
-                publisher=publisher, publication_year=publication_year, copy_number=copy_number
-            )
-            return JsonResponse({'message': 'Book created successfully'}, status=201)
 
-        except json.JSONDecodeError:
-            return JsonResponse({'error': 'Invalid JSON'}, status=400)
-#Delete book view
-@method_decorator(csrf_exempt, name='dispatch')
-class DeleteBookView(View):
-    def delete(self, request ,book_id):
-        try:
-            book = get_object_or_404(Book, id=book_id)
-            book.delete()
-            return JsonResponse({'message': 'Book deleted successfully'}, status=200)
-        except Exception as e:
-            return JsonResponse({'error': str(e)}, status=500)
-# Create user view
-@method_decorator(csrf_exempt, name='dispatch')
-class CreateUserView(View):
-    def post(self, request):
-        try:
-            data = json.loads(request.body)
-            name = data.get('name')
-            age = data.get('age')
-            email= data.get('email')
-            password = data.get('password')
-            numberbooks = 0
-            type = data.get('type')
-            # Validate fields
-            if not name or not type:
-                return JsonResponse({'error': 'All fields are required'}, status=400)
+# ============================== #
+# 4️ SECURITY & CSRF ROUTES       #
+# ============================== #
 
-            if not validate_username(name):
-                return JsonResponse({'error': 'Invalid name'}, status=400)
+def csrf_token_view(request):
+    return JsonResponse({"csrfToken": get_token(request)})
 
-            if not validate_password(numberbooks):
-                return JsonResponse({'error': 'Invalid number of books'}, status=400)
 
-            if not validate_email(type):
-                return JsonResponse({'error': 'Invalid type'}, status=400)
 
-        
-            # Create user
-            People.objects.create(name=name, numberbooks=numberbooks, type=type, age=age, email=email, password=password)
-            User.objects.create_user(username=name, password=password, email=email)
-            return JsonResponse({'message': 'User created successfully'}, status=201)
+# ============================== #
+# 5️ STATIC & FRONTEND ROUTES     #
+# ============================== #
 
-        except json.JSONDecodeError:
-            return JsonResponse({'error': 'Invalid JSON'}, status=400)
+
 # Delete user view
 @method_decorator(csrf_exempt, name='dispatch')
 class DeleteUserView(View):
     def delete(self, request ,user_id):
         try:
             user = get_object_or_404(People, id=user_id)
-            user2= get_object_or_404(User, id=user_id)
+            user2= get_object_or_404(AuthUser, id=user_id)
             user2.delete()
             user.delete()
             return JsonResponse({'message': 'User deleted successfully'}, status=200)
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
         
-@method_decorator(login_required, name='dispatch')
-class CurrentUserView(View):
-    def get(self, request):
-        user = request.user
-        try:
-            people = People.objects.get(name=user.username)
-            user_data = {
-                'id': user.id,
-                'username': user.username,
-                'type': people.type
-            }
-        except People.DoesNotExist:
-            # ✅ Return user details even if "People" entry is missing
-            user_data = {
-                'id': user.id,
-                'username': user.username,
-                'type': "Unknown"
-            }
 
-        return JsonResponse(user_data)
-
-
-class ListUsersView(generics.ListAPIView):
-    queryset = People.objects.all()
-    serializer_class = PeopleSerializer
-
-
-# Get User Profile
-@method_decorator(csrf_exempt, name='dispatch')
-class UserProfileView(View):
-    def get(self, request, user_id):
-        try:
-            user = People.objects.get(id=user_id)
-            user_data = {
-                'id': user.id,
-                'name': user.name,
-                'email': user.email,
-                'age': user.age,
-                'avatar': user.avatar,
-                'type': user.type
-            }
-            return JsonResponse(user_data, status=200)
-        except People.DoesNotExist:
-            return JsonResponse({'error': 'User not found'}, status=404)
-
-# Update User Profile
-@method_decorator(csrf_exempt, name='dispatch')
-class UpdateUserProfileView(View):
-    def post(self, request, user_id):
-        try:
-            data = json.loads(request.body)
-            user = People.objects.get(id=user_id)
-
-            user.name = data.get('name', user.name)
-            user.email = data.get('email', user.email)
-            user.age = data.get('age', user.age)
-            user.avatar = data.get('avatar', user.avatar)  # Update avatar
-
-            user.save()
-            return JsonResponse({'message': 'Profile updated successfully'}, status=200)
-        except People.DoesNotExist:
-            return JsonResponse({'error': 'User not found'}, status=404)
-        except json.JSONDecodeError:
-            return JsonResponse({'error': 'Invalid JSON'}, status=400)
-
-
-
-def csrf_token_view(request):
-    return JsonResponse({"csrfToken": get_token(request)})
-
-
-@login_required
-def get_user_info(request):
-    if request.user.is_authenticated:
-        return JsonResponse({
-            "username": request.user.username,
-            "email": request.user.email,
-        })
-    else:
-        return JsonResponse({"error": "Not authenticated"}, status=401)
-
-@csrf_exempt
-def update_profile(request):
-    if request.method == "POST":
-        try:
-            data = json.loads(request.body)
-            user = request.user
-
-            if not user.is_authenticated:
-                return JsonResponse({"error": "User not authenticated"}, status=401)
-
-            # Store old username for debugging
-            old_username = user.username  
-
-            # Update fields
-            if "username" in data and data["username"] != user.username:
-                user.username = data["username"]
-
-            if "email" in data:
-                user.email = data["email"]
-
-            if "password" in data and data["password"] != "":
-                user.set_password(data["password"])  # Django's hashing
-
-            if "avatar" in data:
-                user.avatar = data["avatar"]
-
-            user.save()
-
-            # ✅ Prevent logout by updating session authentication hash
-            update_session_auth_hash(request, user)  
-
-            # ✅ Ensure session is modified so Django doesn't invalidate it
-            request.session.modified = True
-
-            return JsonResponse({
-                "message": "Profile updated successfully",
-                "new_username": user.username,
-                "old_username": old_username
-            }, status=200)
-
-        except json.JSONDecodeError:
-            return JsonResponse({"error": "Invalid JSON format"}, status=400)
-        except Exception as e:
-            return JsonResponse({"error": str(e)}, status=400)
-
-    return JsonResponse({"error": "Invalid request method"}, status=405)
 
 
 
