@@ -274,24 +274,22 @@ class CreateUserView(View):
 # ============================== #
 
 # List books view
-def list_books(request):
-    search_title = request.GET.get('title', '').strip().lower()
-    search_author = request.GET.get('author', '').strip().lower()
+class ListBooksView(View):
+    def get(self, request):
+        category_filter = request.GET.get("category") 
 
-    books = Book.objects.all()
+        books = Book.objects.all()
 
-    if search_title:
-        books = books.filter(title__icontains=search_title)
-    if search_author:
-        books = books.filter(author__icontains=search_author)
+        if category_filter:
+            books = books.filter(category=category_filter)  
 
-    books_data = books.values(
-        'id', 'title', 'author', 'isbn', 'category', 'language', 'user_id', 
-        'condition', 'available', 'image', 'due_date', 'borrower_id', 
-        'borrow_date', 'storage_location', 'publisher', 'publication_year', 'copy_number'
-    )
+        books_data = books.values(
+            "id", "title", "author", "isbn", "category", "language", "condition",
+            "available", "image", "due_date", "borrower_id", "storage_location",
+            "publisher", "publication_year", "copy_number"
+        )
 
-    return JsonResponse(list(books_data), safe=False)
+        return JsonResponse(list(books_data), safe=False, status=200)
 
 
 # Create book view
