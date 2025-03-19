@@ -437,7 +437,133 @@ class DeleteUserView(View):
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
         
+@method_decorator(login_required, name='dispatch')
+class CurrentUserView(View):
+    def get(self, request):
+        user = request.user
+        try:
+            people = People.objects.get(name=user.username)
+            user_data = {
+                'id': people.id, 
+                'username': user.username,
+                'type': people.type
+            }
+        except People.DoesNotExist:
+            # ✅ Return user details even if "People" entry is missing
+            user_data = {
+                'id': user.id,
+                'username': user.username,
+                'type': "Unknown"
+            }
 
+        return JsonResponse(user_data)
+
+
+class ListUsersView(generics.ListAPIView):
+    queryset = People.objects.all()
+    serializer_class = PeopleSerializer
+
+
+# Get User Profile
+@method_decorator(csrf_exempt, name='dispatch')
+class UserProfileView(View):
+    def get(self, request, user_id):
+        try:
+            user = People.objects.get(id=user_id)
+            user_data = {
+                'id': user.id,
+                'name': user.name,
+                'email': user.email,
+                'age': user.age,
+                'avatar': user.avatar,
+                'type': user.type
+            }
+            return JsonResponse(user_data, status=200)
+        except People.DoesNotExist:
+            return JsonResponse({'error': 'User not found'}, status=404)
+
+# Update User Profile
+@method_decorator(csrf_exempt, name='dispatch')
+class UpdateUserProfileView(View):
+    def post(self, request, user_id):
+        try:
+            data = json.loads(request.body)
+            user = People.objects.get(id=user_id)
+
+            user.name = data.get('name', user.name)
+            user.email = data.get('email', user.email)
+            user.age = data.get('age', user.age)
+            user.avatar = data.get('avatar', user.avatar)  # Update avatar
+
+            user.save()
+            return JsonResponse({'message': 'Profile updated successfully'}, status=200)
+        except People.DoesNotExist:
+            return JsonResponse({'error': 'User not found'}, status=404)
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON'}, status=400)
+
+
+
+def csrf_token_view(request):
+    return JsonResponse({"csrfToken": get_token(request)})
+
+
+@login_required
+def get_user_info(request):
+    if request.user.is_authenticated:
+        return JsonResponse({
+            "username": request.user.username,
+            "email": request.user.email,
+        })
+    else:
+        return JsonResponse({"error": "Not authenticated"}, status=401)
+
+@csrf_exempt
+def update_profile(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            user = request.user
+
+            if not user.is_authenticated:
+                return JsonResponse({"error": "User not authenticated"}, status=401)
+
+            # Store old username for debugging
+            old_username = user.username  
+
+            # Update fields
+            if "username" in data and data["username"] != user.username:
+                user.username = data["username"]
+
+            if "email" in data:
+                user.email = data["email"]
+
+            if "password" in data and data["password"] != "":
+                user.set_password(data["password"])  # Django's hashing
+
+            if "avatar" in data:
+                user.avatar = data["avatar"]
+
+            user.save()
+
+            # ✅ Prevent logout by updating session authentication hash
+            update_session_auth_hash(request, user)  
+
+            # ✅ Ensure session is modified so Django doesn't invalidate it
+            request.session.modified = True
+
+            return JsonResponse({
+                "message": "Profile updated successfully",
+                "new_username": user.username,
+                "old_username": old_username
+            }, status=200)
+
+        except json.JSONDecodeError:
+            return JsonResponse({"error": "Invalid JSON format"}, status=400)
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=400)
+
+    return JsonResponse({"error": "Invalid request method"}, status=405)
 
 
 
