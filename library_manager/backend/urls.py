@@ -19,9 +19,10 @@ from django.urls import path, re_path
 from django.views.generic import TemplateView
 from .views import( 
     RegisterView, LoginView, LogoutView, ListUsersView, 
-    CreateBookView, CurrentUserView, DeleteBookView, CreateUserView, 
-    list_books, BorrowBookView, UserProfileView, UpdateUserProfileView, UpdateBookView, BookDetailView,
-    csrf_token_view,  get_user_info, update_profile
+    UserProfileView, CurrentUserView,  CreateUserView, UpdateUserProfileView, 
+    list_books, BorrowBookView, CreateBookView, DeleteBookView, UpdateBookView, BookDetailView, BorrowedBooksView,
+    csrf_token_view, 
+    get_user_info, update_profile
 )
 
 from django.views.generic.base import RedirectView
@@ -61,6 +62,7 @@ urlpatterns = [
     path("api/borrow_book/", BorrowBookView.as_view(), name="borrow-book"),
     path("api/update_book/<int:book_id>/", UpdateBookView.as_view(), name="update-book"),
     path("api/book/<int:book_id>/", BookDetailView.as_view(), name="book-detail"),
+    path("api/borrowed_books/", BorrowedBooksView.as_view(), name="borrowed-books"),
 
 
     # ============================== #
