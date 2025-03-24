@@ -17,6 +17,7 @@ interface Book {
   due_date: string;
   publisher: string;
   publication_year: number;
+  copy_number: string;
 }
 interface People {
   id: number;
@@ -27,17 +28,15 @@ interface People {
   password?: string;
 }
 
-const BookCard: React.FC<{ book: Book, onBorrow: () => void }> = ({ book, onBorrow }) => {
-  const [isFlipped, setIsFlipped] = useState(false);
-  const [currentUser, setCurrentUser] = useState<People | null>(null); // Add currentUser state
+interface BookCardProps {
+  book: Book;
+  onBorrow: () => void;
+  currentUser: People | null; // ✅ Add currentUser prop
+  onEditBook: (book: Book) => void; // ✅ Add onEditBook prop
+}
 
-  useEffect(() => {
-    // Fetch current user data on component mount
-    fetch("/api/current_user/")
-      .then((response) => response.json())
-      .then((data) => setCurrentUser(data))
-      .catch((error) => console.error("Error fetching current user:", error));
-  }, []);
+const BookCard: React.FC<BookCardProps> = ({ book, onBorrow, currentUser, onEditBook }) => { // ✅ Destructure onEditBook from props
+  const [isFlipped, setIsFlipped] = useState(false);
 
 
   const getBorrowButtonText = (): string => { // Function to determine button text
@@ -60,6 +59,10 @@ const BookCard: React.FC<{ book: Book, onBorrow: () => void }> = ({ book, onBorr
     } else {
       return `button borrow-button ${book.available ? "available" : "unavailable"}`; // Default classes
     }
+  };
+
+  const handleEditClick = () => { // ✅ Modified handleEditClick
+    onEditBook(book); // Call the onEditBook prop function, passing the book
   };
 
 
@@ -97,7 +100,7 @@ const BookCard: React.FC<{ book: Book, onBorrow: () => void }> = ({ book, onBorr
         </div>
       </div>
 
-      {/* Borrow Button Always Below */}
+      {/* Book Actions */}
       <div className="book-actions">
         <button
           onClick={onBorrow}
@@ -105,6 +108,15 @@ const BookCard: React.FC<{ book: Book, onBorrow: () => void }> = ({ book, onBorr
           >
           {getBorrowButtonText()} {/* Use function to get button text */}
         </button>
+        {/* ✅ Conditionally render Edit button for Librarians and Admins */}
+        {currentUser && (currentUser.type === "AD" || currentUser.type === "LB") && (
+          <button
+            className="button edit-button"
+            onClick={handleEditClick}
+          >
+            Edit Book
+          </button>
+        )}
       </div>
     </motion.div>
   );

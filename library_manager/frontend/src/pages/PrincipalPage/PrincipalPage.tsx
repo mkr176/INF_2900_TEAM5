@@ -5,6 +5,7 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import "./PrincipalPage.css";
 import AddBookForm from "../../components/AddBookForm/AddBookForm";
+import EditBookForm from "../../components/EditBookForm/EditBookForm"; // ✅ Import EditBookForm
 import BookCard from "./BookCard"; // ✅ Import BookCard component
 
 
@@ -23,6 +24,7 @@ interface Book {
   due_date: string; // Ensure due_date is a string to handle date format from backend
   publisher: string;       
   publication_year: number;
+  copy_number: string;
 }
 interface People {
   id: number;
@@ -38,8 +40,10 @@ const BookDisplayPage: React.FC = () => {
   const [bookList, setBookList] = useState<Book[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [currentUser, setCurrentUser] = useState<People | null>(null);
-  const [showAddBookForm, setShowAddBookForm] = useState(false); // State to control form visibility
+  const [showAddBookForm, setShowAddBookForm] = useState(false); // State to control AddBookForm visibility
   const [flippedBooks, setFlippedBooks] = useState<{ [key: number]: boolean }>({});
+  const [showEditBookForm, setShowEditBookForm] = useState(false); // ✅ State to control EditBookForm visibility
+  const [editingBook, setEditingBook] = useState<Book | null>(null); // ✅ State to hold book being edited
 
 
   useEffect(() => {
@@ -62,6 +66,7 @@ const BookDisplayPage: React.FC = () => {
 
   const handleCreateBook = () => {
     setShowAddBookForm(!showAddBookForm); // Toggle form visibility
+    setShowEditBookForm(false); // Ensure Edit form is hidden when Add form is shown
   };
 
   const handleBookCreated = () => {
@@ -73,6 +78,29 @@ const BookDisplayPage: React.FC = () => {
       })
       .catch((error) => console.error("Error fetching books:", error));
     setShowAddBookForm(false); // Optionally hide the form after successful creation
+  };
+
+  const handleBookUpdated = () => { // ✅ Callback for when book is updated
+    // Callback function to refresh book list after book update
+    fetch("/api/principal/")
+      .then((response) => response.json())
+      .then((data) => {
+        setBookList(data); // Update book list
+      })
+      .catch((error) => console.error("Error fetching books:", error));
+    setShowEditBookForm(false); // Hide Edit form after successful update
+    setEditingBook(null); // Clear editing book
+  };
+
+  const handleEditBook = (book: Book) => { // ✅ Function to handle Edit Book button click
+    setEditingBook(book); // Set the book to be edited
+    setShowEditBookForm(true); // Show the EditBookForm
+    setShowAddBookForm(false); // Ensure Add form is hidden when Edit form is shown
+  };
+
+  const handleEditFormCancel = () => { // ✅ Function to handle canceling Edit Book form
+    setShowEditBookForm(false); // Hide EditBookForm
+    setEditingBook(null); // Clear editing book
   };
 
 
@@ -192,7 +220,15 @@ const BookDisplayPage: React.FC = () => {
       )}
       {/* Conditionally render AddBookForm */}
       {showAddBookForm && currentUser && ( // ✅ Ensure currentUser is available
-        <AddBookForm onBookCreated={handleBookCreated} /> // ✅ Pass currentUser.id as prop - userId prop removed
+        <AddBookForm onBookCreated={handleBookCreated} /> // ✅ Pass onBookCreated callback
+      )}
+      {/* Conditionally render EditBookForm */}
+      {showEditBookForm && editingBook && currentUser && ( // ✅ Render EditBookForm when showEditBookForm is true
+        <EditBookForm
+          book={editingBook}
+          onBookUpdated={handleBookUpdated} // ✅ Pass onBookUpdated callback
+          onCancel={handleEditFormCancel} // ✅ Pass onCancel callback
+        />
       )}
       {/* Book carousel */}
       <div className="carousel-container">
@@ -203,6 +239,8 @@ const BookDisplayPage: React.FC = () => {
                 key={book.id}
                 book={book}
                 onBorrow={() => handleBorrowReturn(book)}
+                currentUser={currentUser} // ✅ Pass currentUser prop to BookCard
+                onEditBook={() => handleEditBook(book)} // ✅ Pass handleEditBook to BookCard
               />
             ))}
           </Slider>
@@ -211,6 +249,8 @@ const BookDisplayPage: React.FC = () => {
             <BookCard
               book={filteredBooks[0]}
               onBorrow={() => handleBorrowReturn(filteredBooks[0])}
+              currentUser={currentUser} // ✅ Pass currentUser prop to BookCard
+              onEditBook={() => handleEditBook(filteredBooks[0])} // ✅ Pass handleEditBook to BookCard
             />
           </div>
         ) : (
