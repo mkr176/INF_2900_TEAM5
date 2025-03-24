@@ -380,6 +380,7 @@ class BorrowBookView(View): # Changed to Class-based view
                 book.available = False
                 book.borrower = user # Assign the borrower
                 book.borrow_date = datetime.now().date() # Record borrow date
+                book.due_date = datetime.now().date() + timedelta(weeks=2) # Set due date to 2 weeks from now
                 book.save()
                 message = 'Book borrowed successfully' # Set success message
                 status_code = 200 # OK
@@ -387,6 +388,7 @@ class BorrowBookView(View): # Changed to Class-based view
                 book.available = True
                 book.borrower = None # Clear borrower
                 book.borrow_date = None # Clear borrow date
+                book.due_date = datetime.now().date() + timedelta(weeks=2) #reset due date for next borrow
                 book.save()
                 message = 'Book returned successfully' # Set return message
                 status_code = 200 # OK
