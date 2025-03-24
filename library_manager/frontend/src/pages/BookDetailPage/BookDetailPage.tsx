@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import "./BookDetailPage.css";
+import EditBookForm from "../../components/EditBookForm/EditBookForm";
 
 interface Book {
   id: number;
@@ -15,18 +15,33 @@ interface Book {
   image?: string;
   borrower_id: number | null;
   due_date: string;
+  storage_location: string;
+  publisher: string;
+  publication_year: number;
+  copy_number: string;
 }
 
 const BookDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [book, setBook] = useState<Book | null>(null);
+  const [refresh, setRefresh] = useState(false);
+  const [showEditForm, setShowEditForm] = useState(false);
 
-  useEffect(() => {
+  const fetchBookDetails = () => {
     fetch(`/api/book/${id}/`)
       .then((response) => response.json())
       .then((data) => setBook(data))
       .catch((error) => console.error("Error fetching book details:", error));
-  }, [id]);
+  };
+
+  useEffect(() => {
+    fetchBookDetails();
+  }, [id, refresh]); // Re-fetch when refresh state changes
+
+  const handleBookUpdated = () => {
+    setRefresh((prev) => !prev); // Trigger refresh
+    setShowEditForm(false); // Close edit form
+  };
 
   if (!book) {
     return <p>Loading book details...</p>;
@@ -47,6 +62,16 @@ const BookDetailPage: React.FC = () => {
           {book.available ? "Available" : `Checked out until ${new Date(book.due_date).toLocaleDateString()}`}
         </span>
       </p>
+
+      <button onClick={() => setShowEditForm(true)}>Edit Book</button>
+
+      {showEditForm && (
+        <EditBookForm 
+          book={book} 
+          onBookUpdated={handleBookUpdated} 
+          onCancel={() => setShowEditForm(false)}
+        />
+      )}
     </div>
   );
 };

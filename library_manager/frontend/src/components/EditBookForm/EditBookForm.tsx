@@ -83,7 +83,7 @@ const EditBookForm: React.FC<EditBookFormProps> = ({ book, onBookUpdated, onCanc
             language,
             condition,
             available,
-            storageLocation, // ✅ Use camelCase 'storageLocation' here
+            storage_location: storageLocation, // ✅ Use camelCase 'storageLocation' here
             publisher,
             publicationYear,
             copyNumber

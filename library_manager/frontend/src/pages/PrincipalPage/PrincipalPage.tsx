@@ -25,6 +25,7 @@ interface Book {
   publisher: string;       
   publication_year: number;
   copy_number: string;
+  storage_location: string; // Add storage_location property
 }
 interface People {
   id: number;
@@ -80,17 +81,13 @@ const BookDisplayPage: React.FC = () => {
     setShowAddBookForm(false); // Optionally hide the form after successful creation
   };
 
-  const handleBookUpdated = () => { // ✅ Callback for when book is updated
-    // Callback function to refresh book list after book update
-    fetch("/api/principal/")
-      .then((response) => response.json())
-      .then((data) => {
-        setBookList(data); // Update book list
-      })
-      .catch((error) => console.error("Error fetching books:", error));
-    setShowEditBookForm(false); // Hide Edit form after successful update
-    setEditingBook(null); // Clear editing book
-  };
+  const handleBookUpdated = (updatedBook: Book) => {
+    setBookList((prevBooks) => 
+      prevBooks.map((book) => (book.id === updatedBook.id ? updatedBook : book))
+    );
+    setShowEditBookForm(false);
+    setEditingBook(null);
+    };
 
   const handleEditBook = (book: Book) => { // ✅ Function to handle Edit Book button click
     setEditingBook(book); // Set the book to be edited
@@ -102,6 +99,7 @@ const BookDisplayPage: React.FC = () => {
     setShowEditBookForm(false); // Hide EditBookForm
     setEditingBook(null); // Clear editing book
   };
+
 
 
   const handleBorrowReturn = (book: Book) => {

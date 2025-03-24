@@ -53,6 +53,8 @@ const BookCard: React.FC<BookCardProps> = ({ book, onBorrow, currentUser, onEdit
     }
   };
 
+  
+
   const getBorrowButtonClassName = (): string => { // Function to determine button style
     if (!book.available && currentUser && book.borrower_id === currentUser.id) {
       return "button return-button"; // Apply return-button class for yellow style
