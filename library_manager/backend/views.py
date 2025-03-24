@@ -425,7 +425,7 @@ class BorrowBookView(View): # Changed to Class-based view
 # Update Book
 @method_decorator(csrf_exempt, name='dispatch')
 class UpdateBookView(View):
-    def post(self, request, book_id):
+    def put(self, request, book_id): # Changed from post to put method
         try:
             data = json.loads(request.body)
             book = get_object_or_404(Book, id=book_id)
