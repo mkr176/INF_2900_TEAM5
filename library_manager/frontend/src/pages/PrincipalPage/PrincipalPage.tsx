@@ -31,8 +31,41 @@ interface People {
   password?: string; // just for type compatibility, not actually used in frontend
 }
 
-const BookCard: React.FC<{ book: Book; onBorrow: () => void }> = ({ book, onBorrow }) => {
+const BookCard: React.FC<{ book: Book, onBorrow: () => void }> = ({ book, onBorrow }) => {
   const [isFlipped, setIsFlipped] = useState(false);
+  const [currentUser, setCurrentUser] = useState<People | null>(null); // Add currentUser state
+
+  useEffect(() => {
+    // Fetch current user data on component mount
+    fetch("/api/current_user/")
+      .then((response) => response.json())
+      .then((data) => setCurrentUser(data))
+      .catch((error) => console.error("Error fetching current user:", error));
+  }, []);
+
+
+  const getBorrowButtonText = (): string => { // Function to determine button text
+    if (book.available) {
+      return "Borrow Book";
+    } else {
+      if (currentUser && book.borrower_id === currentUser.id) { // Check if borrowed by current user
+        const dueDate = new Date(book.due_date).toLocaleDateString();
+        return `Return Book - due date: ${dueDate}`; // Return book text with due date
+      } else {
+        const dueDate = new Date(book.due_date).toLocaleDateString();
+        return `Unavailable until ${dueDate}`;
+      }
+    }
+  };
+
+  const getBorrowButtonClassName = (): string => { // Function to determine button style
+    if (!book.available && currentUser && book.borrower_id === currentUser.id) {
+      return "button return-button"; // Apply return-button class for yellow style
+    } else {
+      return `button borrow-button ${book.available ? "available" : "unavailable"}`; // Default classes
+    }
+  };
+
 
   return (
     <motion.div
@@ -72,9 +105,9 @@ const BookCard: React.FC<{ book: Book; onBorrow: () => void }> = ({ book, onBorr
       <div className="book-actions">
         <button
           onClick={onBorrow}
-          className={`button borrow-button ${book.available ? "available" : "unavailable"}`}
+          className={getBorrowButtonClassName()} // Use function to get class names
         >
-          {book.available ? "Borrow Book" : `Unavailable until ${book.due_date}`}
+          {getBorrowButtonText()} {/* Use function to get button text */}
         </button>
       </div>
     </motion.div>
