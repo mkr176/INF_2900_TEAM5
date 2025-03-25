@@ -20,7 +20,7 @@ interface Book {
   copy_number: string;
 }
 interface People {
-  id: number; 
+  id: number;
   username: string;
   email: string;
   type: string;
@@ -36,7 +36,7 @@ interface BookCardProps {
   onRemoveBook: (bookId: number) => void; // ✅ Add onRemoveBook prop
 }
 
-const BookCard: React.FC<BookCardProps> = ({ book, onBorrow, currentUser, onEditBook }) => { // ✅ Destructure onEditBook from props
+const BookCard: React.FC<BookCardProps> = ({ book, onBorrow, currentUser, onEditBook, onRemoveBook }) => { // ✅ Destructure onEditBook and onRemoveBook from props
   const [isFlipped, setIsFlipped] = useState(false);
 
 
@@ -67,7 +67,9 @@ const BookCard: React.FC<BookCardProps> = ({ book, onBorrow, currentUser, onEdit
   };
 
   const handleRemoveClick = () => {
-    onRemoveBook(book.id);
+    if (onRemoveBook) { // Check if onRemoveBook is defined before calling
+      onRemoveBook(book.id);
+    }
   };
 
   return (
@@ -109,7 +111,7 @@ const BookCard: React.FC<BookCardProps> = ({ book, onBorrow, currentUser, onEdit
         <button
           onClick={onBorrow}
           className={getBorrowButtonClassName()} // Use function to get class names
-          >
+        >
           {getBorrowButtonText()} {/* Use function to get button text */}
         </button>
         {/* ✅ Conditionally render Edit button for Librarians and Admins */}

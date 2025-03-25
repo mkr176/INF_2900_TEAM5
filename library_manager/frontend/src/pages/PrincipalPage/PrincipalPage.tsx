@@ -22,7 +22,7 @@ interface Book {
   image?: string;
   borrower_id: number | null; // Add borrower_id to Book interface
   due_date: string; // Ensure due_date is a string to handle date format from backend
-  publisher: string;       
+  publisher: string;
   publication_year: number;
   copy_number: string;
   storage_location: string; // Add storage_location property
@@ -67,15 +67,21 @@ const BookDisplayPage: React.FC = () => {
 
     fetch(`/api/book/${bookId}/`, { method: "DELETE" })
       .then((response) => {
-        if (!response.ok) throw new Error("Failed to remove book");
-        return response.json();
+        if (!response.ok) {
+          console.error("HTTP error!", response); // Log the entire response for more details
+          throw new Error(`Failed to remove book: HTTP status ${response.status}`);
+        }
+        return response.json(); // Parse JSON here
       })
-      .then(() => {
+      .then((data) => {
+        console.log("Book removal successful:", data); // Log success data
         setBookList((prevBooks) => prevBooks.filter((book) => book.id !== bookId));
       })
-      .catch((error) => console.error("Error removing book:", error));
+      .catch((error) => {
+        console.error("Error removing book:", error); // Keep error logging
+        alert(`Error removing book: ${error.message}`); // Keep alert
+      });
   };
-
   const handleViewDetails = (book: Book) => {
     alert(`${book.title}`);
   };
@@ -97,12 +103,12 @@ const BookDisplayPage: React.FC = () => {
   };
 
   const handleBookUpdated = (updatedBook: Book) => {
-    setBookList((prevBooks) => 
+    setBookList((prevBooks) =>
       prevBooks.map((book) => (book.id === updatedBook.id ? updatedBook : book))
     );
     setShowEditBookForm(false);
     setEditingBook(null);
-    };
+  };
 
   const handleEditBook = (book: Book) => { // ✅ Function to handle Edit Book button click
     setEditingBook(book); // Set the book to be edited
@@ -200,15 +206,15 @@ const BookDisplayPage: React.FC = () => {
   const handleMouseEnter = (bookId: number) => {
     setTimeout(() => {
       setFlippedBooks((prev) => ({ ...prev, [bookId]: true }));
-    }, 150); 
+    }, 150);
   };
-  
+
   const handleMouseLeave = (bookId: number) => {
     setTimeout(() => {
       setFlippedBooks((prev) => ({ ...prev, [bookId]: false }));
     }, 150);
   };
-  
+
 
 
   return (
