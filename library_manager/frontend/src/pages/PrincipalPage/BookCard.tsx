@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import "./PrincipalPage.css"; // Make sure to keep the import for CSS
 
+
+
 interface Book {
   id: number;
   title: string;
@@ -35,6 +37,25 @@ interface BookCardProps {
   onEditBook: (book: Book) => void; // ✅ Add onEditBook prop
   onRemoveBook: (bookId: number) => void; // ✅ Add onRemoveBook prop
 }
+
+const categoryMap: { [key: string]: string } = {
+    'CK': 'Cooking',
+    'CR': 'Crime',
+    'MY': 'Mystery',
+    'SF': 'Science Fiction',
+    'FAN': 'Fantasy',
+    'HIS': 'History',
+    'ROM': 'Romance',
+    'TXT': 'Textbook',
+};
+
+const conditionMap: { [key: string]: string } = {
+    'NW': 'New',
+    'GD': 'Good',
+    'FR': 'Fair',
+    'PO': 'Poor',
+};
+
 
 const BookCard: React.FC<BookCardProps> = ({ book, onBorrow, currentUser, onEditBook, onRemoveBook }) => { // ✅ Destructure onEditBook and onRemoveBook from props
   const [isFlipped, setIsFlipped] = useState(false);
@@ -95,8 +116,8 @@ const BookCard: React.FC<BookCardProps> = ({ book, onBorrow, currentUser, onEdit
           <div className="book-card-back">
             <h3>{book.title}</h3>
             <p><strong>Author:</strong> {book.author}</p>
-            <p><strong>Category:</strong> {book.category}</p>
-            <p><strong>Condition:</strong> {book.condition}</p>
+            <p><strong>Category:</strong> {categoryMap[book.category] || book.category}</p>
+            <p><strong>Condition:</strong> {conditionMap[book.condition] || book.condition}</p>
             <p><strong>Language:</strong> {book.language}</p>
             <p><strong>ISBN:</strong> {book.isbn}</p>
             <p><strong>Publisher:</strong> {book.publisher}</p>

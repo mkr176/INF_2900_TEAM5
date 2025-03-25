@@ -105,7 +105,7 @@ const AddBookForm: React.FC<AddBookFormProps> = ({ onBookCreated }) => {
             <label htmlFor="category">Category:</label>
             <select id="category" value={category} onChange={(e) => setCategory(e.target.value)} required>
                 {bookCategories.map((cat) => (
-                    <option key={cat.value} value={cat.value}>{cat.value}</option>
+                    <option key={cat.value} value={cat.value}>{cat.label}</option>
                 ))}
             </select>
 
