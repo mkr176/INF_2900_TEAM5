@@ -146,14 +146,18 @@ const BookDisplayPage: React.FC = () => {
       })
       .then((data) => {
         console.log("Borrow/Return API response:", data);
-        // Update book availability in the local state
+        console.log("BookList before update:", bookList); // Log bookList before update
+
+        // Update book availability in the local state - IMMUTABLE UPDATE
         setBookList((prevBooks) => {
+          console.log("prevBooks inside setBookList map:", prevBooks); // Log prevBooks inside map
           const updatedBooks = prevBooks.map((b) =>
-            b.id === book.id ? { ...b, available: data.book.available, borrower_id: data.book.borrower_id } : b
+            b.id === book.id ? { ...b, ...data.book } : b // Use spread operator to update book properties
           );
           console.log("Updated bookList:", updatedBooks); // Log updated bookList
           return updatedBooks;
         });
+        console.log("BookList after update:", bookList); // Log bookList after update (should show updated value in next render)
         alert(data.message); // Show success or return message
       })
       .catch((error) => {
@@ -193,7 +197,8 @@ const BookDisplayPage: React.FC = () => {
       return "Borrow Book";
     } else {
       if (currentUser && book.borrower_id === currentUser.id) {
-        return "Return Book";
+        const dueDate = new Date(book.due_date).toLocaleDateString();
+        return `Return Book - due date: ${dueDate}`;
       } else {
         const dueDate = new Date(book.due_date).toLocaleDateString();
         return `Unavailable until ${dueDate}`;
