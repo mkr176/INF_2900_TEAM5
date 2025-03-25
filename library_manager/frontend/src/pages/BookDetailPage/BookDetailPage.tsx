@@ -43,6 +43,17 @@ const BookDetailPage: React.FC = () => {
     setShowEditForm(false); // Close edit form
   };
 
+  const handleRemoveBook = () => {
+    if (window.confirm(`Are you sure you want to remove "${book?.title}"?`)) {
+      fetch(`/api/remove_book/${id}/`, { method: "DELETE" })
+        .then((response) => {
+          if (response.ok) navigate("/");
+          else throw new Error("Failed to remove book");
+        })
+        .catch(console.error);
+    }
+  };
+
   if (!book) {
     return <p>Loading book details...</p>;
   }
@@ -62,6 +73,7 @@ const BookDetailPage: React.FC = () => {
           {book.available ? "Available" : `Checked out until ${new Date(book.due_date).toLocaleDateString()}`}
         </span>
       </p>
+
 
       <button onClick={() => setShowEditForm(true)}>Edit Book</button>
 

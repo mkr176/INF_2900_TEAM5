@@ -20,7 +20,7 @@ interface Book {
   copy_number: string;
 }
 interface People {
-  id: number;
+  id: number; 
   username: string;
   email: string;
   type: string;
@@ -33,6 +33,7 @@ interface BookCardProps {
   onBorrow: () => void;
   currentUser: People | null; // ✅ Add currentUser prop
   onEditBook: (book: Book) => void; // ✅ Add onEditBook prop
+  onRemoveBook: (bookId: number) => void; // ✅ Add onRemoveBook prop
 }
 
 const BookCard: React.FC<BookCardProps> = ({ book, onBorrow, currentUser, onEditBook }) => { // ✅ Destructure onEditBook from props
@@ -53,8 +54,6 @@ const BookCard: React.FC<BookCardProps> = ({ book, onBorrow, currentUser, onEdit
     }
   };
 
-  
-
   const getBorrowButtonClassName = (): string => { // Function to determine button style
     if (!book.available && currentUser && book.borrower_id === currentUser.id) {
       return "button return-button"; // Apply return-button class for yellow style
@@ -67,6 +66,9 @@ const BookCard: React.FC<BookCardProps> = ({ book, onBorrow, currentUser, onEdit
     onEditBook(book); // Call the onEditBook prop function, passing the book
   };
 
+  const handleRemoveClick = () => {
+    onRemoveBook(book.id);
+  };
 
   return (
     <motion.div
@@ -112,12 +114,14 @@ const BookCard: React.FC<BookCardProps> = ({ book, onBorrow, currentUser, onEdit
         </button>
         {/* ✅ Conditionally render Edit button for Librarians and Admins */}
         {currentUser && (currentUser.type === "AD" || currentUser.type === "LB") && (
-          <button
-            className="button edit-button"
-            onClick={handleEditClick}
-          >
-            Edit Book
-          </button>
+          <div>
+            <button
+              className="button edit-button" onClick={handleEditClick}>Edit Book
+            </button>
+            <button
+              className="button remove-button" onClick={handleRemoveClick}>Remove
+            </button>
+          </div>
         )}
       </div>
     </motion.div>

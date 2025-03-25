@@ -61,6 +61,21 @@ const BookDisplayPage: React.FC = () => {
       .catch((error) => console.error("Error fetching current user:", error));
   }, []);
 
+
+  const handleRemoveBook = (bookId: number) => {
+    if (!window.confirm("Are you sure you want to remove this book?")) return;
+
+    fetch(`/api/book/${bookId}/`, { method: "DELETE" })
+      .then((response) => {
+        if (!response.ok) throw new Error("Failed to remove book");
+        return response.json();
+      })
+      .then(() => {
+        setBookList((prevBooks) => prevBooks.filter((book) => book.id !== bookId));
+      })
+      .catch((error) => console.error("Error removing book:", error));
+  };
+
   const handleViewDetails = (book: Book) => {
     alert(`${book.title}`);
   };
@@ -239,6 +254,7 @@ const BookDisplayPage: React.FC = () => {
                 onBorrow={() => handleBorrowReturn(book)}
                 currentUser={currentUser} // ✅ Pass currentUser prop to BookCard
                 onEditBook={() => handleEditBook(book)} // ✅ Pass handleEditBook to BookCard
+                onRemoveBook={handleRemoveBook}
               />
             ))}
           </Slider>
@@ -249,6 +265,7 @@ const BookDisplayPage: React.FC = () => {
               onBorrow={() => handleBorrowReturn(filteredBooks[0])}
               currentUser={currentUser} // ✅ Pass currentUser prop to BookCard
               onEditBook={() => handleEditBook(filteredBooks[0])} // ✅ Pass handleEditBook to BookCard
+              onRemoveBook={handleRemoveBook}
             />
           </div>
         ) : (
