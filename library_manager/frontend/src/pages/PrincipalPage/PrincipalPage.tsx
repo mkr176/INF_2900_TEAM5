@@ -167,7 +167,8 @@ const BookDisplayPage: React.FC = () => {
   };
 
   const filteredBooks = bookList.filter((book: Book) =>
-    book.title.toLowerCase().includes(searchQuery.toLowerCase())
+    book.title.toLowerCase().includes(searchQuery.toLowerCase()) || book.author.toLowerCase().includes(searchQuery.toLowerCase())
+
   );
 
   const settings = {
@@ -228,7 +229,7 @@ const BookDisplayPage: React.FC = () => {
       <div className="search-container">
         <input
           type="text"
-          placeholder="Search books..."
+          placeholder="Search books by title or author..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           className="search-bar"
