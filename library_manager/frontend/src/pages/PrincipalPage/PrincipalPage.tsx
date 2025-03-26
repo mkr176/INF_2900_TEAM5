@@ -7,6 +7,7 @@ import "./PrincipalPage.css";
 import AddBookForm from "../../components/AddBookForm/AddBookForm";
 import EditBookForm from "../../components/EditBookForm/EditBookForm"; // ✅ Import EditBookForm
 import BookCard from "./BookCard"; // ✅ Import BookCard component
+import BorrowedBooksList from "../../components/BorrowedBooksList/BorrowedBooksList"; // ✅ Import BorrowedBooksList component
 
 
 interface Book {
@@ -60,6 +61,7 @@ const BookDisplayPage: React.FC = () => {
 
   // State for selected category
   const [selectedCategory, setSelectedCategory] = useState(''); // Initialize with empty string for 'All Categories'
+  const [showBorrowedBooks, setShowBorrowedBooks] = useState(false); // ✅ State to toggle borrowed books view
 
 
   useEffect(() => {
@@ -245,6 +247,11 @@ const BookDisplayPage: React.FC = () => {
       setFlippedBooks((prev) => ({ ...prev, [bookId]: false }));
     }, 150);
   };
+  const toggleBorrowedBooksView = () => { // ✅ Function to toggle borrowed books view
+    setShowBorrowedBooks(!showBorrowedBooks);
+  };
+
+
 
 
 
@@ -282,48 +289,58 @@ const BookDisplayPage: React.FC = () => {
           </button>
         </div>
       )}
-      {/* Conditionally render AddBookForm */}
-      {showAddBookForm && currentUser && ( // ✅ Ensure currentUser is available
-        <AddBookForm onBookCreated={handleBookCreated} /> // ✅ Pass onBookCreated callback
+      {/* Add Book Form and Edit Book Form */}
+      {showAddBookForm && currentUser && <AddBookForm onBookCreated={handleBookCreated} />}
+      {showEditBookForm && editingBook && currentUser && (
+        <EditBookForm book={editingBook} onBookUpdated={handleBookUpdated} onCancel={handleEditFormCancel} />
       )}
-      {/* Conditionally render EditBookForm */}
-      {showEditBookForm && editingBook && currentUser && ( // ✅ Render EditBookForm when showEditBookForm is true
-        <EditBookForm
-          book={editingBook}
-          onBookUpdated={handleBookUpdated} // ✅ Pass onBookUpdated callback
-          onCancel={handleEditFormCancel} // ✅ Pass onCancel callback
-        />
+
+      {/* Borrowed Books View Button */}
+      {currentUser && (currentUser.type === "AD" || currentUser.type === "LB" || currentUser.type === "US") && ( // ✅ Show for all user types for now, adjust if needed
+        <div className="borrowed-books-button-container">
+          <button onClick={toggleBorrowedBooksView} className="button button-secondary">
+            {showBorrowedBooks ? "Hide Borrowed Books" : "View Borrowed Books"}
+          </button>
+        </div>
       )}
+
+      {/* Borrowed Books List Component */}
+      {showBorrowedBooks && currentUser && ( // ✅ Conditionally render BorrowedBooksList
+        <BorrowedBooksList currentUser={currentUser} /> // ✅ Pass currentUser to BorrowedBooksList
+      )}
+
+
       {/* Book carousel */}
-      <div className="carousel-container">
-        {filteredBooks.length > 1 ? (
-          <Slider {...settings}>
-            {filteredBooks.map((book: Book) => (
+      {!showBorrowedBooks && ( // ✅ Conditionally render book carousel when borrowed books view is hidden
+        <div className="carousel-container">
+          {filteredBooks.length > 1 ? (
+            <Slider {...settings}>
+              {filteredBooks.map((book: Book) => (
+                <BookCard
+                  key={book.id}
+                  book={book}
+                  onBorrow={() => handleBorrowReturn(book)}
+                  currentUser={currentUser} // ✅ Pass currentUser prop to BookCard
+                  onEditBook={() => handleEditBook(book)} // ✅ Pass handleEditBook to BookCard
+                  onRemoveBook={handleRemoveBook}
+                />
+              ))}
+            </Slider>
+          ) : filteredBooks.length === 1 ? (
+            <div className="single-book-container">
               <BookCard
-                key={book.id}
-                book={book}
-                onBorrow={() => handleBorrowReturn(book)}
+                book={filteredBooks[0]}
+                onBorrow={() => handleBorrowReturn(filteredBooks[0])}
                 currentUser={currentUser} // ✅ Pass currentUser prop to BookCard
-                onEditBook={() => handleEditBook(book)} // ✅ Pass handleEditBook to BookCard
+                onEditBook={() => handleEditBook(filteredBooks[0])} // ✅ Pass handleEditBook to BookCard
                 onRemoveBook={handleRemoveBook}
               />
-            ))}
-          </Slider>
-        ) : filteredBooks.length === 1 ? (
-          <div className="single-book-container">
-            <BookCard
-              book={filteredBooks[0]}
-              onBorrow={() => handleBorrowReturn(filteredBooks[0])}
-              currentUser={currentUser} // ✅ Pass currentUser prop to BookCard
-              onEditBook={() => handleEditBook(filteredBooks[0])} // ✅ Pass handleEditBook to BookCard
-              onRemoveBook={handleRemoveBook}
-            />
-          </div>
-        ) : (
-          <p className="no-results">No books found</p>
-        )}
-      </div>
-
+            </div>
+          ) : (
+            <p className="no-results">No books found</p>
+          )}
+        </div>
+      )}
     </div>
   );
 };

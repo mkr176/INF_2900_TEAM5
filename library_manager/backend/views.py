@@ -525,19 +525,6 @@ class BookDetailView(View):
             return JsonResponse({"error": str(e)}, status=500)
 
 
-@method_decorator(login_required, name="dispatch")
-class BorrowedBooksView(View):
-    def get(self, request):
-        borrowed_books = Book.objects.filter(available=False).values(
-            "id", "title", "author", "isbn", "category", "language", "condition", 
-            "image", "due_date", "borrower_id"
-        )
-
-        return JsonResponse(list(borrowed_books), safe=False, status=200)
-
-
-
-
 # ============================== #
 # 4️ SECURITY & CSRF ROUTES       #
 # ============================== #
