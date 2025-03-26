@@ -38,11 +38,11 @@ class Book(models.Model):
     id = models.AutoField(primary_key=True)
     title = models.CharField(max_length=200)
     author = models.CharField(max_length=200)
-    due_date = models.DateField()
+    due_date = models.DateField(null=True, blank=True)
     isbn = models.CharField(max_length=13, unique=True)
     category = models.CharField(max_length=3, choices=CATEGORIES)
     language = models.CharField(max_length=50)
-    user = models.ForeignKey(People, on_delete=models.CASCADE)
+    user = models.ForeignKey(People, on_delete=models.CASCADE, null=True, blank=True) # Modified to allow NULL and blank
     condition = models.CharField(max_length=4, choices=CONDITIONS)
     available = models.BooleanField(default=True)
     image = models.ImageField(upload_to='images/', default='static/images/library_seal.jpg')
