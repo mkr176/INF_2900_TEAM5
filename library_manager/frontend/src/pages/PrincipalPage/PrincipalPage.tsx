@@ -45,13 +45,33 @@ const BookDisplayPage: React.FC = () => {
   const [flippedBooks, setFlippedBooks] = useState<{ [key: number]: boolean }>({});
   const [showEditBookForm, setShowEditBookForm] = useState(false); // ✅ State to control EditBookForm visibility
   const [editingBook, setEditingBook] = useState<Book | null>(null); // ✅ State to hold book being edited
+  // Define bookCategories here
+  const bookCategories = [
+    { value: '', label: 'All Categories' }, // Added 'All Categories' option
+    { value: 'CK', label: 'Cooking' },
+    { value: 'CR', label: 'Crime' },
+    { value: 'MY', label: 'Mystery' },
+    { value: 'SF', label: 'Science Fiction' },
+    { value: 'FAN', label: 'Fantasy' },
+    { value: 'HIS', label: 'History' },
+    { value: 'ROM', label: 'Romance' },
+    { value: 'TXT', label: 'Textbook' },
+  ];
+
+  // State for selected category
+  const [selectedCategory, setSelectedCategory] = useState(''); // Initialize with empty string for 'All Categories'
 
 
   useEffect(() => {
-    fetch("/api/principal/")
+    // Construct fetch URL based on selectedCategory
+    const fetchUrl = selectedCategory
+      ? `/api/principal/?category=${selectedCategory}`
+      : '/api/principal/';
+
+    fetch(fetchUrl)
       .then((response) => response.json())
       .then((data) => {
-        console.log("Initial book data:", data); // Log initial book data
+        console.log("Book data:", data); // Log book data
         setBookList(data);
       })
       .catch((error) => console.error("Error fetching books:", error));
@@ -59,7 +79,7 @@ const BookDisplayPage: React.FC = () => {
       .then((response) => response.json())
       .then((data) => setCurrentUser(data))
       .catch((error) => console.error("Error fetching current user:", error));
-  }, []);
+  }, [selectedCategory]); // Added selectedCategory as dependency for useEffect
 
 
   const handleRemoveBook = (bookId: number) => {
@@ -206,6 +226,11 @@ const BookDisplayPage: React.FC = () => {
       }
     }
   };
+  // Handler for category dropdown change
+  const handleCategoryChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedCategory(event.target.value);
+    // Book refetch will be triggered in the next step's useEffect update
+  };
 
 
 
@@ -235,6 +260,20 @@ const BookDisplayPage: React.FC = () => {
           className="search-bar"
         />
       </div>
+      {/* Category Dropdown */}
+      <div className="category-container"> {/* Added container for category dropdown */}
+        <label htmlFor="category-select">Filter by Category:</label> {/* Label for dropdown */}
+        <select
+          id="category-select"
+          value={selectedCategory} // Use selectedCategory state for value
+          onChange={handleCategoryChange} // Attach onChange handler
+        >
+          {bookCategories.map((cat) => (
+            <option key={cat.value} value={cat.value}>{cat.label}</option>
+          ))}
+        </select>
+      </div>
+
       {/* Create book button for Admins and Librarians */}
       {currentUser && (currentUser.type === "AD" || currentUser.type === "LB") && (
         <div className="create-book-container">
