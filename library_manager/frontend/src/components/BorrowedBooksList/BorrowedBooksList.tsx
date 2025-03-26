@@ -34,29 +34,63 @@ const BorrowedBooksList: React.FC<BorrowedBooksListProps> = ({ currentUser }) =>
     const [borrowedBooksByUser, setBorrowedBooksByUser] = useState<any[] | undefined>(undefined); // ✅ Initialize as undefined and allow undefined type
     const [specialViewActive, setSpecialViewActive] = useState(false); // State for special view, default to false
 
+    const fetchBorrowedBooks = async () => {
+        try {
+            const response = await fetch('/api/borrowed_books/');
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const data = await response.json();
+            console.log("Borrowed books data fetched:", data.borrowed_books_by_user);
+            setBorrowedBooksByUser(data.borrowed_books_by_user);
+        } catch (error) {
+            console.error('Error fetching borrowed books:', error);
+        }
+    };
+
 
     useEffect(() => {
         // Determine if special view should be active based on user type
         const isLibrarianOrAdmin = currentUser && (currentUser.type === "AD" || currentUser.type === "LB");
         setSpecialViewActive(isLibrarianOrAdmin); // Set specialViewActive based on user role
-
-        fetch('/api/borrowed_books/')
-            .then(response => response.json())
-            .then(data => {
-                console.log("Full API response data:", data); // Log the entire response
-                console.log("Borrowed books by user data:", data.borrowed_books_by_user); // Log specifically borrowed_books_by_user
-                console.dir(data.borrowed_books_by_user, {depth: null}); // Log with object inspector to see full structure
-                setBorrowedBooksByUser(data.borrowed_books_by_user);
-            })
-            .catch(error => console.error('Error fetching borrowed books:', error));
+        fetchBorrowedBooks();
      }, [currentUser]);
+
+    const handleReturnBook = async (bookId: number, userId: number | undefined) => {
+        if (!userId) {
+            alert("User ID is not available.");
+            return;
+        }
+        try {
+            const response = await fetch('/api/borrow_book/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ book_id: bookId, user_id: userId }),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json(); // Try to parse error message from backend
+                throw new Error(errorData.error || `Failed to return book: HTTP status ${response.status}`);
+            }
+
+            alert('Book returned successfully!');
+            fetchBorrowedBooks(); // Refresh the list after returning
+
+        } catch (error: any) { // error is of type 'any' to access 'message' property
+            console.error("Error returning book:", error);
+            alert(`Error returning book: ${error.message}`); // Display error message from backend or default message
+        }
+    };
 
 
     return (
         <div className="borrowed-books-list-container">
             <h2>Borrowed Books</h2>
 
-            {/* Special View Button for Librarians and Admins */}
+            {/* Special View Button for Librarians and Admins -  No longer needed here */}
+
             {borrowedBooksByUser === undefined ? ( // ✅ Show loading state
                 <p>Loading borrowed books...</p>
             ) : borrowedBooksByUser && borrowedBooksByUser.length > 0 ? ( // ✅ Check if borrowedBooksByUser is truthy and is an array with length
@@ -78,6 +112,13 @@ const BorrowedBooksList: React.FC<BorrowedBooksListProps> = ({ currentUser }) =>
                                 {!specialViewActive && ( // ✅ Display due date for normal user view
                                     <span className="book-due-date"> - Due Date: {new Date(book.due_date).toLocaleDateString()}</span>
                                 )}
+                                {/* ✅ Return Button */}
+                                <button
+                                    className="button button-return-book"
+                                    onClick={() => handleReturnBook(book.id, book.borrower_id)}
+                                >
+                                    Return
+                                </button>
                             </li>
                         ))}
                     </ul>
