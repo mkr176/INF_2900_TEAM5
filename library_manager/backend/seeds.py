@@ -100,13 +100,13 @@ def seed_database():
         {
             "title": "Banda Municipal de Sangüesa",
             "author": "Juan Cruz Labeaga Mendiola",
-            "due_date": datetime.date(2025, 6, 1),
+            "due_date": None, # Updated to None
             "isbn": "84-87120-27-X",
             "category": "HIS",
             "language": "Spanish",
-            "user": users[1],
+            "user": None,
             "condition": "NW",
-            "available": True,
+            "available": True, # Updated to True
             "image": "static/images/library_seal.jpg",
             "storage_location": "Shelf D4",
             "publisher": "Gobierno de Navarra",
@@ -116,13 +116,13 @@ def seed_database():
         {
             "title": "Hygge for Hardangerfjord Hikers: A Koselig Guide to Conquering Cliffs",
             "author": "Astrid Fjord",
-            "due_date": datetime.date(2025, 7, 1),
+            "due_date": None, # Updated to None
             "isbn": "9781234567001",
             "category": "TXT",
             "language": "English",  # TXT - Textbook/Guidebook
-            "user": users[0],
+            "user": None,
             "condition": "NW",
-            "available": True,
+            "available": True, # Updated to True
             "image": "static/images/library_seal.jpg",
             "storage_location": "Shelf N1",
             "publisher": "Cozy Trails Publishing",
@@ -132,13 +132,13 @@ def seed_database():
         {
             "title": "The Introvert's Guide to Oslo Nightlife (and Why You Should Stay Home)",
             "author": "Bjørn Stillenatt",
-            "due_date": datetime.date(2025, 8, 1),
+            "due_date": None, # Updated to None
             "isbn": "9781234567002",
             "category": "TXT",
             "language": "English",  # TXT - Textbook/Guidebook
-            "user": users[1],
+            "user": None,
             "condition": "GD",
-            "available": True,
+            "available": True, # Updated to True
             "image": "static/images/library_seal.jpg",
             "storage_location": "Shelf I2",
             "publisher": "Quiet Nights Press",
@@ -148,13 +148,13 @@ def seed_database():
         {
             "title": "50 Shades of Brunost: A Cheesy Love Story",
             "author": "Greta Geitost",
-            "due_date": datetime.date(2025, 9, 1),
+            "due_date": None, # Updated to None
             "isbn": "9781234567003",
             "category": "ROM",
             "language": "English",  # ROM - Romance
-            "user": users[2],
+            "user": None,
             "condition": "NW",
-            "available": True,
+            "available": True, # Updated to True
             "image": "static/images/library_seal.jpg",
             "storage_location": "Shelf C5",
             "publisher": "Dairy Tales Publishing",
@@ -164,13 +164,13 @@ def seed_database():
         {
             "title": "Silence of the Fjords: A Thrillingly Quiet Mystery",
             "author": "Lars Lydløs",
-            "due_date": datetime.date(2025, 10, 1),
+            "due_date": None, # Updated to None
             "isbn": "9781234567004",
             "category": "MY",
             "language": "English",  # MY - Mystery
-            "user": users[0],
+            "user": None,
             "condition": "FR",
-            "available": False,
+            "available": True, # Updated to True
             "image": "static/images/library_seal.jpg",
             "storage_location": "Shelf M7",
             "publisher": "Silent Peaks Mysteries",
@@ -180,13 +180,13 @@ def seed_database():
         {
             "title": "Knit Your Own Viking Helmet: A Cozy Crafting Adventure",
             "author": "Solveig Ulltråd",
-            "due_date": datetime.date(2025, 11, 1),
+            "due_date": None, # Updated to None
             "isbn": "9781234567005",
             "category": "TXT",
             "language": "English",  # TXT - Textbook/Guidebook
-            "user": users[1],
+            "user": None,
             "condition": "GD",
-            "available": True,
+            "available": True, # Updated to True
             "image": "static/images/library_seal.jpg",
             "storage_location": "Shelf K9",
             "publisher": "Woolly Warrior Crafts",
@@ -196,13 +196,13 @@ def seed_database():
         {
             "title": "The Little Book of Lagom... Just Kidding, Go Big or Go Home (Norwegian Edition)",
             "author": "Magnus Maksimal",
-            "due_date": datetime.date(2025, 12, 1),
+            "due_date": None, # Updated to None
             "isbn": "9781234567006",
             "category": "TXT",
             "language": "English",  # TXT - Textbook/Guidebook
-            "user": users[2],
+            "user": None,
             "condition": "NW",
-            "available": True,
+            "available": True, # Updated to True
             "image": "static/images/library_seal.jpg",
             "storage_location": "Shelf L1",
             "publisher": "Janteloven Jokes Inc.",
@@ -212,13 +212,13 @@ def seed_database():
         {
             "title": "My Summer Vacation in a Hytte (and I Only Saw the Sun Twice)",
             "author": "Ingrid Regnvær",
-            "due_date": datetime.date(2026, 1, 1),
+            "due_date": None, # Updated to None
             "isbn": "9781234567007",
             "category": "TXT",
             "language": "English",  # TXT - Textbook/Guidebook
-            "user": users[0],
+            "user": None,
             "condition": "FR",
-            "available": False,
+            "available": True, # Updated to True
             "image": "static/images/library_seal.jpg",
             "storage_location": "Shelf H3",
             "publisher": "Rainy Day Reads",
@@ -228,13 +228,13 @@ def seed_database():
         {
             "title": "Left Out in the Cold: A Guide to Norwegian Socializing (or Lack Thereof)",
             "author": "Frode Frys",
-            "due_date": datetime.date(2026, 2, 1),
+            "due_date": None, # Updated to None
             "isbn": "9781234567008",
             "category": "TXT",
             "language": "English",  # TXT - Textbook/Guidebook
-            "user": users[1],
+            "user": None,
             "condition": "GD",
-            "available": True,
+            "available": True, # Updated to True
             "image": "static/images/library_seal.jpg",
             "storage_location": "Shelf J4",
             "publisher": "Awkward Penguin Press",
@@ -244,13 +244,13 @@ def seed_database():
         {
             "title": "The Joy of Janteloven: Why Being Average is Actually Awesome",
             "author": "Kari Beskjeden",
-            "due_date": datetime.date(2026, 3, 1),
+            "due_date": None, # Updated to None
             "isbn": "9781234567009",
             "category": "TXT",
             "language": "English",  # TXT - Textbook/Guidebook
-            "user": users[2],
+            "user": None,
             "condition": "NW",
-            "available": True,
+            "available": True, # Updated to True
             "image": "static/images/library_seal.jpg",
             "storage_location": "Shelf B6",
             "publisher": "Modesty Matters Media",
@@ -260,13 +260,13 @@ def seed_database():
         {
             "title": "From Fjord to Fork: The Ultimate Lutefisk Cookbook",
             "author": "Sven Fiskesuppe",
-            "due_date": datetime.date(2026, 4, 1),
+            "due_date": None, # Updated to None
             "isbn": "9781234567010",
             "category": "CK",
             "language": "English",  # CK - Cooking
-            "user": users[0],
+            "user": None,
             "condition": "FR",
-            "available": False,
+            "available": True, # Updated to True
             "image": "static/images/library_seal.jpg",
             "storage_location": "Shelf F8",
             "publisher": "Lutefisk Lovers Ltd.",
@@ -276,13 +276,13 @@ def seed_database():
         {
             "title": "The Norwegian Guide to Avoiding Eye Contact: A Masterclass",
             "author": "Hilda Blikkstille",
-            "due_date": datetime.date(2026, 5, 1),
+            "due_date": None, # Updated to None
             "isbn": "9781234567011",
             "category": "TXT",
             "language": "English",  # TXT - Textbook/Guidebook
-            "user": users[1],
+            "user": None,
             "condition": "GD",
-            "available": True,
+            "available": True, # Updated to True
             "image": "static/images/library_seal.jpg",
             "storage_location": "Shelf D10",
             "publisher": "Shifty Eyes Publications",
@@ -292,13 +292,13 @@ def seed_database():
         {
             "title": "Vikings on Vespas: Modern Myths of Norway",
             "author": "Ragnar Moderne",
-            "due_date": datetime.date(2026, 6, 1),
+            "due_date": None, # Updated to None
             "isbn": "9781234567012",
             "category": "HIS",
             "language": "English",  # HIS - History
-            "user": users[2],
+            "user": None,
             "condition": "NW",
-            "available": True,
+            "available": True, # Updated to True
             "image": "static/images/library_seal.jpg",
             "storage_location": "Shelf G1",
             "publisher": "Anachronistic Adventures",
@@ -308,13 +308,13 @@ def seed_database():
         {
             "title": "Koselig Crime Scenes: A Detective in a Wool Sweater Mystery",
             "author": "Eva Varm",
-            "due_date": datetime.date(2026, 7, 1),
+            "due_date": None, # Updated to None
             "isbn": "9781234567013",
             "category": "MY",
             "language": "English",  # MY - Mystery
-            "user": users[0],
+            "user": None,
             "condition": "FR",
-            "available": False,
+            "available": True, # Updated to True
             "image": "static/images/library_seal.jpg",
             "storage_location": "Shelf E3",
             "publisher": "Cozy Crime Co.",
@@ -324,13 +324,13 @@ def seed_database():
         {
             "title": "The Unofficial Guide to Surviving a Norwegian Winter (Without Going Mad)",
             "author": "Ole Mørketid",
-            "due_date": datetime.date(2026, 8, 1),
+            "due_date": None, # Updated to None
             "isbn": "9781234567014",
             "category": "TXT",
             "language": "English",  # TXT - Textbook/Guidebook
-            "user": users[1],
+            "user": None,
             "condition": "GD",
-            "available": True,
+            "available": True, # Updated to True
             "image": "static/images/library_seal.jpg",
             "storage_location": "Shelf A5",
             "publisher": "Polar Night Press",
@@ -340,13 +340,13 @@ def seed_database():
         {
             "title": "Speak Like a Viking: A Phrasebook for the Modern Norwegian",
             "author": "Torvald Gammelord",
-            "due_date": datetime.date(2026, 9, 1),
+            "due_date": None, # Updated to None
             "isbn": "9781234567015",
             "category": "TXT",
             "language": "English",  # TXT - Textbook/Guidebook
-            "user": users[2],
+            "user": None,
             "condition": "NW",
-            "available": True,
+            "available": True, # Updated to True
             "image": "static/images/library_seal.jpg",
             "storage_location": "Shelf C7",
             "publisher": "Ancient Tongues Today",
@@ -356,13 +356,13 @@ def seed_database():
         {
             "title": "The Art of the Norwegian Stare: Communication Without Words",
             "author": "Liv Stillhet",
-            "due_date": datetime.date(2026, 10, 1),
+            "due_date": None, # Updated to None
             "isbn": "9781234567016",
             "category": "TXT",
             "language": "English",  # TXT - Textbook/Guidebook
-            "user": users[0],
+            "user": None,
             "condition": "FR",
-            "available": False,
+            "available": True, # Updated to True
             "image": "static/images/library_seal.jpg",
             "storage_location": "Shelf I9",
             "publisher": "Silent Signals Society",
@@ -372,13 +372,13 @@ def seed_database():
         {
             "title": "My 1000-Hour Hike: A Norwegian Nature Memoir (in Real Time)",
             "author": "Jens Langtur",
-            "due_date": datetime.date(2026, 11, 1),
+            "due_date": None, # Updated to None
             "isbn": "9781234567017",
             "category": "TXT",
             "language": "English",  # TXT - Textbook/Guidebook
-            "user": users[1],
+            "user": None,
             "condition": "GD",
-            "available": True,
+            "available": True, # Updated to True
             "image": "static/images/library_seal.jpg",
             "storage_location": "Shelf L2",
             "publisher": "Endurance Explorers",
@@ -388,13 +388,13 @@ def seed_database():
         {
             "title": "The Hygge Hypothesis: Is 'Kos' Just an Excuse for Staying Indoors?",
             "author": "Professor Koskritisk",
-            "due_date": datetime.date(2026, 12, 1),
+            "due_date": None, # Updated to None
             "isbn": "9781234567018",
             "category": "TXT",
             "language": "English",  # TXT - Textbook/Guidebook
-            "user": users[2],
+            "user": None,
             "condition": "NW",
-            "available": True,
+            "available": True, # Updated to True
             "image": "static/images/library_seal.jpg",
             "storage_location": "Shelf H4",
             "publisher": "Kos Konundrums Press",
@@ -404,13 +404,13 @@ def seed_database():
         {
             "title": "Norwegian Minimalism: Owning Only What Fits in Your Backpack (for Hiking)",
             "author": "Milla Minimalist",
-            "due_date": datetime.date(2027, 1, 1),
+            "due_date": None, # Updated to None
             "isbn": "9781234567019",
             "category": "TXT",
             "language": "English",  # TXT - Textbook/Guidebook
-            "user": users[0],
+            "user": None,
             "condition": "FR",
-            "available": False,
+            "available": True, # Updated to True
             "image": "static/images/library_seal.jpg",
             "storage_location": "Shelf J6",
             "publisher": "Less is More Mountains",
@@ -420,16 +420,281 @@ def seed_database():
         {
             "title": "Help, I Married a Norwegian! A Humorous Handbook for Husbands/Wives",
             "author": "Ulf Gift",
-            "due_date": datetime.date(2027, 2, 1),
+            "due_date": None, # Updated to None
             "isbn": "9781234567020",
             "category": "ROM",
             "language": "English",  # ROM - Romance
-            "user": users[1],
+            "user": None,
             "condition": "GD",
-            "available": True,
+            "available": True, # Updated to True
             "image": "static/images/library_seal.jpg",
             "storage_location": "Shelf B8",
             "publisher": "Cultural Clash Comedy",
+            "publication_year": 2023,
+            "copy_number": 1,
+        },
+        # New books
+        # Cooking (CK)
+        {
+            "title": "Tromsø Treats: Recipes from the Arctic Kitchen",
+            "author": "Astrid Kokk",
+            "due_date": None,
+            "isbn": "9781234567021",
+            "category": "CK",
+            "language": "English",
+            "user": None,
+            "condition": "NW",
+            "available": True,
+            "image": "static/images/library_seal.jpg",
+            "storage_location": "Shelf F9",
+            "publisher": "Northern Flavors Publishing",
+            "publication_year": 2024,
+            "copy_number": 1,
+        },
+        {
+            "title": "Viking Feasts: A Modern Guide to Ancient Nordic Cooking",
+            "author": "Bjørn Matglad",
+            "due_date": None,
+            "isbn": "9781234567022",
+            "category": "CK",
+            "language": "English",
+            "user": None,
+            "condition": "NW",
+            "available": True,
+            "image": "static/images/library_seal.jpg",
+            "storage_location": "Shelf F10",
+            "publisher": "Historical Gastronomy Press",
+            "publication_year": 2023,
+            "copy_number": 1,
+        },
+        # Crime (CR)
+        {
+            "title": "Midnight Sun Murders: A Tromsø Crime Novel",
+            "author": "Kari Natt",
+            "due_date": None,
+            "isbn": "9781234567023",
+            "category": "CR",
+            "language": "English",
+            "user": None,
+            "condition": "NW",
+            "available": True,
+            "image": "static/images/library_seal.jpg",
+            "storage_location": "Shelf M8",
+            "publisher": "Arctic Noir Books",
+            "publication_year": 2024,
+            "copy_number": 1,
+        },
+        {
+            "title": "Ragnarok Robbery: A Viking Crime Caper",
+            "author": "Odin Tyv",
+            "due_date": None,
+            "isbn": "9781234567024",
+            "category": "CR",
+            "language": "English",
+            "user": None,
+            "condition": "NW",
+            "available": True,
+            "image": "static/images/library_seal.jpg",
+            "storage_location": "Shelf M9",
+            "publisher": "Mythos Mayhem Publishing",
+            "publication_year": 2023,
+            "copy_number": 1,
+        },
+        # Mystery (MY)
+        {
+            "title": "The Tromsø Ice Enigma: A Chilling Mystery",
+            "author": "Lars Is",
+            "due_date": None,
+            "isbn": "9781234567025",
+            "category": "MY",
+            "language": "English",
+            "user": None,
+            "condition": "NW",
+            "available": True,
+            "image": "static/images/library_seal.jpg",
+            "storage_location": "Shelf M10",
+            "publisher": "Glacial Mysteries Inc.",
+            "publication_year": 2024,
+            "copy_number": 1,
+        },
+        {
+            "title": "Valkyrie's Riddle: A Viking Age Mystery",
+            "author": "Frøya Rune",
+            "due_date": None,
+            "isbn": "9781234567026",
+            "category": "MY",
+            "language": "English",
+            "user": None,
+            "condition": "NW",
+            "available": True,
+            "image": "static/images/library_seal.jpg",
+            "storage_location": "Shelf M11",
+            "publisher": "Ancient Enigmas Press",
+            "publication_year": 2023,
+            "copy_number": 1,
+        },
+        # Science Fiction (SF)
+        {
+            "title": "Arctic Starfarers: A Tromsø Space Odyssey",
+            "author": "Sven Romfarer",
+            "due_date": None,
+            "isbn": "9781234567027",
+            "category": "SF",
+            "language": "English",
+            "user": None,
+            "condition": "NW",
+            "available": True,
+            "image": "static/images/library_seal.jpg",
+            "storage_location": "Shelf S1",
+            "publisher": "Polaris Sci-Fi",
+            "publication_year": 2024,
+            "copy_number": 1,
+        },
+        {
+            "title": "Vikings of the Void: Norse Mythology in Space",
+            "author": "Tor Galakse",
+            "due_date": None,
+            "isbn": "9781234567028",
+            "category": "SF",
+            "language": "English",
+            "user": None,
+            "condition": "NW",
+            "available": True,
+            "image": "static/images/library_seal.jpg",
+            "storage_location": "Shelf S2",
+            "publisher": "Cosmic Saga Publishing",
+            "publication_year": 2023,
+            "copy_number": 1,
+        },
+        # Fantasy (FAN)
+        {
+            "title": "Trolls of Tromsdalstind: A Mountain Fantasy",
+            "author": "Liv Fjell",
+            "due_date": None,
+            "isbn": "9781234567029",
+            "category": "FAN",
+            "language": "English",
+            "user": None,
+            "condition": "NW",
+            "available": True,
+            "image": "static/images/library_seal.jpg",
+            "storage_location": "Shelf F1",
+            "publisher": "Fjord Fantasy Reads",
+            "publication_year": 2024,
+            "copy_number": 1,
+        },
+        {
+            "title": "Yggdrasil's Roots: A Viking Fantasy Epic",
+            "author": "Heimdall Skald",
+            "due_date": None,
+            "isbn": "9781234567030",
+            "category": "FAN",
+            "language": "English",
+            "user": None,
+            "condition": "NW",
+            "available": True,
+            "image": "static/images/library_seal.jpg",
+            "storage_location": "Shelf F2",
+            "publisher": "Mythical Realms Publishing",
+            "publication_year": 2023,
+            "copy_number": 1,
+        },
+        # History (HIS)
+        {
+            "title": "Tromsø Through the Ages: A Northern City's History",
+            "author": "Einar Historiker",
+            "due_date": None,
+            "isbn": "9781234567031",
+            "category": "HIS",
+            "language": "English",
+            "user": None,
+            "condition": "NW",
+            "available": True,
+            "image": "static/images/library_seal.jpg",
+            "storage_location": "Shelf H1",
+            "publisher": "Arctic History Press",
+            "publication_year": 2024,
+            "copy_number": 1,
+        },
+        {
+            "title": "Viking Voyages: The Norse Exploration of the North",
+            "author": "Astrid Langskip",
+            "due_date": None,
+            "isbn": "9781234567032",
+            "category": "HIS",
+            "language": "English",
+            "user": None,
+            "condition": "NW",
+            "available": True,
+            "image": "static/images/library_seal.jpg",
+            "storage_location": "Shelf H2",
+            "publisher": "Norse Heritage Books",
+            "publication_year": 2023,
+            "copy_number": 1,
+        },
+        # Romance (ROM)
+        {
+            "title": "Love in the Land of the Midnight Sun: A Tromsø Romance",
+            "author": "Solveig Hjerte",
+            "due_date": None,
+            "isbn": "9781234567033",
+            "category": "ROM",
+            "language": "English",
+            "user": None,
+            "condition": "NW",
+            "available": True,
+            "image": "static/images/library_seal.jpg",
+            "storage_location": "Shelf R1",
+            "publisher": "Northern Lights Romances",
+            "publication_year": 2024,
+            "copy_number": 1,
+        },
+        {
+            "title": "Viking Hearts: A Norse Love Saga",
+            "author": "Sigrid Kjærlighet",
+            "due_date": None,
+            "isbn": "9781234567034",
+            "category": "ROM",
+            "language": "English",
+            "user": None,
+            "condition": "NW",
+            "available": True,
+            "image": "static/images/library_seal.jpg",
+            "storage_location": "Shelf R2",
+            "publisher": "Valhalla Valentine Publishing",
+            "publication_year": 2023,
+            "copy_number": 1,
+        },
+        # Textbook (TXT)
+        {
+            "title": "University of Tromsø Curriculum Guide",
+            "author": "UiT Academic Council",
+            "due_date": None,
+            "isbn": "9781234567035",
+            "category": "TXT",
+            "language": "English",
+            "user": None,
+            "condition": "NW",
+            "available": True,
+            "image": "static/images/library_seal.jpg",
+            "storage_location": "Shelf T1",
+            "publisher": "UiT Press",
+            "publication_year": 2024,
+            "copy_number": 1,
+        },
+        {
+            "title": "Navigating Tromsø: A Student's Handbook",
+            "author": "Tromsø Student Union",
+            "due_date": None,
+            "isbn": "9781234567036",
+            "category": "TXT",
+            "language": "English",
+            "user": None,
+            "condition": "NW",
+            "available": True,
+            "image": "static/images/library_seal.jpg",
+            "storage_location": "Shelf T2",
+            "publisher": "StudentLife Guides",
             "publication_year": 2023,
             "copy_number": 1,
         },
