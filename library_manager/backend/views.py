@@ -12,6 +12,7 @@ from rest_framework import generics
 from datetime import datetime, timedelta
 from django.middleware.csrf import get_token
 from django.core.exceptions import ObjectDoesNotExist
+from datetime import date
 
 from .serializers import PeopleSerializer
 from .validations import validate_username, validate_password, validate_email, validate_birth_date
@@ -91,6 +92,59 @@ class LoginView(View):
 
         except json.JSONDecodeError:
             return JsonResponse({'error': 'Invalid JSON'}, status=400)
+
+@method_decorator(login_required, name="dispatch")
+class BorrowedBooksView(View):
+    def get(self, request):
+        user = request.user
+        people_user = People.objects.get(name=user.username)
+        is_librarian_or_admin = people_user.type in ["LB", "AD"]
+        today = date.today()
+
+        if is_librarian_or_admin:
+            borrowed_books = Book.objects.filter(available=False).select_related('borrower')
+        else:
+            borrowed_books = Book.objects.filter(available=False, borrower=people_user).select_related('borrower')
+
+        borrowed_books_data = {}
+        for book in borrowed_books:
+            borrower_name = book.borrower.name if book.borrower else "Unknown"
+            if borrower_name not in borrowed_books_data:
+                borrowed_books_data[borrower_name] = []
+
+            days_left = (book.due_date - today).days
+            overdue = days_left < 0
+            days_overdue = abs(days_left) if overdue else 0
+            due_today = days_left == 0
+
+            book_info = {
+                "id": book.id,
+                "title": book.title,
+                "author": book.author,
+                "isbn": book.isbn,
+                "category": book.category,
+                "language": book.language,
+                "condition": book.condition,
+                "image": str(book.image),
+                "due_date": book.due_date.isoformat(),
+                "borrower_id": book.borrower.id if book.borrower else None,
+                "days_left": days_left,
+                "overdue": overdue,
+                "days_overdue": days_overdue,
+                "due_today": due_today,
+            }
+            borrowed_books_data[borrower_name].append(book_info)
+
+        # Convert the dictionary to a list of user groups for frontend
+        grouped_borrowed_books = []
+        for borrower_name, books in borrowed_books_data.items():
+            grouped_borrowed_books.append({
+                "borrower_name": borrower_name,
+                "books": books
+            })
+
+
+        return JsonResponse({"borrowed_books_by_user": grouped_borrowed_books},  status=200)
 
 
 # Logout View
