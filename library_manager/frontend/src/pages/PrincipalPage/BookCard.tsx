@@ -110,6 +110,7 @@ const BookCard: React.FC<BookCardProps> = ({ book, onBorrow, currentUser, onEdit
           <div className="book-card-front">
             <img src={book.image} alt={book.title} className="book-image" />
             <h2 className="book-title">{book.title}</h2>
+            <p className="book-author">{book.author}</p> {/* ✅ ADDED AUTHOR HERE */}
           </div>
 
           {/* Back Side (Details) */}
