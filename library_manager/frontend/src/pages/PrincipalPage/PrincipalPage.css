@@ -62,7 +62,7 @@
 }
 
 .book-card-back {
-  background: rgba(255, 204, 128, 0.15); 
+  background: #f9f9f9; /* Changed to light grey for better readability */
   color: black;
   transform: rotateY(180deg);
   padding: 20px;
