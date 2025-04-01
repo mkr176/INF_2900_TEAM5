@@ -16,7 +16,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [username, setUsername] = useState("Not logged in");
   const [avatar, setAvatar] = useState("default.svg");
-  const [userType, setUserType] = useState<string>("");
+  const [userType, setUserType] = useState("");
 
   // ✅ Fetch user details when app starts
   const fetchUser = async () => {

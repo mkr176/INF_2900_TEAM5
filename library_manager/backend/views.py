@@ -626,10 +626,17 @@ def csrf_token_view(request):
 @login_required
 def get_user_info(request):
     if request.user.is_authenticated:
-        return JsonResponse({
-            "username": request.user.username,
-            "email": request.user.email,
-        })
+        try:
+            person = People.objects.get(name=request.user.username)
+            return JsonResponse({
+                "username": person.name,
+                "email": person.email,
+                "avatar": person.avatar if hasattr(person, 'avatar') else "default.svg",
+                "type": person.type,
+            })
+        except People.DoesNotExist:
+           
+            return JsonResponse({"error": "Unauthorized"}, status=401)
     else:
         return JsonResponse({"error": "Not authenticated"}, status=401)
 
