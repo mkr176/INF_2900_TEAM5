@@ -4,8 +4,10 @@ interface AuthContextType {
   isLoggedIn: boolean;
   username: string;
   avatar: string;
+  userType: string; 
   fetchUser: () => void;
   logout: () => void;
+  
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -14,6 +16,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [username, setUsername] = useState("Not logged in");
   const [avatar, setAvatar] = useState("default.svg");
+  const [userType, setUserType] = useState<string>("");
 
   // ✅ Fetch user details when app starts
   const fetchUser = async () => {
@@ -22,6 +25,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (response.ok) {
         const user = await response.json();
         setUsername(user.username);
+        setUserType(user.type || "");
         setAvatar(user.avatar || "default.svg");
         setIsLoggedIn(true);
       } else {
@@ -70,7 +74,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   return (
-    <AuthContext.Provider value={{ isLoggedIn, username, avatar, fetchUser, logout }}>
+    <AuthContext.Provider value={{ isLoggedIn, username, avatar, userType, fetchUser, logout }}>
       {children}
     </AuthContext.Provider>
   );

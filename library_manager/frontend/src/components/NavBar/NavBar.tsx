@@ -4,7 +4,7 @@ import { useAuth } from "../../context/AuthContext";  // ✅ Import AuthContext
 import "./NavBar.css";
 
 const Navbar: React.FC = () => {
-  const { isLoggedIn, username, avatar, logout,fetchUser } = useAuth();
+  const { isLoggedIn, username, avatar, userType, logout,fetchUser } = useAuth();
   const navigate = useNavigate();
 
   
@@ -45,9 +45,23 @@ const Navbar: React.FC = () => {
       </div>      <ul className="nav-links">
         <li><Link to="/contact">Contact</Link></li>
         <li><Link to="/about">About</Link></li>
+        <li><Link to="/admin/users">Manage Users</Link></li>
+
+         {/* ✅ Add User Management button for Admins and Librarians */}
+         {isLoggedIn && (userType === "AD" || userType === "LB") && (
+          <li>
+            <button
+              onClick={() => navigate("/admin/users")}
+              className="nav-button"
+            >
+              Manage Users
+            </button>
+          </li>
+        )}
+      
       </ul>
 
-      {/* ✅ Right-aligned profile info */}
+      {/* Right-aligned profile info */}
       <div className="nav-profile">
         {isLoggedIn ? (
           <>
