@@ -545,7 +545,7 @@ class DeleteUserView(View):
     def delete(self, request ,user_id):
         try:
             user = get_object_or_404(People, id=user_id)
-            user2= get_object_or_404(AuthUser, id=user_id)
+            user2 = get_object_or_404(AuthUser, username=user.name)
             user2.delete()
             user.delete()
             return JsonResponse({'message': 'User deleted successfully'}, status=200)

@@ -19,7 +19,7 @@ from django.urls import path, re_path
 from django.views.generic import TemplateView
 from .views import( 
     RegisterView, LoginView, LogoutView, ListUsersView, 
-    UserProfileView, CurrentUserView,  CreateUserView, UpdateUserProfileView, 
+    UserProfileView, CurrentUserView,  CreateUserView, UpdateUserProfileView, DeleteUserView,
     ListBooksView, BorrowBookView, CreateBookView, DeleteBookView, UpdateBookView, BookDetailView, BorrowedBooksView,
     csrf_token_view, 
     get_user_info, update_profile
@@ -50,6 +50,8 @@ urlpatterns = [
     path("api/user/<int:user_id>/update/", UpdateUserProfileView.as_view(), name="update-user-profile"),
     path("api/update-profile/", update_profile, name="update-profile"),
     path("api/create_users/", CreateUserView.as_view(), name="create-users"),
+    path("api/user/<int:user_id>/delete/", DeleteUserView.as_view(), name="delete-user"),
+
 
 
     # ============================== #
