@@ -1,0 +1,87 @@
+.admin-user-container {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 1.5rem;
+   
+    border-radius: 1rem;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  }
+  
+  .admin-user-title {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    color: #2d3748;
+  }
+  
+  .user-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  
+    border: 1px solid #e2e8f0;
+    border-radius: 0.75rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  
+  .user-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  }
+  
+  .user-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  
+  .user-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #cbd5e0;
+  }
+  
+  .user-details {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .user-details p {
+    margin: 0;
+    font-size: 0.9rem;
+  }
+  
+  .user-details .name {
+    font-weight: 600;
+    color: #2b6cb0;
+  }
+  
+  .user-details .email {
+    color: #000000;
+  }
+  
+  .user-details .role {
+    font-size: 0.75rem;
+    color: #000000;
+  }
+  
+  .delete-btn {
+    background-color: #e53e3e;
+    color: white;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.2s ease;
+  }
+  
+  .delete-btn:hover {
+    background-color: #c53030;
+  }
+  

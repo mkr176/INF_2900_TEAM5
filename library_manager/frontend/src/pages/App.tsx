@@ -9,7 +9,7 @@ import AboutPage from "./AboutPage/AboutPage";
 import ProfilePage from "./ProfilePage/ProfilePage"
 import PolicyPage from "./PrivacyPolicyPage/PolicyPage";
 import ServicePage from "./TermsofServicePage/ServicePage";
-
+import AdminUserManagement from "./AdminUserManagement/AdminUserManagement";
 import Footer from "../components/Footer/Footer"; // Import the Footer component
 import NavBar from "../components/NavBar/NavBar";
 
@@ -31,6 +31,7 @@ const App = () => {
           <Route path="/policy" element={<PolicyPage />} />
           <Route path="/terms" element={<ServicePage />} />
           <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/admin/users" element={<AdminUserManagement />} />
         </Routes>
       </div>
       <Footer /> {/* Footer always at bottom */}
