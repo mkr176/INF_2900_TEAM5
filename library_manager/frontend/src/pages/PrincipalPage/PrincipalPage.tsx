@@ -73,10 +73,21 @@ const BookDisplayPage: React.FC = () => {
     fetch(fetchUrl)
       .then((response) => response.json())
       .then((data) => {
-        console.log("Book data:", data); // Log book data
-        setBookList(data);
+        console.log("Fetched book data:", data); // Log fetched book data
+
+        // Sort the fetched books: first by category, then by title alphabetically
+        const sortedBooks = data.sort((a: Book, b: Book) => {
+          const categoryComparison = a.category.localeCompare(b.category);
+          if (categoryComparison !== 0) {
+            return categoryComparison; // Sort by category first
+          }
+          return a.title.localeCompare(b.title); // Then sort by title alphabetically
+        });
+
+        console.log("Sorted book data:", sortedBooks); // Log sorted book data
+        setBookList(sortedBooks); // Set the sorted list to state
       })
-      .catch((error) => console.error("Error fetching books:", error));
+      .catch((error) => console.error("Error fetching or sorting books:", error));
     fetch("/api/current_user/")
       .then((response) => response.json())
       .then((data) => setCurrentUser(data))
@@ -188,9 +199,10 @@ const BookDisplayPage: React.FC = () => {
       });
   };
 
+ // Filter books based on search query *after* they have been sorted
   const filteredBooks = bookList.filter((book: Book) =>
     book.title.toLowerCase().includes(searchQuery.toLowerCase()) || book.author.toLowerCase().includes(searchQuery.toLowerCase())
-
+ // Category filtering is handled by the API call, sorting is done after fetch
   );
 
   const settings = {
