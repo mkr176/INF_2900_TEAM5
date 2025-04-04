@@ -39,21 +39,21 @@ interface BookCardProps {
 }
 
 const categoryMap: { [key: string]: string } = {
-    'CK': 'Cooking',
-    'CR': 'Crime',
-    'MY': 'Mystery',
-    'SF': 'Science Fiction',
-    'FAN': 'Fantasy',
-    'HIS': 'History',
-    'ROM': 'Romance',
-    'TXT': 'Textbook',
+  'CK': 'Cooking',
+  'CR': 'Crime',
+  'MY': 'Mystery',
+  'SF': 'Science Fiction',
+  'FAN': 'Fantasy',
+  'HIS': 'History',
+  'ROM': 'Romance',
+  'TXT': 'Textbook',
 };
 
 const conditionMap: { [key: string]: string } = {
-    'NW': 'New',
-    'GD': 'Good',
-    'FR': 'Fair',
-    'PO': 'Poor',
+  'NW': 'New',
+  'GD': 'Good',
+  'FR': 'Fair',
+  'PO': 'Poor',
 };
 
 
@@ -99,6 +99,11 @@ const BookCard: React.FC<BookCardProps> = ({ book, onBorrow, currentUser, onEdit
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
     >
+      {/* Recommended Badge */}
+      {book.author === "Ine Arvola" && (
+        <div className="recommended-badge">Recommended</div>
+      )}
+
       {/* Flipping Book Card */}
       <div
         className={`book-card ${isFlipped ? "flipped" : ""}`}

@@ -16,8 +16,10 @@
   display: flex;
   justify-content: center;
 }
+
 .single-book-container .book-card-container {
-  width: 250px; /* Match carousel width */
+  width: 250px;
+  /* Match carousel width */
 }
 
 .book-card {
@@ -26,7 +28,8 @@
   height: 450px;
   border-radius: 16px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  perspective: 1000px; /* Enables 3D effect */
+  perspective: 1000px;
+  /* Enables 3D effect */
 }
 
 .book-card-inner {
@@ -42,8 +45,9 @@
 }
 
 /* Front Side */
-.book-card-front, .book-card-back {
-  
+.book-card-front,
+.book-card-back {
+
   position: absolute;
   width: 100%;
   height: 100%;
@@ -62,7 +66,8 @@
 }
 
 .book-card-back {
-  background: #f9f9f9; /* Changed to light grey for better readability */
+  background: #f9f9f9;
+  /* Changed to light grey for better readability */
   color: black;
   transform: rotateY(180deg);
   padding: 20px;
@@ -116,21 +121,21 @@
 
 /* Borrow Button - Green for Available, Red for Unavailable */
 .borrow-button.available {
-  background-color: #28a745; 
+  background-color: #28a745;
   color: white;
 }
 
 .borrow-button.available:hover {
-  background-color: #218838; 
+  background-color: #218838;
 }
 
 .borrow-button.unavailable {
-  background-color: #d32f2f; 
+  background-color: #d32f2f;
   color: white;
 }
 
 .borrow-button.unavailable:hover {
-  background-color: #b71c1c; 
+  background-color: #b71c1c;
 }
 
 /* Book Actions */
@@ -139,7 +144,7 @@
   justify-content: center;
   align-items: center;
   width: 90%;
-  margin-top: auto; 
+  margin-top: auto;
 }
 
 .view-details-button {
@@ -150,7 +155,7 @@
 
 /* Borrow Button */
 .borrow-button {
-  width: 100%; 
+  width: 100%;
   padding: 12px;
   font-size: 14px;
   text-align: center;
@@ -161,26 +166,58 @@
   cursor: pointer;
   text-transform: uppercase;
   transition: all 0.3s ease-in-out;
-  min-height: 50px; 
-  
+  min-height: 50px;
+
 }
 
 .borrow-button:hover {
   background-color: #1e40af;
 }
 
+/* Recommended Badge Styling */
+.recommended-badge {
+  background-color: #28a745;
+  /* Green background */
+  color: white;
+  /* White text */
+  padding: 4px 8px;
+  /* Padding */
+  border-radius: 4px;
+  /* Rounded corners */
+  font-size: 0.8rem;
+  /* Smaller font size */
+  font-weight: bold;
+  /* Bold text */
+  text-align: center;
+  /* Center text */
+  display: inline-block;
+  /* Allow it to sit nicely */
+  position: absolute;
+  /* Position relative to the container */
+  top: -5px;
+  /* Position it slightly above the card */
+  left: 50%;
+  /* Center horizontally */
+  transform: translateX(-50%);
+  /* Adjust horizontal centering */
+  z-index: 10;
+  /* Ensure it's above the card */
+}
+
+
 .book-card-container {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  
-  
-  
+  position: relative; /* Needed for absolute positioning of the badge */
+
+
 }
 
 /* Navigation Buttons */
-.slick-prev, .slick-next {
+.slick-prev,
+.slick-next {
   width: 50px;
   height: 50px;
   background-color: rgba(37, 99, 235, 0.8);
@@ -192,11 +229,13 @@
   transition: background 0.3s ease-in-out;
 }
 
-.slick-prev:hover, .slick-next:hover {
+.slick-prev:hover,
+.slick-next:hover {
   background-color: rgba(37, 99, 235, 1);
 }
 
-.slick-prev:before, .slick-next:before {
+.slick-prev:before,
+.slick-next:before {
   font-size: 24px;
   color: white !important;
   opacity: 1;
