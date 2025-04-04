@@ -2,12 +2,15 @@ import json
 from django.shortcuts import render, get_object_or_404
 from django.views import View
 from django.http import JsonResponse
-from django.views.generic import TemplateView
+from django.views import View
+from django.views.generic import TemplateView # <-- ADD THIS LINE
 from django.contrib.auth.models import User as AuthUser # Alias Django's User model to avoid confusion
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash, get_user_model, logout
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
+from django.contrib.auth import get_user_model # Ensure this is imported
+
 from rest_framework import generics
 from datetime import datetime, timedelta
 from django.middleware.csrf import get_token
@@ -19,6 +22,10 @@ from .validations import validate_username, validate_password, validate_email, v
 from .models import Book,People
 
 
+import re
+MIN_PASSWORD_LENGTH = 6
+EMAIL_REGEX = re.compile(r"^[^\s@]+@[^\s@]+\.[^\s@]+$")
+AuthUser = get_user_model() # Use Django's configured user model
 
 
 # Landing Page View
@@ -240,47 +247,130 @@ class UpdateUserProfileView(View):
 @csrf_exempt
 def update_profile(request):
     if request.method == "POST":
+        print("--- Entering update_profile POST ---") # DEBUG
         try:
             data = json.loads(request.body)
-            user = request.user
+            print(f"Received data: {data}") # DEBUG
+            user = request.user # Get the authenticated user object
 
             if not user.is_authenticated:
+                print("User not authenticated.") # DEBUG
                 return JsonResponse({"error": "User not authenticated"}, status=401)
 
-            # Store old username for debugging
-            old_username = user.username  
+            print(f"Authenticated user: {user.username}") # DEBUG
 
-            # Update fields
-            if "username" in data and data["username"] != user.username:
-                user.username = data["username"]
+            people_instance = None
+            try:
+                # Get the corresponding People instance to update avatar/email if needed
+                people_instance = People.objects.get(name=user.username)
+                print(f"Found People instance for {user.username}") # DEBUG
+            except People.DoesNotExist:
+                print(f"No People instance found for {user.username}") # DEBUG
+                pass # Continue without People instance if not found
 
+            # --- Field Updates ---
+            email_updated = False
             if "email" in data:
-                user.email = data["email"]
+                new_email = data["email"]
+                # Basic validation (consider more robust validation)
+                if not EMAIL_REGEX.match(new_email):
+                     print("Invalid email format.") # DEBUG
+                     return JsonResponse({"error": "Invalid email format"}, status=400)
+                if new_email != user.email:
+                    user.email = new_email
+                    if people_instance:
+                        people_instance.email = new_email
+                    email_updated = True
+                    print(f"Email updated to: {new_email}") # DEBUG
 
-            if "password" in data and data["password"] != "":
-                user.set_password(data["password"])  # Django's hashing
+            avatar_updated = False
+            if "avatar" in data and people_instance:
+                 if data["avatar"] != people_instance.avatar:
+                    people_instance.avatar = data["avatar"]
+                    avatar_updated = True
+                    print(f"Avatar updated to: {data['avatar']}") # DEBUG
 
-            if "avatar" in data:
-                user.avatar = data["avatar"]
+            # --- Password Update Logic ---
+            password_updated = False
+            new_password = data.get("new_password")
+            current_password = data.get("current_password")
+            print(f"Attempting password change? new_password provided: {bool(new_password)}") # DEBUG
 
-            user.save()
+            if new_password: # Check if a new password was provided
+                print("Processing new password...") # DEBUG
+                if not current_password:
+                    print("Current password missing.") # DEBUG
+                    return JsonResponse({
+                        "error": "Current password is required to set a new password."
+                    }, status=400)
 
-            # ✅ Prevent logout by updating session authentication hash
-            update_session_auth_hash(request, user)  
+                print("Checking current password...") # DEBUG
+                # *** Check if the provided current password is correct ***
+                if not user.check_password(current_password):
+                    print("Incorrect current password provided.") # DEBUG
+                    return JsonResponse({
+                        "error": "Incorrect current password."
+                    }, status=400) # Use 400 for bad request
 
-            # ✅ Ensure session is modified so Django doesn't invalidate it
+                print("Current password CORRECT.") # DEBUG
+
+                # Basic validation for new password length
+                if len(new_password) < MIN_PASSWORD_LENGTH:
+                     print("New password too short.") # DEBUG
+                     return JsonResponse({
+                         "error": f"New password must be at least {MIN_PASSWORD_LENGTH} characters long."
+                     }, status=400)
+
+                # *** If current password is correct, set the new password ***
+                print("Setting new password...") # DEBUG
+                user.set_password(new_password)
+                password_updated = True
+                # Decide if you need to update People.password (generally NO)
+                # if people_instance: people_instance.password = make_password(new_password)
+
+            # --- Save Changes ---
+            try:
+                print("Saving AuthUser changes...") # DEBUG
+                user.save() # Save changes to AuthUser (email, password hash)
+                print("AuthUser saved.") # DEBUG
+                if people_instance and (email_updated or avatar_updated):
+                    print("Saving People instance changes...") # DEBUG
+                    people_instance.save() # Save changes to People (email, avatar)
+                    print("People instance saved.") # DEBUG
+            except Exception as db_error:
+                print(f"DATABASE SAVE ERROR: {db_error}") # DEBUG
+                return JsonResponse({"error": "Failed to save profile changes to database."}, status=500)
+
+
+            # Prevent logout after password change
+            if password_updated:
+                print("Updating session auth hash...") # DEBUG
+                update_session_auth_hash(request, user)
+                print("Session auth hash updated.") # DEBUG
+
+            # Ensure session is saved if modified
             request.session.modified = True
+            print("Session marked as modified.") # DEBUG
 
+            # --- Success Response ---
+            updated_avatar = people_instance.avatar if people_instance else "default.svg" # Provide a default
+            print("Profile update successful. Sending response.") # DEBUG
             return JsonResponse({
                 "message": "Profile updated successfully",
-                "new_username": user.username,
-                "old_username": old_username
+                "username": user.username,
+                "email": user.email,
+                "avatar": updated_avatar,
             }, status=200)
 
         except json.JSONDecodeError:
+            print("Invalid JSON received.") # DEBUG
             return JsonResponse({"error": "Invalid JSON format"}, status=400)
+        except People.DoesNotExist:
+             print("People.DoesNotExist caught (should have been handled earlier).") # DEBUG
+             return JsonResponse({"error": "Associated profile data not found."}, status=404)
         except Exception as e:
-            return JsonResponse({"error": str(e)}, status=400)
+            print(f"UNEXPECTED ERROR in update_profile: {e}") # DEBUG
+            return JsonResponse({"error": "An internal error occurred."}, status=500) # Generic error for unexpected issues
 
     return JsonResponse({"error": "Invalid request method"}, status=405)
 
