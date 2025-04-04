@@ -1,11 +1,30 @@
-import React from "react";
+import React, { useEffect } from "react"; // Import useEffect
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import { useAuth } from "../../context/AuthContext"; // Import useAuth
 import "./WelcomePage.css";
 
 const WelcomePage = () => {
   const navigate = useNavigate();
+  const { isLoggedIn } = useAuth(); // Get login status from AuthContext
 
+  // Add useEffect to check login status and redirect if necessary
+  useEffect(() => {
+    if (isLoggedIn) {
+      // If the user is logged in, redirect them to the principal page
+      // 'replace: true' ensures the welcome page isn't added to the history stack
+      navigate("/principal", { replace: true });
+    }
+    // Dependency array: run this effect when isLoggedIn or navigate changes
+  }, [isLoggedIn, navigate]);
+
+  // If logged in, the component will redirect, so we can optionally return null or a loading indicator
+  // to avoid rendering the welcome content briefly before redirection.
+  if (isLoggedIn) {
+    return null; // Or <p>Redirecting...</p>
+  }
+
+  // If not logged in, render the welcome page content
   return (
     <div className="WelcomePage-container">
       {/* Hero Section */}
