@@ -271,3 +271,8 @@ To push changes from your branch to the main branch, you'll need to follow these
    ```bash
    git push origin main
    ```
+
+To update the text file which shows who created or changed which files at which time use this command
+   ```bash
+   git log --all --pretty=format:"Author: %an %nDate:   %ad%nSubject: %s%n%b%n" --name-status --date=iso > commits_all_hash.txt      
+   ```

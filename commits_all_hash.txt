@@ -1,0 +1,2404 @@
+Author: julius 
+Date:   2025-04-04 12:41:09 +0200
+Subject: Frontend: Refactor ProfilePage component: streamline state management, enhance email and password validation, and remove unused username input and avatar array.
+
+
+M	library_manager/frontend/src/pages/ProfilePage/ProfilePage.tsx
+
+Author: julius 
+Date:   2025-04-04 12:41:02 +0200
+Subject: Backend: Enhance user profile update functionality with email and avatar validation, improve error handling, and add debug logging
+
+
+M	library_manager/backend/views.py
+
+Author: julius 
+Date:   2025-04-04 12:05:45 +0200
+Subject: Frontend: Redirect to principal page in WelcomePage component
+
+
+M	library_manager/frontend/src/pages/WelcomePage/WelcomePage.tsx
+
+Author: julius 
+Date:   2025-04-04 11:51:01 +0200
+Subject: Sort fetched books by category and title, enhance error logging, and adjust filtering logic
+
+
+M	library_manager/frontend/src/pages/PrincipalPage/PrincipalPage.tsx
+
+Author: julius 
+Date:   2025-04-04 11:07:39 +0200
+Subject: Add recommended badge to BookCard and improve CSS formatting
+
+
+M	library_manager/frontend/src/pages/PrincipalPage/BookCard.tsx
+M	library_manager/frontend/src/pages/PrincipalPage/PrincipalPage.css
+
+Author: julius 
+Date:   2025-04-02 08:10:02 +0200
+Subject: Add missing cover
+
+
+A	library_manager/static/images/covers/TheMysteryoftheMissingTapasACarlosCrimeNovel_cover.jpg
+
+Author: julius 
+Date:   2025-04-02 08:01:05 +0200
+Subject: New Fun Books
+
+
+M	library_manager/backend/books_data.json
+M	library_manager/backend/seeds.py
+A	library_manager/static/images/covers/AHistoryofVikingComputerSecurity_cover.jpg
+A	library_manager/static/images/covers/EatingWellonaBudget_cover.jpg
+A	library_manager/static/images/covers/FjordsForksInesIcyKitchen_cover.jpg
+A	library_manager/static/images/covers/GutierrezGuidetoSpanishGrammar_cover.jpg
+A	library_manager/static/images/covers/KristiansensCompendiumofColdWeatherKnittingPatter_cover.jpg
+A	library_manager/static/images/covers/LageMatCookbookMattKristiansensNorwegianKitchen_cover.jpg
+A	library_manager/static/images/covers/SoftwareEngineeringAPracticalFunIntroduction_cover.jpg
+A	library_manager/static/images/covers/SoftwareEngineeringAPracticalIntroduction_cover.jpg
+A	library_manager/static/images/covers/TheCaseoftheFrozenFirewallAnIneArvolaMystery_cover.jpg
+
+Author: Matt Ricote Kristiansen 
+Date:   2025-04-01 16:03:16 +0200
+Subject: Updated  to safely fetch user role and avatar from People table, Fix navbar visibility for Manage Users button (only for Admins and Librarians)
+
+
+M	library_manager/backend/views.py
+M	library_manager/frontend/src/components/NavBar/NavBar.tsx
+M	library_manager/frontend/src/context/AuthContext.tsx
+
+Author: Matt Ricote Kristiansen 
+Date:   2025-04-01 13:11:25 +0200
+Subject: Scrum-71 Finished, Added button for lib and admin to use when logging in for managing users, Updated authentication. Frontend: Adding/Deleting Users for Admin and Librarian view
+
+
+M	library_manager/frontend/src/components/NavBar/NavBar.tsx
+M	library_manager/frontend/src/context/AuthContext.tsx
+
+Author: Matt Ricote Kristiansen 
+Date:   2025-04-01 13:09:53 +0200
+Subject: updated routing and views for deleting users
+
+
+M	library_manager/backend/urls.py
+M	library_manager/backend/views.py
+
+Author: Matt Ricote Kristiansen 
+Date:   2025-04-01 13:09:03 +0200
+Subject: Frontend: Adding/Deleting Users for Admin and Librarian view
+
+
+M	library_manager/frontend/package-lock.json
+M	library_manager/frontend/package.json
+A	library_manager/frontend/src/pages/AdminUserManagement/AdminUserManagement.css
+A	library_manager/frontend/src/pages/AdminUserManagement/AdminUserManagement.tsx
+M	library_manager/frontend/src/pages/App.tsx
+
+Author: julius 
+Date:   2025-03-27 11:20:31 +0100
+Subject: Add image generation and book title creation utilities
+
+
+A	library_manager/backend/books_data.json
+M	library_manager/backend/seeds.py
+A	library_manager/static/images/covers/50ShadesofBrunostACheesyLoveStory_cover.jpg
+A	library_manager/static/images/covers/ArcticStarfarersATromsSpaceOdyssey_cover.jpg
+A	library_manager/static/images/covers/BandaMunicipaldeSangesa_cover.jpg
+A	library_manager/static/images/covers/FromFjordtoForkTheUltimateLutefiskCookbook_cover.jpg
+A	library_manager/static/images/covers/HelpIMarriedaNorwegianAHumorousHandbookforHusbands_cover.jpg
+A	library_manager/static/images/covers/HyggeforHardangerfjordHikersAKoseligGuidetoConquer_cover.jpg
+A	library_manager/static/images/covers/KnitYourOwnVikingHelmetACozyCraftingAdventure_cover.jpg
+A	library_manager/static/images/covers/KoseligCrimeScenesADetectiveinaWoolSweaterMystery_cover.jpg
+A	library_manager/static/images/covers/LeftOutintheColdAGuidetoNorwegianSocializingorLack_cover.jpg
+A	library_manager/static/images/covers/LoveintheLandoftheMidnightSunATromsRomance_cover.jpg
+A	library_manager/static/images/covers/MidnightSunMurdersATromsCrimeNovel_cover.jpg
+A	library_manager/static/images/covers/My1000-HourHikeANorwegianNatureMemoirinRealTime_cover.jpg
+A	library_manager/static/images/covers/MySummerVacationinaHytteandIOnlySawtheSunTwice_cover.jpg
+A	library_manager/static/images/covers/NavigatingTromsAStudentsHandbook_cover.jpg
+A	library_manager/static/images/covers/NorwegianMinimalismOwningOnlyWhatFitsinYourBackpac_cover.jpg
+A	library_manager/static/images/covers/RagnarokRobberyAVikingCrimeCaper_cover.jpg
+A	library_manager/static/images/covers/SilenceoftheFjordsAThrillinglyQuietMystery_cover.jpg
+A	library_manager/static/images/covers/SpeakLikeaVikingAPhrasebookfortheModernNorwegian_cover.jpg
+A	library_manager/static/images/covers/TheArtoftheNorwegianStareCommunicationWithoutWords_cover.jpg
+A	library_manager/static/images/covers/TheHyggeHypothesisIsKosJustanExcuseforStayingIndoo_cover.jpg
+A	library_manager/static/images/covers/TheIntrovertsGuidetoOsloNightlifeandWhyYouShouldSt_cover.jpg
+A	library_manager/static/images/covers/TheJoyofJantelovenWhyBeingAverageisActuallyAwesome_cover.jpg
+A	library_manager/static/images/covers/TheLittleBookofLagomJustKiddingGoBigorGoHomeNorweg_cover.jpg
+A	library_manager/static/images/covers/TheNorwegianGuidetoAvoidingEyeContactAMasterclass_cover.jpg
+A	library_manager/static/images/covers/TheTromsIceEnigmaAChillingMystery_cover.jpg
+A	library_manager/static/images/covers/TheUnofficialGuidetoSurvivingaNorwegianWinterWitho_cover.jpg
+A	library_manager/static/images/covers/TrollsofTromsdalstindAMountainFantasy_cover.jpg
+A	library_manager/static/images/covers/TromsThroughtheAgesANorthernCitysHistory_cover.jpg
+A	library_manager/static/images/covers/TromsTreatsRecipesfromtheArcticKitchen_cover.jpg
+A	library_manager/static/images/covers/UniversityofTromsCurriculumGuide_cover.jpg
+A	library_manager/static/images/covers/ValkyriesRiddleAVikingAgeMystery_cover.jpg
+A	library_manager/static/images/covers/VikingFeastsAModernGuidetoAncientNordicCooking_cover.jpg
+A	library_manager/static/images/covers/VikingHeartsANorseLoveSaga_cover.jpg
+A	library_manager/static/images/covers/VikingVoyagesTheNorseExplorationoftheNorth_cover.jpg
+A	library_manager/static/images/covers/VikingsoftheVoidNorseMythologyinSpace_cover.jpg
+A	library_manager/static/images/covers/VikingsonVespasModernMythsofNorway_cover.jpg
+A	library_manager/static/images/covers/YggdrasilsRootsAVikingFantasyEpic_cover.jpg
+A	utils/create_new_books_titles.py
+A	utils/image_generator.py
+
+Author: julius 
+Date:   2025-03-26 13:14:07 +0100
+Subject: Frontend: Update background color of book card for improved readability
+
+
+M	library_manager/frontend/src/pages/PrincipalPage/PrincipalPage.css
+
+Author: julius 
+Date:   2025-03-26 13:11:11 +0100
+Subject: Frontend: Add author display to BookCard component
+
+
+M	library_manager/frontend/src/pages/PrincipalPage/BookCard.tsx
+
+Author: julius 
+Date:   2025-03-26 12:46:31 +0100
+Subject: Add database seeding to Windows startup script
+
+
+M	Windows_start_backend.bat
+
+Author: julius 
+Date:   2025-03-26 12:41:44 +0100
+Subject: Backend: many new books
+
+
+M	library_manager/backend/seeds.py
+
+Author: julius 
+Date:   2025-03-26 12:41:31 +0100
+Subject: Backend: Modify Book model to allow null and blank values for due_date and user fields
+
+
+A	library_manager/backend/migrations/0002_alter_book_due_date_alter_book_user.py
+M	library_manager/backend/models.py
+
+Author: julius 
+Date:   2025-03-26 12:22:29 +0100
+Subject: Frontend: Add return button functionality to BorrowedBooksList component and improve styling
+
+
+M	library_manager/frontend/src/components/BorrowedBooksList/BorrowedBooksList.css
+M	library_manager/frontend/src/components/BorrowedBooksList/BorrowedBooksList.tsx
+
+Author: julius 
+Date:   2025-03-26 11:49:20 +0100
+Subject: Frontend: Implement BorrowedBooksList component to display user's borrowed books with special view for librarians and admins
+
+
+M	library_manager/backend/views.py
+A	library_manager/frontend/src/components/BorrowedBooksList/BorrowedBooksList.css
+A	library_manager/frontend/src/components/BorrowedBooksList/BorrowedBooksList.tsx
+M	library_manager/frontend/src/pages/PrincipalPage/PrincipalPage.tsx
+
+Author: julius 
+Date:   2025-03-26 11:24:12 +0100
+Subject: Backend: Add BorrowedBooksView to retrieve and group borrowed books by user
+
+
+M	library_manager/backend/views.py
+
+Author: julius 
+Date:   2025-03-26 11:13:23 +0100
+Subject: Frontend: Add category filter to PrincipalPage for improved book browsing
+
+
+M	library_manager/frontend/src/pages/PrincipalPage/PrincipalPage.tsx
+
+Author: julius 
+Date:   2025-03-26 11:05:17 +0100
+Subject: Frontend: Enhance search functionality in PrincipalPage to include author names and update placeholder text
+
+
+M	library_manager/frontend/src/pages/PrincipalPage/PrincipalPage.tsx
+
+Author: julius 
+Date:   2025-03-25 16:17:53 +0100
+Subject: Frontend: improve state update in PrincipalPage
+
+
+M	library_manager/frontend/src/pages/PrincipalPage/PrincipalPage.tsx
+
+Author: julius 
+Date:   2025-03-25 14:15:18 +0100
+Subject: New books
+
+
+M	library_manager/backend/seeds.py
+
+Author: julius 
+Date:   2025-03-25 14:05:15 +0100
+Subject: Enhance AddBookForm and EditBookForm to display category labels, and update BookCard to show mapped category and condition values
+
+
+M	library_manager/frontend/src/components/AddBookForm/AddBookForm.tsx
+M	library_manager/frontend/src/components/EditBookForm/EditBookForm.tsx
+M	library_manager/frontend/src/pages/PrincipalPage/BookCard.tsx
+
+Author: julius 
+Date:   2025-03-25 13:51:58 +0100
+Subject: Fix delete book URL and enhance BookCard and PrincipalPage with improved error handling and prop management
+
+
+M	library_manager/backend/urls.py
+M	library_manager/frontend/src/pages/PrincipalPage/BookCard.tsx
+M	library_manager/frontend/src/pages/PrincipalPage/PrincipalPage.tsx
+
+Author: guti-1 
+Date:   2025-03-25 10:18:07 +0100
+Subject: someone check if it works for AD and LB
+
+
+M	library_manager/frontend/src/pages/BookDetailPage/BookDetailPage.tsx
+M	library_manager/frontend/src/pages/PrincipalPage/BookCard.tsx
+M	library_manager/frontend/src/pages/PrincipalPage/PrincipalPage.tsx
+
+Author: guti-1 
+Date:   2025-03-24 18:15:19 +0100
+Subject: some changes not finished
+
+
+M	library_manager/frontend/src/components/EditBookForm/EditBookForm.tsx
+M	library_manager/frontend/src/pages/BookDetailPage/BookDetailPage.tsx
+M	library_manager/frontend/src/pages/PrincipalPage/BookCard.tsx
+M	library_manager/frontend/src/pages/PrincipalPage/PrincipalPage.tsx
+
+Author: julius 
+Date:   2025-03-24 15:16:53 +0100
+Subject: Frontend: Add EditBookForm and enhance BookCard to support book editing functionality
+
+
+M	library_manager/frontend/package-lock.json
+M	library_manager/frontend/package.json
+A	library_manager/frontend/src/components/EditBookForm/EditBookForm.tsx
+M	library_manager/frontend/src/pages/PrincipalPage/BookCard.tsx
+M	library_manager/frontend/src/pages/PrincipalPage/PrincipalPage.tsx
+
+Author: julius 
+Date:   2025-03-24 14:50:11 +0100
+Subject: Change UpdateBookView method from POST to PUT for updateability
+
+
+M	library_manager/backend/views.py
+
+Author: julius 
+Date:   2025-03-24 14:35:36 +0100
+Subject: Frontend: Refactor PrincipalPage into two files
+
+
+A	library_manager/frontend/src/pages/PrincipalPage/BookCard.tsx
+M	library_manager/frontend/src/pages/PrincipalPage/PrincipalPage.tsx
+
+Author: julius 
+Date:   2025-03-24 14:27:56 +0100
+Subject: Remove due date reset logic from BorrowBookView on book return
+
+
+M	library_manager/backend/views.py
+
+Author: julius 
+Date:   2025-03-24 14:24:53 +0100
+Subject: Frontend: Enhance BookCard component to display current user borrowing status and update button text/styles accordingly
+
+
+M	library_manager/frontend/src/pages/PrincipalPage/PrincipalPage.tsx
+
+Author: julius 
+Date:   2025-03-24 14:18:39 +0100
+Subject: Set due date for borrowed books to 2 weeks from now and reset on return
+
+
+M	library_manager/backend/views.py
+
+Author: julius 
+Date:   2025-03-24 14:10:07 +0100
+Subject: Enhance testing setup: add Vitest and Cypress commands, improve test execution in run_tests.py, and remove unused App.test.tsx
+
+
+M	Windows_run_tests.bat
+M	library_manager/frontend/package.json
+D	library_manager/frontend/tests/component/App.test.tsx
+M	run_tests.py
+
+Author: Matt Ricote Kristiansen 
+Date:   2025-03-20 11:28:19 +0100
+Subject: added more component/pages, not imported yet
+
+
+A	library_manager/frontend/src/components/BookCard/BookCard.tsx
+A	library_manager/frontend/src/pages/BookDetailPage/BookDetailPage.css
+A	library_manager/frontend/src/pages/BookDetailPage/BookDetailPage.tsx
+
+Author: julius 
+Date:   2025-03-19 16:11:27 +0100
+Subject: Set up testing environment with Vitest and Jest-DOM; add tests for AddBookForm component
+
+
+M	library_manager/frontend/package-lock.json
+M	library_manager/frontend/package.json
+A	library_manager/frontend/src/test/setupTests.ts
+A	library_manager/frontend/tests/component/AddBookForm.test.tsx
+M	library_manager/frontend/tests/component/App.test.tsx
+M	library_manager/frontend/tests/endtoend/login.cy.ts
+M	library_manager/frontend/tsconfig.json
+A	library_manager/frontend/vitest.config.ts
+M	run_tests.py
+
+Author: Matt Ricote Kristiansen 
+Date:   2025-03-19 14:51:53 +0100
+Subject: minor frontend fix and remove of duplicate code in the princiapl page for better readbility
+
+
+M	library_manager/frontend/src/pages/PrincipalPage/PrincipalPage.css
+M	library_manager/frontend/src/pages/PrincipalPage/PrincipalPage.tsx
+
+Author: Matt Ricote Kristiansen 
+Date:   2025-03-19 14:02:07 +0100
+Subject: SCRUM-51 Implemented Book dtails to display when hovering over a card, + aligned button with card
+
+
+M	library_manager/frontend/src/pages/PrincipalPage/PrincipalPage.css
+
+Author: Matt Ricote Kristiansen 
+Date:   2025-03-19 14:00:00 +0100
+Subject: SCRUM-51 Implemented Book dtails to display when hovering over a card, + aligned button with card
+
+
+M	library_manager/frontend/src/pages/PrincipalPage/PrincipalPage.css
+
+Author: Matt Ricote Kristiansen 
+Date:   2025-03-19 13:56:16 +0100
+Subject: SCRUM-51 Implemented Book dtails to display when hovering over a card
+
+
+M	library_manager/frontend/src/pages/PrincipalPage/PrincipalPage.css
+M	library_manager/frontend/src/pages/PrincipalPage/PrincipalPage.tsx
+
+Author: Matt Ricote Kristiansen 
+Date:   2025-03-19 12:51:18 +0100
+Subject: SCRUM-50 updated the borrow button and unavailability indicator to be green for available books and red for unavailable books.
+
+
+M	library_manager/frontend/src/pages/PrincipalPage/PrincipalPage.css
+M	library_manager/frontend/src/pages/PrincipalPage/PrincipalPage.tsx
+
+Author: Matt Ricote Kristiansen 
+Date:   2025-03-19 12:32:47 +0100
+Subject:  Modifyied list_books to Support Category Filtering, changed from function to a class
+
+
+M	library_manager/backend/urls.py
+M	library_manager/backend/views.py
+
+Author: Matt Ricote Kristiansen 
+Date:   2025-03-19 12:26:36 +0100
+Subject:  Show Borrowed books
+
+
+M	library_manager/backend/urls.py
+M	library_manager/backend/views.py
+
+Author: guti-1 
+Date:   2025-03-19 12:07:18 +0100
+Subject: added terms of service and privacy policy page
+
+
+M	library_manager/backend/migrations/0001_initial.py
+D	library_manager/backend/migrations/0002_book_borrow_date_book_borrower.py
+D	library_manager/backend/migrations/0003_book_copy_number_book_publication_year_and_more.py
+M	library_manager/frontend/package-lock.json
+M	library_manager/frontend/src/components/Footer/Footer.tsx
+M	library_manager/frontend/src/pages/App.tsx
+A	library_manager/frontend/src/pages/PrivacyPolicyPage/PolicyPage.css
+A	library_manager/frontend/src/pages/PrivacyPolicyPage/PolicyPage.tsx
+A	library_manager/frontend/src/pages/TermsofServicePage/ServicePage.css
+A	library_manager/frontend/src/pages/TermsofServicePage/ServicePage.tsx
+
+Author: Matt Ricote Kristiansen 
+Date:   2025-03-19 10:36:22 +0100
+Subject:  Added search functionality for books by title and author in list_books API
+
+
+M	library_manager/backend/views.py
+
+Author: Matt Ricote Kristiansen 
+Date:   2025-03-19 10:32:13 +0100
+Subject:  Added API endpoint to retrieve full book details by ID, including borrower info and availability status
+
+
+M	library_manager/backend/urls.py
+M	library_manager/backend/views.py
+A	library_manager/frontend/src/components/BookUpdateForm/BookUpdateform.tsx
+
+Author: Matt Ricote Kristiansen 
+Date:   2025-03-19 10:22:33 +0100
+Subject: Added API for updating books - backend
+
+
+M	library_manager/backend/urls.py
+M	library_manager/backend/views.py
+
+Author: Matt Ricote Kristiansen 
+Date:   2025-03-19 10:14:21 +0100
+Subject: Cleaned and structured backend files
+
+
+Author: Matt Ricote Kristiansen 
+Date:   2025-03-19 09:32:41 +0100
+Subject: Small restructure and cleanup on backend files
+
+
+M	library_manager/backend/urls.py
+M	library_manager/backend/views.py
+
+Author: julius 
+Date:   2025-03-19 08:08:11 +0100
+Subject: Fix Borrow Frontend: CurrentUserView to return People ID instead of User ID
+
+
+M	library_manager/backend/views.py
+
+Author: AlvaroBarragan 
+Date:   2025-03-18 13:47:42 +0100
+Subject: Update the default page when logged in and avoiding the use of browser arrowa
+
+
+M	library_manager/frontend/package-lock.json
+M	library_manager/frontend/src/components/NavBar/NavBar.tsx
+
+Author: julius 
+Date:   2025-03-17 14:43:17 +0100
+Subject: Refactor CreateBookView to use authenticated user and remove userId prop from AddBookForm
+
+
+M	library_manager/backend/views.py
+M	library_manager/frontend/src/components/AddBookForm/AddBookForm.tsx
+M	library_manager/frontend/src/pages/PrincipalPage/PrincipalPage.tsx
+
+Author: julius 
+Date:   2025-03-17 14:34:03 +0100
+Subject: Implement AddBookForm component and update user references in CreateBookView
+
+
+M	library_manager/backend/views.py
+A	library_manager/frontend/src/components/AddBookForm/AddBookForm.css
+A	library_manager/frontend/src/components/AddBookForm/AddBookForm.tsx
+M	library_manager/frontend/src/pages/PrincipalPage/PrincipalPage.tsx
+
+Author: julius 
+Date:   2025-03-17 13:33:03 +0100
+Subject: Add additional fields to Book model: storage_location, publisher, publication_year, and copy_number
+
+
+A	library_manager/backend/migrations/0003_book_copy_number_book_publication_year_and_more.py
+M	library_manager/backend/models.py
+M	library_manager/backend/seeds.py
+M	library_manager/backend/tests/unit/test_models.py
+M	library_manager/backend/views.py
+
+Author: julius 
+Date:   2025-03-17 13:06:13 +0100
+Subject: testviews: update logout response message
+
+
+M	library_manager/backend/tests/functional/test_views.py
+
+Author: Matt Ricote Kristiansen 
+Date:   2025-03-17 11:18:10 +0100
+Subject: fixed authenticated issue logout, when editing username/password/email
+
+
+M	library_manager/backend/views.py
+A	library_manager/frontend/src/components/AvatarSelector/AvatarSelector.css
+A	library_manager/frontend/src/components/AvatarSelector/AvatarSelector.tsx
+A	library_manager/frontend/src/components/UserCard/UserCard.css
+A	library_manager/frontend/src/components/UserCard/UserCard.tsx
+M	library_manager/frontend/src/pages/ProfilePage/ProfilePage.tsx
+
+Author: Matt Ricote Kristiansen 
+Date:   2025-03-17 10:33:54 +0100
+Subject: sycnronized navbar and userprofile when loggin out
+
+
+M	library_manager/backend/settings.py
+M	library_manager/backend/views.py
+M	library_manager/frontend/src/components/NavBar/NavBar.css
+M	library_manager/frontend/src/context/AuthContext.tsx
+M	library_manager/frontend/src/pages/App.css
+M	library_manager/frontend/src/pages/LoginPage/LoginPage.tsx
+M	library_manager/frontend/src/pages/ProfilePage/ProfilePage.tsx
+
+Author: Matt Ricote Kristiansen 
+Date:   2025-03-14 14:00:19 +0100
+Subject: Merged SCRUM-22: Updated profile page and navbar to reflect login/logout state dynamically
+
+
+Author: Matt Ricote Kristiansen 
+Date:   2025-03-14 14:00:07 +0100
+Subject: Updated user profile and navbar to reflect login state dynamically
+
+
+M	library_manager/backend/settings.py
+M	library_manager/backend/urls.py
+M	library_manager/backend/views.py
+M	library_manager/frontend/src/components/NavBar/NavBar.css
+M	library_manager/frontend/src/components/NavBar/NavBar.tsx
+A	library_manager/frontend/src/context/AuthContext.tsx
+M	library_manager/frontend/src/main.tsx
+M	library_manager/frontend/src/pages/App.tsx
+M	library_manager/frontend/src/pages/LoginPage/LoginPage.tsx
+A	library_manager/frontend/src/pages/ProfilePage/ProfilePage.css
+A	library_manager/frontend/src/pages/ProfilePage/ProfilePage.tsx
+M	library_manager/frontend/tsconfig.node.json
+
+Author: mkr176 
+Date:   2025-03-13 10:51:42 +0100
+Subject: resolved conflict with displaying book
+
+
+M	library_manager/frontend/src/pages/App.css
+
+Author: julius 
+Date:   2025-03-13 10:25:44 +0100
+Subject: refactor: update database seeding logic to use update_or_create for users and books
+
+
+M	library_manager/backend/seeds.py
+
+Author: julius 
+Date:   2025-03-13 09:55:50 +0100
+Subject: feat: enhance error handling for book data fetching on PrincipalPage
+
+
+M	library_manager/frontend/src/pages/PrincipalPage/PrincipalPage.tsx
+
+Author: Matt Ricote Kristiansen 
+Date:   2025-03-13 09:06:17 +0100
+Subject: fix, accidently removed moving effects for homepage
+
+
+M	library_manager/frontend/src/pages/WelcomePage/WelcomePage.tsx
+
+Author: Matt Ricote Kristiansen 
+Date:   2025-03-12 21:06:09 +0100
+Subject: Added About Us Page
+
+
+M	library_manager/frontend/src/index.css
+A	library_manager/frontend/src/pages/AboutPage/AboutPage.css
+A	library_manager/frontend/src/pages/AboutPage/AboutPage.tsx
+M	library_manager/frontend/src/pages/App.css
+M	library_manager/frontend/src/pages/App.tsx
+
+Author: Matt Ricote Kristiansen 
+Date:   2025-03-12 20:21:21 +0100
+Subject: Added new components: Navbar, Footer, and Button for the contact page
+
+
+D	cookies.txt
+M	library_manager/backend/settings.py
+A	library_manager/frontend/src/components/Button/Button.css
+A	library_manager/frontend/src/components/Button/Button.tsx
+A	library_manager/frontend/src/components/Footer/Footer.css
+A	library_manager/frontend/src/components/Footer/Footer.tsx
+A	library_manager/frontend/src/components/NavBar/NavBar.css
+A	library_manager/frontend/src/components/NavBar/NavBar.tsx
+M	library_manager/frontend/src/index.css
+D	library_manager/frontend/src/login.css
+M	library_manager/frontend/src/pages/App.css
+M	library_manager/frontend/src/pages/App.tsx
+A	library_manager/frontend/src/pages/ContactPage/ContactPage.css
+A	library_manager/frontend/src/pages/ContactPage/ContactPage.tsx
+M	library_manager/frontend/src/pages/WelcomePage/WelcomePage.css
+M	library_manager/frontend/src/pages/WelcomePage/WelcomePage.tsx
+
+Author: Matt Ricote Kristiansen 
+Date:   2025-03-12 17:56:31 +0100
+Subject: Updated homepage UI with login/signup and footer
+
+
+A	cookies.txt
+A	db.sqlite3
+M	library_manager/backend/settings.py
+M	library_manager/frontend/package-lock.json
+M	library_manager/frontend/package.json
+M	library_manager/frontend/src/pages/WelcomePage/WelcomePage.css
+M	library_manager/frontend/src/pages/WelcomePage/WelcomePage.tsx
+
+Author: julius 
+Date:   2025-03-12 10:47:17 +0100
+Subject: feat: improve error handling in borrowing/returning books; update UI feedback for success and error responses
+
+
+M	library_manager/frontend/src/pages/PrincipalPage/PrincipalPage.tsx
+
+Author: julius 
+Date:   2025-03-12 10:35:40 +0100
+Subject: Merge branch 'main' into SCRUM-38-Borrow-Books-Frontend
+
+
+Author: julius 
+Date:   2025-03-12 10:34:10 +0100
+Subject: feat: enhance borrowing functionality to support book returns; update response messages and include borrower details
+
+
+M	library_manager/backend/tests/functional/test_views.py
+M	library_manager/backend/views.py
+
+Author: julius 
+Date:   2025-03-12 10:19:09 +0100
+Subject: feat: add borrowing and return functionality with updated UI; include due date handling and button interactions
+
+
+M	library_manager/frontend/src/pages/PrincipalPage/PrincipalPage.css
+M	library_manager/frontend/src/pages/PrincipalPage/PrincipalPage.tsx
+
+Author: julius 
+Date:   2025-03-12 10:00:34 +0100
+Subject: feat: enhance borrowing functionality to include due date and return logic; update response messages
+
+
+M	library_manager/backend/views.py
+
+Author: julius 
+Date:   2025-03-12 09:45:39 +0100
+Subject: feat: implement borrowing functionality with class-based view; add tests for borrowing scenarios
+
+
+M	library_manager/backend/tests/functional/test_views.py
+M	library_manager/backend/urls.py
+M	library_manager/backend/views.py
+
+Author: julius 
+Date:   2025-03-12 08:54:20 +0100
+Subject: feat: add borrowing functionality for books; include borrower and borrow date fields
+
+
+A	library_manager/backend/migrations/0002_book_borrow_date_book_borrower.py
+M	library_manager/backend/models.py
+M	library_manager/backend/urls.py
+M	library_manager/backend/views.py
+
+Author: julius 
+Date:   2025-03-09 13:04:40 +0100
+Subject: refactor: rename User model to People and update related references; add age field to user creation
+
+
+M	Windows_run_tests.bat
+M	library_manager/backend/migrations/0001_initial.py
+M	library_manager/backend/tests/functional/test_views.py
+M	library_manager/backend/tests/unit/test_models.py
+M	library_manager/backend/views.py
+
+Author: AlvaroBarragan 
+Date:   2025-03-08 21:00:40 +0100
+Subject: registration of users
+
+
+M	library_manager/backend/models.py
+M	library_manager/backend/seeds.py
+M	library_manager/backend/serializers.py
+M	library_manager/backend/urls.py
+M	library_manager/backend/views.py
+M	library_manager/frontend/package-lock.json
+M	library_manager/frontend/src/pages/LoginPage/LoginPage.tsx
+M	library_manager/frontend/src/pages/PrincipalPage/PrincipalPage.tsx
+M	library_manager/frontend/src/pages/SignUpPage/SignUpPage.tsx
+
+Author: guti-1 
+Date:   2025-03-08 20:36:41 +0100
+Subject: mini change again
+
+
+Author: guti-1 
+Date:   2025-03-08 20:27:19 +0100
+Subject: carrusell now is workin
+
+
+M	README.md
+M	library_manager/backend/migrations/0001_initial.py
+D	library_manager/backend/migrations/0002_book_image.py
+D	library_manager/backend/migrations/0003_alter_book_image.py
+M	library_manager/frontend/package-lock.json
+M	library_manager/frontend/package.json
+M	library_manager/frontend/src/pages/PrincipalPage/PrincipalPage.css
+M	library_manager/frontend/src/pages/PrincipalPage/PrincipalPage.tsx
+
+Author: AlvaroBarragan 
+Date:   2025-03-08 20:14:38 +0100
+Subject: registration of users  and small changes
+
+
+M	library_manager/backend/migrations/0001_initial.py
+D	library_manager/backend/migrations/0002_book_image.py
+D	library_manager/backend/migrations/0003_alter_book_image.py
+M	library_manager/backend/models.py
+M	library_manager/backend/seeds.py
+M	library_manager/backend/serializers.py
+M	library_manager/backend/urls.py
+M	library_manager/backend/views.py
+M	library_manager/frontend/src/pages/LoginPage/LoginPage.tsx
+M	library_manager/frontend/src/pages/PrincipalPage/PrincipalPage.tsx
+M	library_manager/frontend/src/pages/SignUpPage/SignUpPage.tsx
+M	node_modules/.package-lock.json
+M	package-lock.json
+
+Author: AlvaroBarragan 
+Date:   2025-03-08 18:35:29 +0100
+Subject: Merge branch 'main' of https://github.com/mkr176/INF_2900_TEAM5
+
+
+Author: julius 
+Date:   2025-03-08 14:14:07 +0100
+Subject: Add serializers and views for custom User and Book models; implement listing views with tests
+
+
+M	library_manager/backend/serializers.py
+M	library_manager/backend/tests/functional/test_views.py
+M	library_manager/backend/urls.py
+M	library_manager/backend/views.py
+
+Author: julius 
+Date:   2025-03-08 13:40:46 +0100
+Subject: Add functional tests for user registration and login views
+
+
+M	library_manager/backend/tests/functional/test_views.py
+
+Author: julius 
+Date:   2025-03-07 14:55:51 +0100
+Subject: Add browser opening command to Windows_RUN_ALL.bat
+
+
+M	Windows_RUN_ALL.bat
+
+Author: julius 
+Date:   2025-03-07 14:52:43 +0100
+Subject: Enhance Windows batch scripts for improved error handling and virtual environment setup
+
+
+M	Windows_RUN_ALL.bat
+M	Windows_run_tests.bat
+M	Windows_start_frontend.bat
+M	library_manager/frontend/package-lock.json
+M	run_tests.py
+
+Author: Matt Ricote Kristiansen 
+Date:   2025-03-06 09:52:08 +0100
+Subject: update readme linux start
+
+
+M	README.md
+
+Author: Matt Ricote Kristiansen 
+Date:   2025-03-06 09:45:59 +0100
+Subject: Updated readme for linux startup
+
+
+M	README.md
+
+Author: Matt Ricote Kristiansen 
+Date:   2025-03-06 09:45:31 +0100
+Subject: Added figures for Userprofile
+
+
+A	library_manager/static/images/avatars/account-avatar-profile-user-10-svgrepo-com.svg
+A	library_manager/static/images/avatars/account-avatar-profile-user-11-svgrepo-com.svg
+A	library_manager/static/images/avatars/account-avatar-profile-user-12-svgrepo-com.svg
+A	library_manager/static/images/avatars/account-avatar-profile-user-13-svgrepo-com.svg
+A	library_manager/static/images/avatars/account-avatar-profile-user-14-svgrepo-com.svg
+A	library_manager/static/images/avatars/account-avatar-profile-user-15-svgrepo-com.svg
+A	library_manager/static/images/avatars/account-avatar-profile-user-16-svgrepo-com.svg
+A	library_manager/static/images/avatars/account-avatar-profile-user-2-svgrepo-com.svg
+A	library_manager/static/images/avatars/account-avatar-profile-user-3-svgrepo-com.svg
+A	library_manager/static/images/avatars/account-avatar-profile-user-4-svgrepo-com.svg
+A	library_manager/static/images/avatars/account-avatar-profile-user-5-svgrepo-com.svg
+A	library_manager/static/images/avatars/account-avatar-profile-user-6-svgrepo-com.svg
+A	library_manager/static/images/avatars/account-avatar-profile-user-7-svgrepo-com.svg
+A	library_manager/static/images/avatars/account-avatar-profile-user-8-svgrepo-com.svg
+A	library_manager/static/images/avatars/account-avatar-profile-user-9-svgrepo-com.svg
+A	library_manager/static/images/avatars/account-avatar-profile-user-svgrepo-com.svg
+A	library_manager/static/images/avatars/default.svg
+
+Author: Matt Ricote Kristiansen 
+Date:   2025-03-06 09:44:46 +0100
+Subject: Moved all linux startup for a cleaner root directory
+
+
+R100	Linux_RUN_ALL.sh	Linux_Start/Linux_RUN_ALL.sh
+R090	Linux_run_tests.sh	Linux_Start/Linux_run_tests.sh
+R096	Linux_start_backend.sh	Linux_Start/Linux_start_backend.sh
+R082	Linux_start_frontend.sh	Linux_Start/Linux_start_frontend.sh
+
+Author: AlvaroBarragan 
+Date:   2025-03-04 13:25:25 +0100
+Subject: Fixed images on the list of books
+
+
+A	library_manager/backend/migrations/0003_alter_book_image.py
+M	library_manager/backend/models.py
+M	library_manager/backend/seeds.py
+
+Author: AlvaroBarragan 
+Date:   2025-03-04 13:11:13 +0100
+Subject: Merge branch 'main' of https://github.com/mkr176/INF_2900_TEAM5
+
+
+Author: AlvaroBarragan 
+Date:   2025-03-04 13:11:10 +0100
+Subject: Conection to the database to see books
+
+
+M	README.md
+M	library_manager/backend/migrations/0001_initial.py
+A	library_manager/backend/migrations/0002_book_image.py
+M	library_manager/backend/models.py
+M	library_manager/backend/seeds.py
+M	library_manager/backend/urls.py
+M	library_manager/backend/views.py
+M	library_manager/frontend/package-lock.json
+M	library_manager/frontend/src/pages/PrincipalPage/PrincipalPage.tsx
+M	requirements.txt
+
+Author: julius 
+Date:   2025-03-04 10:46:04 +0100
+Subject: Update test execution scripts to use Django's manage.py for running tests
+
+
+M	Windows_RUN_ALL.bat
+M	Windows_run_tests.bat
+
+Author: guti-1 
+Date:   2025-03-04 10:17:58 +0100
+Subject: display the books and added a search bar
+
+
+A	library_manager/frontend/src/pages/PrincipalPage/PrincipalPage.css
+M	library_manager/frontend/src/pages/PrincipalPage/PrincipalPage.tsx
+
+Author: guti-1 
+Date:   2025-03-04 09:23:42 +0100
+Subject: changes in the readme
+
+
+M	README.md
+M	library_manager/frontend/package-lock.json
+M	library_manager/frontend/package.json
+M	library_manager/frontend/src/pages/PrincipalPage/PrincipalPage.tsx
+M	node_modules/.bin/tsc
+M	node_modules/.bin/tsserver
+M	node_modules/.package-lock.json
+D	node_modules/@types/cookie/LICENSE
+D	node_modules/@types/cookie/README.md
+D	node_modules/@types/cookie/index.d.ts
+D	node_modules/@types/cookie/package.json
+D	node_modules/cookie/LICENSE
+D	node_modules/cookie/README.md
+D	node_modules/cookie/dist/index.d.ts
+D	node_modules/cookie/dist/index.js
+D	node_modules/cookie/dist/index.js.map
+D	node_modules/cookie/package.json
+M	node_modules/react-router-dom/README.md
+D	node_modules/react-router-dom/dist/index.d.mts
+M	node_modules/react-router-dom/dist/index.d.ts
+M	node_modules/react-router-dom/dist/index.js
+D	node_modules/react-router-dom/dist/index.mjs
+M	node_modules/react-router-dom/package.json
+M	node_modules/react-router/CHANGELOG.md
+M	node_modules/react-router/README.md
+D	node_modules/react-router/dist/development/chunk-IR6S3I6Y.mjs
+D	node_modules/react-router/dist/development/data-CQbyyGzl.d.mts
+D	node_modules/react-router/dist/development/data-CQbyyGzl.d.ts
+D	node_modules/react-router/dist/development/dom-export.d.mts
+D	node_modules/react-router/dist/development/dom-export.d.ts
+D	node_modules/react-router/dist/development/dom-export.js
+D	node_modules/react-router/dist/development/dom-export.mjs
+D	node_modules/react-router/dist/development/fog-of-war-CCAcUMgB.d.ts
+D	node_modules/react-router/dist/development/fog-of-war-D6dP9JIt.d.mts
+D	node_modules/react-router/dist/development/index.d.mts
+D	node_modules/react-router/dist/development/index.d.ts
+D	node_modules/react-router/dist/development/index.js
+D	node_modules/react-router/dist/development/index.mjs
+D	node_modules/react-router/dist/development/lib/types/route-module.d.mts
+D	node_modules/react-router/dist/development/lib/types/route-module.d.ts
+D	node_modules/react-router/dist/development/lib/types/route-module.js
+D	node_modules/react-router/dist/development/lib/types/route-module.mjs
+D	node_modules/react-router/dist/development/route-data-Cq_b5feC.d.mts
+D	node_modules/react-router/dist/development/route-data-Cq_b5feC.d.ts
+D	node_modules/react-router/dist/production/chunk-JRAGQQ3X.mjs
+D	node_modules/react-router/dist/production/data-CQbyyGzl.d.mts
+D	node_modules/react-router/dist/production/data-CQbyyGzl.d.ts
+D	node_modules/react-router/dist/production/dom-export.d.mts
+D	node_modules/react-router/dist/production/dom-export.d.ts
+D	node_modules/react-router/dist/production/dom-export.js
+D	node_modules/react-router/dist/production/dom-export.mjs
+D	node_modules/react-router/dist/production/fog-of-war-CCAcUMgB.d.ts
+D	node_modules/react-router/dist/production/fog-of-war-D6dP9JIt.d.mts
+D	node_modules/react-router/dist/production/index.d.mts
+D	node_modules/react-router/dist/production/index.d.ts
+D	node_modules/react-router/dist/production/index.js
+D	node_modules/react-router/dist/production/index.mjs
+D	node_modules/react-router/dist/production/lib/types/route-module.d.mts
+D	node_modules/react-router/dist/production/lib/types/route-module.d.ts
+D	node_modules/react-router/dist/production/lib/types/route-module.js
+D	node_modules/react-router/dist/production/lib/types/route-module.mjs
+D	node_modules/react-router/dist/production/route-data-Cq_b5feC.d.mts
+D	node_modules/react-router/dist/production/route-data-Cq_b5feC.d.ts
+M	node_modules/react-router/package.json
+D	node_modules/set-cookie-parser/LICENSE
+D	node_modules/set-cookie-parser/README.md
+D	node_modules/set-cookie-parser/lib/set-cookie.js
+D	node_modules/set-cookie-parser/package.json
+D	node_modules/turbo-stream/LICENSE
+D	node_modules/turbo-stream/README.md
+D	node_modules/turbo-stream/dist/flatten.d.ts
+D	node_modules/turbo-stream/dist/flatten.js
+D	node_modules/turbo-stream/dist/turbo-stream.d.ts
+D	node_modules/turbo-stream/dist/turbo-stream.js
+D	node_modules/turbo-stream/dist/turbo-stream.mjs
+D	node_modules/turbo-stream/dist/unflatten.d.ts
+D	node_modules/turbo-stream/dist/unflatten.js
+D	node_modules/turbo-stream/dist/utils.d.ts
+D	node_modules/turbo-stream/dist/utils.js
+D	node_modules/turbo-stream/package.json
+M	package-lock.json
+M	package.json
+
+Author: julius 
+Date:   2025-03-04 08:35:43 +0100
+Subject: Merge branch 'SCRUM-34-write-Tests-for-user-models-Admin-User-Librarian'
+
+
+Author: julius 
+Date:   2025-03-04 08:35:18 +0100
+Subject: Enhance User model test to validate user creation and ensure proper error handling
+
+
+M	library_manager/backend/tests/unit/test_models.py
+
+Author: julius 
+Date:   2025-03-04 08:30:11 +0100
+Subject: Refactor User and Book model tests for improved readability and consistency
+
+
+M	library_manager/backend/tests/unit/test_models.py
+
+Author: guti-1 
+Date:   2025-03-03 19:59:50 +0100
+Subject: display of books
+
+
+M	README.md
+M	library_manager/frontend/package-lock.json
+M	library_manager/frontend/package.json
+A	library_manager/frontend/public/images/libroCocina.jpg
+A	library_manager/frontend/public/images/libroCrimen.jpg
+A	library_manager/frontend/public/images/libroMisterio.jpg
+M	library_manager/frontend/src/pages/App.tsx
+M	library_manager/frontend/src/pages/LoginPage/LoginPage.tsx
+A	library_manager/frontend/src/pages/PrincipalPage/PrincipalPage.tsx
+
+Author: julius 
+Date:   2025-02-28 10:49:33 +0100
+Subject: Merge branch 'SCRUM-34-write-Tests-for-user-models-Admin-User-Librarian'
+
+
+Author: julius 
+Date:   2025-02-28 10:48:26 +0100
+Subject: Add unit tests for User and Book models with validation checks
+
+
+M	library_manager/backend/tests/unit/test_models.py
+
+Author: julius 
+Date:   2025-02-28 10:47:02 +0100
+Subject: Update title in startpage.html to 'LibManager'
+
+
+M	library_manager/frontend/html/startpage.html
+
+Author: julius 
+Date:   2025-02-27 10:46:15 +0100
+Subject: Fix index URL routing and name the index view in URL patterns
+
+
+M	library_manager/backend/tests/functional/test_views.py
+M	library_manager/backend/urls.py
+
+Author: julius 
+Date:   2025-02-27 10:39:26 +0100
+Subject: Merge branch 'SCRUM-21-add-favicon'
+
+
+Author: julius 
+Date:   2025-02-27 10:38:07 +0100
+Subject: Merge branch 'main' into SCRUM-21-add-favicon
+
+
+Author: julius 
+Date:   2025-02-27 10:36:49 +0100
+Subject: Add favicon support and update URL routing in backend
+
+
+M	library_manager/backend/urls.py
+M	library_manager/frontend/html/startpage.html
+A	library_manager/frontend/public/favicon.ico
+
+Author: AlvaroBarragan 
+Date:   2025-02-27 10:29:20 +0100
+Subject: Update names
+
+
+M	README.md
+M	library_manager/backend/migrations/0001_initial.py
+M	library_manager/backend/models.py
+M	library_manager/backend/seeds.py
+
+Author: guti-1 
+Date:   2025-02-27 10:13:11 +0100
+Subject: first try of the background change (not succesfull)
+
+
+M	library_manager/frontend/package-lock.json
+M	library_manager/frontend/package.json
+A	library_manager/frontend/public/image2vector.svg
+M	library_manager/frontend/src/pages/LoginPage/LoginPage.css
+
+Author: AlvaroBarragan 
+Date:   2025-02-27 09:47:48 +0100
+Subject: Migrations removed and fixed the populate
+
+
+M	library_manager/backend/apps.py
+R091	library_manager/frontend/migrations/0001_initial.py	library_manager/backend/migrations/0001_initial.py
+R100	library_manager/frontend/migrations/__init__.py	library_manager/backend/migrations/__init__.py
+M	library_manager/backend/seeds.py
+D	library_manager/frontend/migrations/0002_delete_libro_delete_user.py
+
+Author: julius 
+Date:   2025-02-26 12:39:39 +0100
+Subject: Add scripts to run backend, frontend, and tests for Linux and Windows
+
+
+A	Linux_RUN_ALL.sh
+M	README.md
+A	Windows_RUN_ALL.bat
+D	docs/README.md
+M	library_manager/backend/tests/functional/test_views.py
+
+Author: julius 
+Date:   2025-02-25 16:00:28 +0100
+Subject: Refactor validation tests: add comprehensive unit tests for username, password, email, and birth date validations.
+
+
+M	library_manager/backend/tests/functional/test_views.py
+R058	library_manager/backend/tests.py	library_manager/backend/tests/unit/test_validations.py
+
+Author: Matt Ricote Kristiansen 
+Date:   2025-02-20 12:57:00 +0100
+Subject: Update frontend startup for linux
+
+
+M	Linux_start_frontend.sh
+
+Author: julius 
+Date:   2025-02-19 08:52:50 +0100
+Subject: Add README_TEST.md for test instructions and update requirements.txt
+
+
+A	README_TEST.md
+M	requirements.txt
+
+Author: guti-1 
+Date:   2025-02-18 22:50:03 +0100
+Subject: last change
+
+
+M	library_manager/frontend/src/pages/LoginPage/LoginPage.tsx
+
+Author: guti-1 
+Date:   2025-02-18 22:15:24 +0100
+Subject: some reac changes to make it more visual attractive and more dynamic
+
+
+M	README.md
+M	library_manager/frontend/package-lock.json
+M	library_manager/frontend/package.json
+M	library_manager/frontend/src/pages/LoginPage/LoginPage.tsx
+M	library_manager/frontend/src/pages/SignUpPage/SignUpPage.tsx
+M	library_manager/frontend/src/pages/WelcomePage/WelcomePage.tsx
+
+Author: julius 
+Date:   2025-02-18 17:24:44 +0100
+Subject: Add scripts for running tests on Linux and Windows, and update README with test instructions
+
+
+A	Linux_run_tests.sh
+M	README.md
+A	Windows_run_tests.bat
+A	test-readme.md
+
+Author: julius 
+Date:   2025-02-18 17:09:51 +0100
+Subject: implement test structure for backend and frontend
+
+
+A	library_manager/backend/__init__.py
+M	library_manager/backend/settings.py
+A	library_manager/backend/tests/__init__.py
+A	library_manager/backend/tests/functional/__init__.py
+M	library_manager/backend/tests/functional/test_views.py
+A	library_manager/backend/tests/security/__init__.py
+M	library_manager/backend/tests/security/test_security.py
+A	library_manager/backend/tests/unit/__init__.py
+A	library_manager/frontend/tests/__init__.py
+M	library_manager/frontend/vite.config.ts
+A	run_tests.py
+
+Author: Matt Ricote Kristiansen 
+Date:   2025-02-18 15:53:07 +0100
+Subject: fixed issue with api
+
+
+M	library_manager/backend/views.py
+
+Author: Matt Ricote Kristiansen 
+Date:   2025-02-18 15:39:27 +0100
+Subject:  API Endpoint for Listing Users
+
+
+M	library_manager/backend/serializers.py
+M	library_manager/backend/urls.py
+M	library_manager/backend/views.py
+
+Author: Matt Ricote Kristiansen 
+Date:   2025-02-18 14:55:34 +0100
+Subject: , Backend api routing, Updated tests, URLs, validations, and views for SCRUM-11
+
+
+M	library_manager/backend/tests.py
+M	library_manager/backend/urls.py
+M	library_manager/backend/validations.py
+M	library_manager/backend/views.py
+
+Author: Matt Ricote Kristiansen 
+Date:   2025-02-18 12:16:51 +0100
+Subject: updated script for linux
+
+
+M	Linux_start_backend.sh
+M	Linux_start_frontend.sh
+
+Author: AlvaroBarragan 
+Date:   2025-02-18 11:43:21 +0100
+Subject: Small error
+
+
+M	library_manager/backend/seeds.py
+
+Author: AlvaroBarragan 
+Date:   2025-02-18 11:42:11 +0100
+Subject: Merge branch 'main' of https://github.com/mkr176/INF_2900_TEAM5
+
+
+Author: AlvaroBarragan 
+Date:   2025-02-18 11:41:28 +0100
+Subject: Populate the database
+
+
+M	library_manager/backend/db_config.py
+A	library_manager/backend/seeds.py
+M	library_manager/frontend/migrations/0001_initial.py
+M	library_manager/frontend/models.py
+M	requirements.txt
+
+Author: julius 
+Date:   2025-02-18 08:38:09 +0100
+Subject: update frontend directory paths in startup scripts and package.json
+
+
+M	Linux_start_frontend.sh
+M	README.md
+M	Windows_start_frontend.bat
+M	library_manager/frontend/package-lock.json
+M	library_manager/frontend/package.json
+
+Author: Matt Ricote Kristiansen 
+Date:   2025-02-17 19:16:18 +0100
+Subject: port issue, fixed for windows but not linux
+
+
+M	library_manager/backend/settings.py
+
+Author: Matt Ricote Kristiansen 
+Date:   2025-02-17 19:12:46 +0100
+Subject: .
+
+
+M	library_manager/backend/settings.py
+
+Author: Matt Ricote Kristiansen 
+Date:   2025-02-17 18:59:21 +0100
+Subject: Fix: seperated react and django completely
+
+
+M	.gitignore
+M	README.md
+D	library_manager/backend/__init__.py
+R100	library_manager/frontend/admin.py	library_manager/backend/admin.py
+R100	library_manager/frontend/apps.py	library_manager/backend/apps.py
+R100	library_manager/frontend/models.py	library_manager/backend/models.py
+R100	library_manager/frontend/serializers.py	library_manager/backend/serializers.py
+M	library_manager/backend/settings.py
+R100	library_manager/frontend/tests.py	library_manager/backend/tests.py
+M	library_manager/backend/urls.py
+A	library_manager/backend/validations.py
+R100	library_manager/frontend/views.py	library_manager/backend/views.py
+R100	library_manager/frontend/frontend/.eslintrc.cjs	library_manager/frontend/.eslintrc.cjs
+R100	library_manager/frontend/frontend/.gitignore	library_manager/frontend/.gitignore
+R100	library_manager/frontend/frontend/README.md	library_manager/frontend/README.md
+D	library_manager/frontend/__init__.py
+D	library_manager/frontend/frontend/package-lock.json
+R100	library_manager/frontend/frontend/html/new.html	library_manager/frontend/html/new.html
+R100	library_manager/frontend/frontend/html/startpage.html	library_manager/frontend/html/startpage.html
+R100	library_manager/frontend/frontend/index.html	library_manager/frontend/index.html
+A	library_manager/frontend/migrations/0002_delete_libro_delete_user.py
+D	library_manager/frontend/node_modules/.vite/deps_temp_66c996ad/package.json
+M	library_manager/frontend/package-lock.json
+R100	library_manager/frontend/frontend/package.json	library_manager/frontend/package.json
+R100	library_manager/frontend/frontend/public/django.svg	library_manager/frontend/public/django.svg
+R100	library_manager/frontend/frontend/public/images/library_seal.jpg	library_manager/frontend/public/images/library_seal.jpg
+R100	library_manager/frontend/frontend/public/react.svg	library_manager/frontend/public/react.svg
+R100	library_manager/frontend/frontend/public/tull.svg	library_manager/frontend/public/tull.svg
+R100	library_manager/frontend/frontend/public/vite.svg	library_manager/frontend/public/vite.svg
+R100	library_manager/frontend/frontend/src/index.css	library_manager/frontend/src/index.css
+R100	library_manager/frontend/frontend/src/login.css	library_manager/frontend/src/login.css
+R100	library_manager/frontend/frontend/src/main.tsx	library_manager/frontend/src/main.tsx
+R100	library_manager/frontend/frontend/src/pages/App.css	library_manager/frontend/src/pages/App.css
+R100	library_manager/frontend/frontend/src/pages/App.tsx	library_manager/frontend/src/pages/App.tsx
+R100	library_manager/frontend/frontend/src/pages/LoginPage/LoginPage.css	library_manager/frontend/src/pages/LoginPage/LoginPage.css
+R100	library_manager/frontend/frontend/src/pages/LoginPage/LoginPage.tsx	library_manager/frontend/src/pages/LoginPage/LoginPage.tsx
+R100	library_manager/frontend/frontend/src/pages/SignUpPage/SignUpPage.css	library_manager/frontend/src/pages/SignUpPage/SignUpPage.css
+R100	library_manager/frontend/frontend/src/pages/SignUpPage/SignUpPage.tsx	library_manager/frontend/src/pages/SignUpPage/SignUpPage.tsx
+R100	library_manager/frontend/frontend/src/pages/WelcomePage/WelcomePage.css	library_manager/frontend/src/pages/WelcomePage/WelcomePage.css
+R100	library_manager/frontend/frontend/src/pages/WelcomePage/WelcomePage.tsx	library_manager/frontend/src/pages/WelcomePage/WelcomePage.tsx
+R100	library_manager/frontend/frontend/src/vite-env.d.ts	library_manager/frontend/src/vite-env.d.ts
+R094	library_manager/frontend/frontend/tsconfig.json	library_manager/frontend/tsconfig.json
+R100	library_manager/frontend/frontend/tsconfig.node.json	library_manager/frontend/tsconfig.node.json
+D	library_manager/frontend/urls.py
+D	library_manager/frontend/validations.py
+R100	library_manager/frontend/frontend/vite.config.ts	library_manager/frontend/vite.config.ts
+
+Author: julius 
+Date:   2025-02-17 17:13:58 +0100
+Subject: add automatic startup scripts for Windows and Linux to run backend and frontend servers
+
+
+A	Linux_start_backend.sh
+A	Linux_start_frontend.sh
+M	README.md
+A	Windows_start_backend.bat
+A	Windows_start_frontend.bat
+
+Author: guti-1 
+Date:   2025-02-17 15:05:18 +0100
+Subject: corrected the port of settings.py
+
+
+M	library_manager/backend/settings.py
+
+Author: Matt Ricote Kristiansen 
+Date:   2025-02-17 13:10:36 +0100
+Subject: fixed order
+
+
+M	README.md
+
+Author: Matt Ricote Kristiansen 
+Date:   2025-02-17 12:49:56 +0100
+Subject: right order
+
+
+M	README.md
+
+Author: Matt Ricote Kristiansen 
+Date:   2025-02-17 12:47:21 +0100
+Subject: Merge branch file_sctructure_cleanup and resolve conflicts
+
+
+Author: Matt Ricote Kristiansen 
+Date:   2025-02-17 12:38:28 +0100
+Subject: cleanup
+
+
+A	README_MYSQL.md
+D	TESTFILE.md
+M	library_manager/backend/settings.py
+R100	library_manager/frontend/.eslintrc.cjs	library_manager/frontend/frontend/.eslintrc.cjs
+R100	library_manager/frontend/.gitignore	library_manager/frontend/frontend/.gitignore
+R100	library_manager/frontend/README.md	library_manager/frontend/frontend/README.md
+R061	library_manager/frontend/html/new.html	library_manager/frontend/frontend/html/new.html
+R100	library_manager/frontend/html/startpage.html	library_manager/frontend/frontend/html/startpage.html
+R100	library_manager/frontend/index.html	library_manager/frontend/frontend/index.html
+A	library_manager/frontend/frontend/package-lock.json
+R100	library_manager/frontend/package.json	library_manager/frontend/frontend/package.json
+R100	library_manager/frontend/public/django.svg	library_manager/frontend/frontend/public/django.svg
+R100	library_manager/frontend/public/images/library_seal.jpg	library_manager/frontend/frontend/public/images/library_seal.jpg
+R100	library_manager/frontend/public/react.svg	library_manager/frontend/frontend/public/react.svg
+R100	library_manager/frontend/public/tull.svg	library_manager/frontend/frontend/public/tull.svg
+R100	library_manager/frontend/public/vite.svg	library_manager/frontend/frontend/public/vite.svg
+R100	library_manager/frontend/src/index.css	library_manager/frontend/frontend/src/index.css
+R100	library_manager/frontend/src/login.css	library_manager/frontend/frontend/src/login.css
+R085	library_manager/frontend/src/main.tsx	library_manager/frontend/frontend/src/main.tsx
+R100	library_manager/frontend/src/App.css	library_manager/frontend/frontend/src/pages/App.css
+R068	library_manager/frontend/src/App.tsx	library_manager/frontend/frontend/src/pages/App.tsx
+R100	library_manager/frontend/src/pages/LoginPage/LoginPage.css	library_manager/frontend/frontend/src/pages/LoginPage/LoginPage.css
+R100	library_manager/frontend/src/pages/LoginPage/LoginPage.tsx	library_manager/frontend/frontend/src/pages/LoginPage/LoginPage.tsx
+R100	library_manager/frontend/src/pages/SignUpPage/SignUpPage.css	library_manager/frontend/frontend/src/pages/SignUpPage/SignUpPage.css
+R100	library_manager/frontend/src/pages/SignUpPage/SignUpPage.tsx	library_manager/frontend/frontend/src/pages/SignUpPage/SignUpPage.tsx
+R100	library_manager/frontend/src/pages/WelcomePage/WelcomePage.css	library_manager/frontend/frontend/src/pages/WelcomePage/WelcomePage.css
+R100	library_manager/frontend/src/pages/WelcomePage/WelcomePage.tsx	library_manager/frontend/frontend/src/pages/WelcomePage/WelcomePage.tsx
+R100	library_manager/frontend/src/vite-env.d.ts	library_manager/frontend/frontend/src/vite-env.d.ts
+R100	library_manager/frontend/tsconfig.json	library_manager/frontend/frontend/tsconfig.json
+R100	library_manager/frontend/tsconfig.node.json	library_manager/frontend/frontend/tsconfig.node.json
+R100	library_manager/frontend/vite.config.ts	library_manager/frontend/frontend/vite.config.ts
+D	library_manager/frontend/html/login.html
+D	library_manager/frontend/html/sign.html
+D	library_manager/frontend/js/login.js
+D	library_manager/frontend/js/main.js
+D	library_manager/frontend/js/sign.js
+M	library_manager/frontend/package-lock.json
+A	library_manager/frontend/serializers.py
+A	library_manager/frontend/validations.py
+D	library_manager/package-lock.json
+M	package-lock.json
+M	package.json
+D	query
+
+Author: guti-1 
+Date:   2025-02-17 12:11:52 +0100
+Subject: more visual login and more restriction
+
+
+M	library_manager/frontend/src/pages/LoginPage/LoginPage.css
+M	library_manager/frontend/src/pages/LoginPage/LoginPage.tsx
+M	library_manager/frontend/src/pages/SignUpPage/SignUpPage.tsx
+
+Author: guti-1 
+Date:   2025-02-17 10:45:09 +0100
+Subject: added some more restrictions but it doesnt respond well
+
+
+M	library_manager/frontend/html/login.html
+M	library_manager/frontend/js/login.js
+M	library_manager/frontend/js/sign.js
+
+Author: julius 
+Date:   2025-02-13 10:16:28 +0100
+Subject: meeting doc
+
+
+A	docs/protocols_of_meetings/25-2-13.pdf
+
+Author: guti-1 
+Date:   2025-02-11 14:34:11 +0100
+Subject: migrations
+
+
+M	README.md
+
+Author: guti-1 
+Date:   2025-02-11 14:27:30 +0100
+Subject: new databse connect version of readme miss click the port
+
+
+M	README.md
+
+Author: guti-1 
+Date:   2025-02-11 14:20:07 +0100
+Subject: connect to the database
+
+
+M	README.md
+
+Author: guti-1 
+Date:   2025-02-11 14:18:47 +0100
+Subject: HOW TO CONNECT TO DATABASE
+
+
+M	README.md
+A	library_manager/query
+A	query
+
+Author: AlvaroBarragan 
+Date:   2025-02-11 13:13:33 +0100
+Subject: Merge branch 'main' of https://github.com/mkr176/INF_2900_TEAM5
+
+
+Author: AlvaroBarragan 
+Date:   2025-02-11 13:12:46 +0100
+Subject: Requirements update
+
+
+M	requirements.txt
+
+Author: julius 
+Date:   2025-02-11 13:10:18 +0100
+Subject: Update README to reflect correct Django server directory
+
+
+M	README.md
+
+Author: AlvaroBarragan 
+Date:   2025-02-11 10:24:15 +0100
+Subject: Database conection
+
+
+A	library_manager/backend/db_config.py
+M	library_manager/backend/settings.py
+A	library_manager/frontend/migrations/0001_initial.py
+M	library_manager/frontend/models.py
+A	library_manager/package-lock.json
+M	requirements.txt
+
+Author: Matt 
+Date:   2025-02-09 21:21:36 +0100
+Subject: urls and views unfinished
+
+
+M	library_manager/frontend/src/pages/WelcomePage/WelcomePage.tsx
+M	library_manager/frontend/urls.py
+M	library_manager/frontend/views.py
+M	node_modules/.package-lock.json
+M	package-lock.json
+M	package.json
+
+Author: Matt 
+Date:   2025-02-09 19:42:37 +0100
+Subject: Add new pages and update App.tsx for routing
+
+
+M	library_manager/frontend/html/startpage.html
+M	library_manager/frontend/src/App.tsx
+A	library_manager/frontend/src/pages/LoginPage/LoginPage.css
+A	library_manager/frontend/src/pages/LoginPage/LoginPage.tsx
+A	library_manager/frontend/src/pages/SignUpPage/SignUpPage.css
+A	library_manager/frontend/src/pages/SignUpPage/SignUpPage.tsx
+A	library_manager/frontend/src/pages/WelcomePage/WelcomePage.css
+A	library_manager/frontend/src/pages/WelcomePage/WelcomePage.tsx
+A	node_modules/.bin/tsc
+A	node_modules/.bin/tsserver
+A	node_modules/.package-lock.json
+A	node_modules/@types/cookie/LICENSE
+A	node_modules/@types/cookie/README.md
+A	node_modules/@types/cookie/index.d.ts
+A	node_modules/@types/cookie/package.json
+A	node_modules/@types/history/DOMUtils.d.ts
+A	node_modules/@types/history/ExecutionEnvironment.d.ts
+A	node_modules/@types/history/LICENSE
+A	node_modules/@types/history/LocationUtils.d.ts
+A	node_modules/@types/history/PathUtils.d.ts
+A	node_modules/@types/history/README.md
+A	node_modules/@types/history/createBrowserHistory.d.ts
+A	node_modules/@types/history/createHashHistory.d.ts
+A	node_modules/@types/history/createMemoryHistory.d.ts
+A	node_modules/@types/history/createTransitionManager.d.ts
+A	node_modules/@types/history/index.d.ts
+A	node_modules/@types/history/package.json
+A	node_modules/@types/react-router-dom/LICENSE
+A	node_modules/@types/react-router-dom/README.md
+A	node_modules/@types/react-router-dom/index.d.ts
+A	node_modules/@types/react-router-dom/package.json
+A	node_modules/@types/react-router/LICENSE
+A	node_modules/@types/react-router/README.md
+A	node_modules/@types/react-router/index.d.ts
+A	node_modules/@types/react-router/package.json
+A	node_modules/@types/react-router/ts4.6/index.d.ts
+A	node_modules/@types/react/LICENSE
+A	node_modules/@types/react/README.md
+A	node_modules/@types/react/canary.d.ts
+A	node_modules/@types/react/compiler-runtime.d.ts
+A	node_modules/@types/react/experimental.d.ts
+A	node_modules/@types/react/global.d.ts
+A	node_modules/@types/react/index.d.ts
+A	node_modules/@types/react/jsx-dev-runtime.d.ts
+A	node_modules/@types/react/jsx-runtime.d.ts
+A	node_modules/@types/react/package.json
+A	node_modules/@types/react/ts5.0/canary.d.ts
+A	node_modules/@types/react/ts5.0/experimental.d.ts
+A	node_modules/@types/react/ts5.0/global.d.ts
+A	node_modules/@types/react/ts5.0/index.d.ts
+A	node_modules/@types/react/ts5.0/jsx-dev-runtime.d.ts
+A	node_modules/@types/react/ts5.0/jsx-runtime.d.ts
+A	node_modules/@types/react/ts5.0/v18/global.d.ts
+A	node_modules/@types/react/ts5.0/v18/index.d.ts
+A	node_modules/@types/react/ts5.0/v18/jsx-dev-runtime.d.ts
+A	node_modules/@types/react/ts5.0/v18/jsx-runtime.d.ts
+A	node_modules/@types/react/ts5.0/v18/ts5.0/global.d.ts
+A	node_modules/@types/react/ts5.0/v18/ts5.0/index.d.ts
+A	node_modules/@types/react/ts5.0/v18/ts5.0/jsx-dev-runtime.d.ts
+A	node_modules/@types/react/ts5.0/v18/ts5.0/jsx-runtime.d.ts
+A	node_modules/cookie/LICENSE
+A	node_modules/cookie/README.md
+A	node_modules/cookie/dist/index.d.ts
+A	node_modules/cookie/dist/index.js
+A	node_modules/cookie/dist/index.js.map
+A	node_modules/cookie/package.json
+A	node_modules/csstype/LICENSE
+A	node_modules/csstype/README.md
+A	node_modules/csstype/index.d.ts
+A	node_modules/csstype/index.js.flow
+A	node_modules/csstype/package.json
+A	node_modules/react-dom/LICENSE
+A	node_modules/react-dom/README.md
+A	node_modules/react-dom/cjs/react-dom-client.development.js
+A	node_modules/react-dom/cjs/react-dom-client.production.js
+A	node_modules/react-dom/cjs/react-dom-profiling.development.js
+A	node_modules/react-dom/cjs/react-dom-profiling.profiling.js
+A	node_modules/react-dom/cjs/react-dom-server-legacy.browser.development.js
+A	node_modules/react-dom/cjs/react-dom-server-legacy.browser.production.js
+A	node_modules/react-dom/cjs/react-dom-server-legacy.node.development.js
+A	node_modules/react-dom/cjs/react-dom-server-legacy.node.production.js
+A	node_modules/react-dom/cjs/react-dom-server.browser.development.js
+A	node_modules/react-dom/cjs/react-dom-server.browser.production.js
+A	node_modules/react-dom/cjs/react-dom-server.bun.development.js
+A	node_modules/react-dom/cjs/react-dom-server.bun.production.js
+A	node_modules/react-dom/cjs/react-dom-server.edge.development.js
+A	node_modules/react-dom/cjs/react-dom-server.edge.production.js
+A	node_modules/react-dom/cjs/react-dom-server.node.development.js
+A	node_modules/react-dom/cjs/react-dom-server.node.production.js
+A	node_modules/react-dom/cjs/react-dom-test-utils.development.js
+A	node_modules/react-dom/cjs/react-dom-test-utils.production.js
+A	node_modules/react-dom/cjs/react-dom.development.js
+A	node_modules/react-dom/cjs/react-dom.production.js
+A	node_modules/react-dom/cjs/react-dom.react-server.development.js
+A	node_modules/react-dom/cjs/react-dom.react-server.production.js
+A	node_modules/react-dom/client.js
+A	node_modules/react-dom/client.react-server.js
+A	node_modules/react-dom/index.js
+A	node_modules/react-dom/package.json
+A	node_modules/react-dom/profiling.js
+A	node_modules/react-dom/profiling.react-server.js
+A	node_modules/react-dom/react-dom.react-server.js
+A	node_modules/react-dom/server.browser.js
+A	node_modules/react-dom/server.bun.js
+A	node_modules/react-dom/server.edge.js
+A	node_modules/react-dom/server.js
+A	node_modules/react-dom/server.node.js
+A	node_modules/react-dom/server.react-server.js
+A	node_modules/react-dom/static.browser.js
+A	node_modules/react-dom/static.edge.js
+A	node_modules/react-dom/static.js
+A	node_modules/react-dom/static.node.js
+A	node_modules/react-dom/static.react-server.js
+A	node_modules/react-dom/test-utils.js
+A	node_modules/react-router-dom/LICENSE.md
+A	node_modules/react-router-dom/README.md
+A	node_modules/react-router-dom/dist/index.d.mts
+A	node_modules/react-router-dom/dist/index.d.ts
+A	node_modules/react-router-dom/dist/index.js
+A	node_modules/react-router-dom/dist/index.mjs
+A	node_modules/react-router-dom/package.json
+A	node_modules/react-router/CHANGELOG.md
+A	node_modules/react-router/LICENSE.md
+A	node_modules/react-router/README.md
+A	node_modules/react-router/dist/development/chunk-IR6S3I6Y.mjs
+A	node_modules/react-router/dist/development/data-CQbyyGzl.d.mts
+A	node_modules/react-router/dist/development/data-CQbyyGzl.d.ts
+A	node_modules/react-router/dist/development/dom-export.d.mts
+A	node_modules/react-router/dist/development/dom-export.d.ts
+A	node_modules/react-router/dist/development/dom-export.js
+A	node_modules/react-router/dist/development/dom-export.mjs
+A	node_modules/react-router/dist/development/fog-of-war-CCAcUMgB.d.ts
+A	node_modules/react-router/dist/development/fog-of-war-D6dP9JIt.d.mts
+A	node_modules/react-router/dist/development/index.d.mts
+A	node_modules/react-router/dist/development/index.d.ts
+A	node_modules/react-router/dist/development/index.js
+A	node_modules/react-router/dist/development/index.mjs
+A	node_modules/react-router/dist/development/lib/types/route-module.d.mts
+A	node_modules/react-router/dist/development/lib/types/route-module.d.ts
+A	node_modules/react-router/dist/development/lib/types/route-module.js
+A	node_modules/react-router/dist/development/lib/types/route-module.mjs
+A	node_modules/react-router/dist/development/route-data-Cq_b5feC.d.mts
+A	node_modules/react-router/dist/development/route-data-Cq_b5feC.d.ts
+A	node_modules/react-router/dist/production/chunk-JRAGQQ3X.mjs
+A	node_modules/react-router/dist/production/data-CQbyyGzl.d.mts
+A	node_modules/react-router/dist/production/data-CQbyyGzl.d.ts
+A	node_modules/react-router/dist/production/dom-export.d.mts
+A	node_modules/react-router/dist/production/dom-export.d.ts
+A	node_modules/react-router/dist/production/dom-export.js
+A	node_modules/react-router/dist/production/dom-export.mjs
+A	node_modules/react-router/dist/production/fog-of-war-CCAcUMgB.d.ts
+A	node_modules/react-router/dist/production/fog-of-war-D6dP9JIt.d.mts
+A	node_modules/react-router/dist/production/index.d.mts
+A	node_modules/react-router/dist/production/index.d.ts
+A	node_modules/react-router/dist/production/index.js
+A	node_modules/react-router/dist/production/index.mjs
+A	node_modules/react-router/dist/production/lib/types/route-module.d.mts
+A	node_modules/react-router/dist/production/lib/types/route-module.d.ts
+A	node_modules/react-router/dist/production/lib/types/route-module.js
+A	node_modules/react-router/dist/production/lib/types/route-module.mjs
+A	node_modules/react-router/dist/production/route-data-Cq_b5feC.d.mts
+A	node_modules/react-router/dist/production/route-data-Cq_b5feC.d.ts
+A	node_modules/react-router/package.json
+A	node_modules/react/LICENSE
+A	node_modules/react/README.md
+A	node_modules/react/cjs/react-compiler-runtime.development.js
+A	node_modules/react/cjs/react-compiler-runtime.production.js
+A	node_modules/react/cjs/react-compiler-runtime.profiling.js
+A	node_modules/react/cjs/react-jsx-dev-runtime.development.js
+A	node_modules/react/cjs/react-jsx-dev-runtime.production.js
+A	node_modules/react/cjs/react-jsx-dev-runtime.profiling.js
+A	node_modules/react/cjs/react-jsx-dev-runtime.react-server.development.js
+A	node_modules/react/cjs/react-jsx-dev-runtime.react-server.production.js
+A	node_modules/react/cjs/react-jsx-runtime.development.js
+A	node_modules/react/cjs/react-jsx-runtime.production.js
+A	node_modules/react/cjs/react-jsx-runtime.profiling.js
+A	node_modules/react/cjs/react-jsx-runtime.react-server.development.js
+A	node_modules/react/cjs/react-jsx-runtime.react-server.production.js
+A	node_modules/react/cjs/react.development.js
+A	node_modules/react/cjs/react.production.js
+A	node_modules/react/cjs/react.react-server.development.js
+A	node_modules/react/cjs/react.react-server.production.js
+A	node_modules/react/compiler-runtime.js
+A	node_modules/react/index.js
+A	node_modules/react/jsx-dev-runtime.js
+A	node_modules/react/jsx-dev-runtime.react-server.js
+A	node_modules/react/jsx-runtime.js
+A	node_modules/react/jsx-runtime.react-server.js
+A	node_modules/react/package.json
+A	node_modules/react/react.react-server.js
+A	node_modules/scheduler/LICENSE
+A	node_modules/scheduler/README.md
+A	node_modules/scheduler/cjs/scheduler-unstable_mock.development.js
+A	node_modules/scheduler/cjs/scheduler-unstable_mock.production.js
+A	node_modules/scheduler/cjs/scheduler-unstable_post_task.development.js
+A	node_modules/scheduler/cjs/scheduler-unstable_post_task.production.js
+A	node_modules/scheduler/cjs/scheduler.development.js
+A	node_modules/scheduler/cjs/scheduler.native.development.js
+A	node_modules/scheduler/cjs/scheduler.native.production.js
+A	node_modules/scheduler/cjs/scheduler.production.js
+A	node_modules/scheduler/index.js
+A	node_modules/scheduler/index.native.js
+A	node_modules/scheduler/package.json
+A	node_modules/scheduler/unstable_mock.js
+A	node_modules/scheduler/unstable_post_task.js
+A	node_modules/set-cookie-parser/LICENSE
+A	node_modules/set-cookie-parser/README.md
+A	node_modules/set-cookie-parser/lib/set-cookie.js
+A	node_modules/set-cookie-parser/package.json
+A	node_modules/turbo-stream/LICENSE
+A	node_modules/turbo-stream/README.md
+A	node_modules/turbo-stream/dist/flatten.d.ts
+A	node_modules/turbo-stream/dist/flatten.js
+A	node_modules/turbo-stream/dist/turbo-stream.d.ts
+A	node_modules/turbo-stream/dist/turbo-stream.js
+A	node_modules/turbo-stream/dist/turbo-stream.mjs
+A	node_modules/turbo-stream/dist/unflatten.d.ts
+A	node_modules/turbo-stream/dist/unflatten.js
+A	node_modules/turbo-stream/dist/utils.d.ts
+A	node_modules/turbo-stream/dist/utils.js
+A	node_modules/turbo-stream/package.json
+A	node_modules/typescript/LICENSE.txt
+A	node_modules/typescript/README.md
+A	node_modules/typescript/SECURITY.md
+A	node_modules/typescript/ThirdPartyNoticeText.txt
+A	node_modules/typescript/bin/tsc
+A	node_modules/typescript/bin/tsserver
+A	node_modules/typescript/lib/_tsc.js
+A	node_modules/typescript/lib/_tsserver.js
+A	node_modules/typescript/lib/_typingsInstaller.js
+A	node_modules/typescript/lib/cancellationToken.js
+A	node_modules/typescript/lib/cs/diagnosticMessages.generated.json
+A	node_modules/typescript/lib/de/diagnosticMessages.generated.json
+A	node_modules/typescript/lib/es/diagnosticMessages.generated.json
+A	node_modules/typescript/lib/fr/diagnosticMessages.generated.json
+A	node_modules/typescript/lib/it/diagnosticMessages.generated.json
+A	node_modules/typescript/lib/ja/diagnosticMessages.generated.json
+A	node_modules/typescript/lib/ko/diagnosticMessages.generated.json
+A	node_modules/typescript/lib/lib.d.ts
+A	node_modules/typescript/lib/lib.decorators.d.ts
+A	node_modules/typescript/lib/lib.decorators.legacy.d.ts
+A	node_modules/typescript/lib/lib.dom.asynciterable.d.ts
+A	node_modules/typescript/lib/lib.dom.d.ts
+A	node_modules/typescript/lib/lib.dom.iterable.d.ts
+A	node_modules/typescript/lib/lib.es2015.collection.d.ts
+A	node_modules/typescript/lib/lib.es2015.core.d.ts
+A	node_modules/typescript/lib/lib.es2015.d.ts
+A	node_modules/typescript/lib/lib.es2015.generator.d.ts
+A	node_modules/typescript/lib/lib.es2015.iterable.d.ts
+A	node_modules/typescript/lib/lib.es2015.promise.d.ts
+A	node_modules/typescript/lib/lib.es2015.proxy.d.ts
+A	node_modules/typescript/lib/lib.es2015.reflect.d.ts
+A	node_modules/typescript/lib/lib.es2015.symbol.d.ts
+A	node_modules/typescript/lib/lib.es2015.symbol.wellknown.d.ts
+A	node_modules/typescript/lib/lib.es2016.array.include.d.ts
+A	node_modules/typescript/lib/lib.es2016.d.ts
+A	node_modules/typescript/lib/lib.es2016.full.d.ts
+A	node_modules/typescript/lib/lib.es2016.intl.d.ts
+A	node_modules/typescript/lib/lib.es2017.arraybuffer.d.ts
+A	node_modules/typescript/lib/lib.es2017.d.ts
+A	node_modules/typescript/lib/lib.es2017.date.d.ts
+A	node_modules/typescript/lib/lib.es2017.full.d.ts
+A	node_modules/typescript/lib/lib.es2017.intl.d.ts
+A	node_modules/typescript/lib/lib.es2017.object.d.ts
+A	node_modules/typescript/lib/lib.es2017.sharedmemory.d.ts
+A	node_modules/typescript/lib/lib.es2017.string.d.ts
+A	node_modules/typescript/lib/lib.es2017.typedarrays.d.ts
+A	node_modules/typescript/lib/lib.es2018.asyncgenerator.d.ts
+A	node_modules/typescript/lib/lib.es2018.asynciterable.d.ts
+A	node_modules/typescript/lib/lib.es2018.d.ts
+A	node_modules/typescript/lib/lib.es2018.full.d.ts
+A	node_modules/typescript/lib/lib.es2018.intl.d.ts
+A	node_modules/typescript/lib/lib.es2018.promise.d.ts
+A	node_modules/typescript/lib/lib.es2018.regexp.d.ts
+A	node_modules/typescript/lib/lib.es2019.array.d.ts
+A	node_modules/typescript/lib/lib.es2019.d.ts
+A	node_modules/typescript/lib/lib.es2019.full.d.ts
+A	node_modules/typescript/lib/lib.es2019.intl.d.ts
+A	node_modules/typescript/lib/lib.es2019.object.d.ts
+A	node_modules/typescript/lib/lib.es2019.string.d.ts
+A	node_modules/typescript/lib/lib.es2019.symbol.d.ts
+A	node_modules/typescript/lib/lib.es2020.bigint.d.ts
+A	node_modules/typescript/lib/lib.es2020.d.ts
+A	node_modules/typescript/lib/lib.es2020.date.d.ts
+A	node_modules/typescript/lib/lib.es2020.full.d.ts
+A	node_modules/typescript/lib/lib.es2020.intl.d.ts
+A	node_modules/typescript/lib/lib.es2020.number.d.ts
+A	node_modules/typescript/lib/lib.es2020.promise.d.ts
+A	node_modules/typescript/lib/lib.es2020.sharedmemory.d.ts
+A	node_modules/typescript/lib/lib.es2020.string.d.ts
+A	node_modules/typescript/lib/lib.es2020.symbol.wellknown.d.ts
+A	node_modules/typescript/lib/lib.es2021.d.ts
+A	node_modules/typescript/lib/lib.es2021.full.d.ts
+A	node_modules/typescript/lib/lib.es2021.intl.d.ts
+A	node_modules/typescript/lib/lib.es2021.promise.d.ts
+A	node_modules/typescript/lib/lib.es2021.string.d.ts
+A	node_modules/typescript/lib/lib.es2021.weakref.d.ts
+A	node_modules/typescript/lib/lib.es2022.array.d.ts
+A	node_modules/typescript/lib/lib.es2022.d.ts
+A	node_modules/typescript/lib/lib.es2022.error.d.ts
+A	node_modules/typescript/lib/lib.es2022.full.d.ts
+A	node_modules/typescript/lib/lib.es2022.intl.d.ts
+A	node_modules/typescript/lib/lib.es2022.object.d.ts
+A	node_modules/typescript/lib/lib.es2022.regexp.d.ts
+A	node_modules/typescript/lib/lib.es2022.string.d.ts
+A	node_modules/typescript/lib/lib.es2023.array.d.ts
+A	node_modules/typescript/lib/lib.es2023.collection.d.ts
+A	node_modules/typescript/lib/lib.es2023.d.ts
+A	node_modules/typescript/lib/lib.es2023.full.d.ts
+A	node_modules/typescript/lib/lib.es2023.intl.d.ts
+A	node_modules/typescript/lib/lib.es2024.arraybuffer.d.ts
+A	node_modules/typescript/lib/lib.es2024.collection.d.ts
+A	node_modules/typescript/lib/lib.es2024.d.ts
+A	node_modules/typescript/lib/lib.es2024.full.d.ts
+A	node_modules/typescript/lib/lib.es2024.object.d.ts
+A	node_modules/typescript/lib/lib.es2024.promise.d.ts
+A	node_modules/typescript/lib/lib.es2024.regexp.d.ts
+A	node_modules/typescript/lib/lib.es2024.sharedmemory.d.ts
+A	node_modules/typescript/lib/lib.es2024.string.d.ts
+A	node_modules/typescript/lib/lib.es5.d.ts
+A	node_modules/typescript/lib/lib.es6.d.ts
+A	node_modules/typescript/lib/lib.esnext.array.d.ts
+A	node_modules/typescript/lib/lib.esnext.collection.d.ts
+A	node_modules/typescript/lib/lib.esnext.d.ts
+A	node_modules/typescript/lib/lib.esnext.decorators.d.ts
+A	node_modules/typescript/lib/lib.esnext.disposable.d.ts
+A	node_modules/typescript/lib/lib.esnext.full.d.ts
+A	node_modules/typescript/lib/lib.esnext.intl.d.ts
+A	node_modules/typescript/lib/lib.esnext.iterator.d.ts
+A	node_modules/typescript/lib/lib.scripthost.d.ts
+A	node_modules/typescript/lib/lib.webworker.asynciterable.d.ts
+A	node_modules/typescript/lib/lib.webworker.d.ts
+A	node_modules/typescript/lib/lib.webworker.importscripts.d.ts
+A	node_modules/typescript/lib/lib.webworker.iterable.d.ts
+A	node_modules/typescript/lib/pl/diagnosticMessages.generated.json
+A	node_modules/typescript/lib/pt-br/diagnosticMessages.generated.json
+A	node_modules/typescript/lib/ru/diagnosticMessages.generated.json
+A	node_modules/typescript/lib/tr/diagnosticMessages.generated.json
+A	node_modules/typescript/lib/tsc.js
+A	node_modules/typescript/lib/tsserver.js
+A	node_modules/typescript/lib/tsserverlibrary.d.ts
+A	node_modules/typescript/lib/tsserverlibrary.js
+A	node_modules/typescript/lib/typesMap.json
+A	node_modules/typescript/lib/typescript.d.ts
+A	node_modules/typescript/lib/typescript.js
+A	node_modules/typescript/lib/typingsInstaller.js
+A	node_modules/typescript/lib/watchGuard.js
+A	node_modules/typescript/lib/zh-cn/diagnosticMessages.generated.json
+A	node_modules/typescript/lib/zh-tw/diagnosticMessages.generated.json
+A	node_modules/typescript/package.json
+M	package-lock.json
+A	package.json
+
+Author: guti-1 
+Date:   2025-02-09 16:42:07 +0100
+Subject: change of the button
+
+
+M	library_manager/frontend/js/sign.js
+
+Author: guti-1 
+Date:   2025-02-09 16:34:17 +0100
+Subject: made the sign in for resgiter and login but need to figure out how to connect bia url when i click the button to redirect to the pages.
+
+
+M	library_manager/frontend/html/sign.html
+M	library_manager/frontend/html/startpage.html
+M	library_manager/frontend/js/main.js
+M	library_manager/frontend/js/sign.js
+
+Author: julius 
+Date:   2025-02-07 14:33:51 +0100
+Subject: basic testing structure
+Django Tests:
+python manage.py test
+
+This command discovers and runs tests in your Django apps. It looks for files named tests.py or files matching the pattern test*.py. You can specify a specific app or test file:
+
+python manage.py test frontend.tests.functional  # Run only functional tests
+python manage.py test frontend.tests.unit.test_models # Run a specific test file
+
+Use code with caution.Bash
+
+React Tests (Vitest):
+You've already configured Vitest in your package.json:
+
+"scripts": {
+  "test": "vitest",
+  // ... other scripts ...
+}
+
+Use code with caution.Json
+
+To run your React tests, navigate to the frontend directory and run:
+
+npm test
+
+Use code with caution.Bash
+
+or
+
+npm run test
+
+Use code with caution.Bash
+
+End-to-End Tests (Cypress - Example):
+
+    Install Cypress:
+
+    cd library_manager/frontend
+    npm install cypress --save-dev
+
+Use code with caution.Bash
+
+Add Cypress scripts to package.json:
+
+"scripts": {
+  "dev": "vite",
+  "build": "tsc && vite build",
+  "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+  "preview": "vite preview",
+  "test": "vitest",
+  "cypress:open": "cypress open",
+  "cypress:run": "cypress run"
+}
+
+Use code with caution.Json
+
+Run Cypress:
+
+npm run cypress:open  # Opens the Cypress Test Runner (interactive)
+npm run cypress:run   # Runs Cypress tests headlessly
+
+    Use code with caution.Bash
+
+Performance Tests: The way you run these depends on the tool you choose. For the basic example above, you could run it with a test runner that supports performance.now() (like Jest or Mocha). For more comprehensive testing, you'd integrate Lighthouse or WebPageTest into your CI/CD pipeline.
+
+
+A	library_manager/backend/tests/functional/test_views.py
+A	library_manager/backend/tests/security/test_security.py
+A	library_manager/backend/tests/unit/test_models.py
+A	library_manager/frontend/tests/component/App.test.tsx
+A	library_manager/frontend/tests/endtoend/login.cy.ts
+A	library_manager/frontend/tests/performance/performance.test.js
+
+Author: guti-1 
+Date:   2025-02-07 11:51:59 +0100
+Subject: add login and sign.js add some css and html, but needs to connecto properly to the action i want. need to finish the sign
+
+
+A	library_manager/frontend/html/login.html
+A	library_manager/frontend/html/sign.html
+M	library_manager/frontend/html/startpage.html
+A	library_manager/frontend/js/login.js
+A	library_manager/frontend/js/main.js
+A	library_manager/frontend/js/sign.js
+A	library_manager/frontend/src/login.css
+M	package-lock.json
+
+Author: julius 
+Date:   2025-02-05 14:25:13 +0100
+Subject: Update README to clarify documentation links and improve navigation instructions
+
+
+M	README.md
+
+Author: julius 
+Date:   2025-02-05 14:21:08 +0100
+Subject: Merge branch 'main' of https://github.com/mkr176/INF_2900_TEAM5
+
+
+Author: julius 
+Date:   2025-02-05 14:21:04 +0100
+Subject: update front view to render startpage template
+
+
+M	README.md
+A	docs/protocols_of_meetings/25-2-4.pdf
+A	library_manager/frontend/html/startpage.html
+R100	library_manager/static/library_seal.jpg	library_manager/frontend/public/images/library_seal.jpg
+M	library_manager/frontend/views.py
+
+Author: Matt Ricote Kristiansen 
+Date:   2025-02-04 12:10:37 +0100
+Subject: SCRUM-2: Set up Git repository and link to Jira
+
+
+A	TESTFILE.md
+
+Author: julius 
+Date:   2025-02-04 10:06:39 +0100
+Subject: funny user stories and table
+
+
+M	docs/README.md
+
+Author: julius 
+Date:   2025-02-03 17:34:10 +0100
+Subject: readme quick
+
+
+M	README.md
+
+Author: julius 
+Date:   2025-02-03 16:57:35 +0100
+Subject: Meeting Protocol
+
+
+A	docs/protocols_of_meetings/25-1-29.pdf
+
+Author: julius 
+Date:   2025-02-03 16:51:23 +0100
+Subject: update README to include documentation link
+
+
+M	README.md
+
+Author: julius 
+Date:   2025-02-03 16:49:36 +0100
+Subject: Userstories Docs
+
+
+M	README.md
+A	docs/README.md
+
+Author: julius 
+Date:   2025-02-03 16:20:46 +0100
+Subject: project name update
+
+
+M	README.md
+
+Author: julius 
+Date:   2025-02-01 17:33:31 +0100
+Subject: Renaming of folders
+
+
+M	README.md
+D	backend/frontend/validations.py
+R100	backend/backend/__init__.py	library_manager/backend/__init__.py
+R100	backend/backend/asgi.py	library_manager/backend/asgi.py
+R094	backend/backend/settings.py	library_manager/backend/settings.py
+R100	backend/backend/urls.py	library_manager/backend/urls.py
+R100	backend/backend/wsgi.py	library_manager/backend/wsgi.py
+R100	backend/db.sqlite3	library_manager/db.sqlite3
+R100	backend/frontend/frontend/.eslintrc.cjs	library_manager/frontend/.eslintrc.cjs
+R100	backend/frontend/frontend/.gitignore	library_manager/frontend/.gitignore
+R100	backend/frontend/frontend/README.md	library_manager/frontend/README.md
+R100	backend/frontend/__init__.py	library_manager/frontend/__init__.py
+R100	backend/frontend/admin.py	library_manager/frontend/admin.py
+R100	backend/frontend/apps.py	library_manager/frontend/apps.py
+R100	backend/frontend/frontend/html/new.html	library_manager/frontend/html/new.html
+R100	backend/frontend/frontend/index.html	library_manager/frontend/index.html
+R100	backend/frontend/migrations/__init__.py	library_manager/frontend/migrations/__init__.py
+R100	backend/frontend/models.py	library_manager/frontend/models.py
+R099	backend/frontend/frontend/package-lock.json	library_manager/frontend/package-lock.json
+R100	backend/frontend/frontend/package.json	library_manager/frontend/package.json
+R100	backend/frontend/frontend/public/django.svg	library_manager/frontend/public/django.svg
+R100	backend/frontend/frontend/public/react.svg	library_manager/frontend/public/react.svg
+R100	backend/frontend/frontend/public/tull.svg	library_manager/frontend/public/tull.svg
+R100	backend/frontend/frontend/public/vite.svg	library_manager/frontend/public/vite.svg
+R100	backend/frontend/frontend/src/App.css	library_manager/frontend/src/App.css
+R100	backend/frontend/frontend/src/App.tsx	library_manager/frontend/src/App.tsx
+R100	backend/frontend/frontend/src/index.css	library_manager/frontend/src/index.css
+R100	backend/frontend/frontend/src/main.tsx	library_manager/frontend/src/main.tsx
+R100	backend/frontend/frontend/src/vite-env.d.ts	library_manager/frontend/src/vite-env.d.ts
+R100	backend/frontend/tests.py	library_manager/frontend/tests.py
+R100	backend/frontend/frontend/tsconfig.json	library_manager/frontend/tsconfig.json
+R100	backend/frontend/frontend/tsconfig.node.json	library_manager/frontend/tsconfig.node.json
+R100	backend/frontend/urls.py	library_manager/frontend/urls.py
+R100	backend/frontend/views.py	library_manager/frontend/views.py
+R100	backend/frontend/frontend/vite.config.ts	library_manager/frontend/vite.config.ts
+R100	backend/manage.py	library_manager/manage.py
+R100	backend/static/admin/css/autocomplete.css	library_manager/static/admin/css/autocomplete.css
+R100	backend/static/admin/css/base.css	library_manager/static/admin/css/base.css
+R100	backend/static/admin/css/changelists.css	library_manager/static/admin/css/changelists.css
+R100	backend/static/admin/css/dark_mode.css	library_manager/static/admin/css/dark_mode.css
+R100	backend/static/admin/css/dashboard.css	library_manager/static/admin/css/dashboard.css
+R100	backend/static/admin/css/forms.css	library_manager/static/admin/css/forms.css
+R100	backend/static/admin/css/login.css	library_manager/static/admin/css/login.css
+R100	backend/static/admin/css/nav_sidebar.css	library_manager/static/admin/css/nav_sidebar.css
+R100	backend/static/admin/css/responsive.css	library_manager/static/admin/css/responsive.css
+R100	backend/static/admin/css/responsive_rtl.css	library_manager/static/admin/css/responsive_rtl.css
+R100	backend/static/admin/css/rtl.css	library_manager/static/admin/css/rtl.css
+R100	backend/static/admin/css/vendor/select2/LICENSE-SELECT2.md	library_manager/static/admin/css/vendor/select2/LICENSE-SELECT2.md
+R100	backend/static/admin/css/vendor/select2/select2.css	library_manager/static/admin/css/vendor/select2/select2.css
+R100	backend/static/admin/css/vendor/select2/select2.min.css	library_manager/static/admin/css/vendor/select2/select2.min.css
+R100	backend/static/admin/css/widgets.css	library_manager/static/admin/css/widgets.css
+R100	backend/static/admin/img/LICENSE	library_manager/static/admin/img/LICENSE
+R100	backend/static/admin/img/README.txt	library_manager/static/admin/img/README.txt
+R100	backend/static/admin/img/calendar-icons.svg	library_manager/static/admin/img/calendar-icons.svg
+R100	backend/static/admin/img/gis/move_vertex_off.svg	library_manager/static/admin/img/gis/move_vertex_off.svg
+R100	backend/static/admin/img/gis/move_vertex_on.svg	library_manager/static/admin/img/gis/move_vertex_on.svg
+R100	backend/static/admin/img/icon-addlink.svg	library_manager/static/admin/img/icon-addlink.svg
+R100	backend/static/admin/img/icon-alert.svg	library_manager/static/admin/img/icon-alert.svg
+R100	backend/static/admin/img/icon-calendar.svg	library_manager/static/admin/img/icon-calendar.svg
+R100	backend/static/admin/img/icon-changelink.svg	library_manager/static/admin/img/icon-changelink.svg
+R100	backend/static/admin/img/icon-clock.svg	library_manager/static/admin/img/icon-clock.svg
+R100	backend/static/admin/img/icon-deletelink.svg	library_manager/static/admin/img/icon-deletelink.svg
+R100	backend/static/admin/img/icon-hidelink.svg	library_manager/static/admin/img/icon-hidelink.svg
+R100	backend/static/admin/img/icon-no.svg	library_manager/static/admin/img/icon-no.svg
+R100	backend/static/admin/img/icon-unknown-alt.svg	library_manager/static/admin/img/icon-unknown-alt.svg
+R100	backend/static/admin/img/icon-unknown.svg	library_manager/static/admin/img/icon-unknown.svg
+R100	backend/static/admin/img/icon-viewlink.svg	library_manager/static/admin/img/icon-viewlink.svg
+R100	backend/static/admin/img/icon-yes.svg	library_manager/static/admin/img/icon-yes.svg
+R100	backend/static/admin/img/inline-delete.svg	library_manager/static/admin/img/inline-delete.svg
+R100	backend/static/admin/img/search.svg	library_manager/static/admin/img/search.svg
+R100	backend/static/admin/img/selector-icons.svg	library_manager/static/admin/img/selector-icons.svg
+R100	backend/static/admin/img/sorting-icons.svg	library_manager/static/admin/img/sorting-icons.svg
+R100	backend/static/admin/img/tooltag-add.svg	library_manager/static/admin/img/tooltag-add.svg
+R100	backend/static/admin/img/tooltag-arrowright.svg	library_manager/static/admin/img/tooltag-arrowright.svg
+R100	backend/static/admin/js/SelectBox.js	library_manager/static/admin/js/SelectBox.js
+R100	backend/static/admin/js/SelectFilter2.js	library_manager/static/admin/js/SelectFilter2.js
+R100	backend/static/admin/js/actions.js	library_manager/static/admin/js/actions.js
+R100	backend/static/admin/js/admin/DateTimeShortcuts.js	library_manager/static/admin/js/admin/DateTimeShortcuts.js
+R100	backend/static/admin/js/admin/RelatedObjectLookups.js	library_manager/static/admin/js/admin/RelatedObjectLookups.js
+R100	backend/static/admin/js/autocomplete.js	library_manager/static/admin/js/autocomplete.js
+R100	backend/static/admin/js/calendar.js	library_manager/static/admin/js/calendar.js
+R100	backend/static/admin/js/cancel.js	library_manager/static/admin/js/cancel.js
+R100	backend/static/admin/js/change_form.js	library_manager/static/admin/js/change_form.js
+R100	backend/static/admin/js/collapse.js	library_manager/static/admin/js/collapse.js
+R100	backend/static/admin/js/core.js	library_manager/static/admin/js/core.js
+R100	backend/static/admin/js/filters.js	library_manager/static/admin/js/filters.js
+R100	backend/static/admin/js/inlines.js	library_manager/static/admin/js/inlines.js
+R100	backend/static/admin/js/jquery.init.js	library_manager/static/admin/js/jquery.init.js
+R100	backend/static/admin/js/nav_sidebar.js	library_manager/static/admin/js/nav_sidebar.js
+R100	backend/static/admin/js/popup_response.js	library_manager/static/admin/js/popup_response.js
+R100	backend/static/admin/js/prepopulate.js	library_manager/static/admin/js/prepopulate.js
+R100	backend/static/admin/js/prepopulate_init.js	library_manager/static/admin/js/prepopulate_init.js
+R100	backend/static/admin/js/theme.js	library_manager/static/admin/js/theme.js
+R100	backend/static/admin/js/urlify.js	library_manager/static/admin/js/urlify.js
+R100	backend/static/admin/js/vendor/jquery/LICENSE.txt	library_manager/static/admin/js/vendor/jquery/LICENSE.txt
+R100	backend/static/admin/js/vendor/jquery/jquery.js	library_manager/static/admin/js/vendor/jquery/jquery.js
+R100	backend/static/admin/js/vendor/jquery/jquery.min.js	library_manager/static/admin/js/vendor/jquery/jquery.min.js
+R100	backend/static/admin/js/vendor/select2/LICENSE.md	library_manager/static/admin/js/vendor/select2/LICENSE.md
+R100	backend/static/admin/js/vendor/select2/i18n/af.js	library_manager/static/admin/js/vendor/select2/i18n/af.js
+R100	backend/static/admin/js/vendor/select2/i18n/ar.js	library_manager/static/admin/js/vendor/select2/i18n/ar.js
+R100	backend/static/admin/js/vendor/select2/i18n/az.js	library_manager/static/admin/js/vendor/select2/i18n/az.js
+R100	backend/static/admin/js/vendor/select2/i18n/bg.js	library_manager/static/admin/js/vendor/select2/i18n/bg.js
+R100	backend/static/admin/js/vendor/select2/i18n/bn.js	library_manager/static/admin/js/vendor/select2/i18n/bn.js
+R100	backend/static/admin/js/vendor/select2/i18n/bs.js	library_manager/static/admin/js/vendor/select2/i18n/bs.js
+R100	backend/static/admin/js/vendor/select2/i18n/ca.js	library_manager/static/admin/js/vendor/select2/i18n/ca.js
+R100	backend/static/admin/js/vendor/select2/i18n/cs.js	library_manager/static/admin/js/vendor/select2/i18n/cs.js
+R100	backend/static/admin/js/vendor/select2/i18n/da.js	library_manager/static/admin/js/vendor/select2/i18n/da.js
+R100	backend/static/admin/js/vendor/select2/i18n/de.js	library_manager/static/admin/js/vendor/select2/i18n/de.js
+R100	backend/static/admin/js/vendor/select2/i18n/dsb.js	library_manager/static/admin/js/vendor/select2/i18n/dsb.js
+R100	backend/static/admin/js/vendor/select2/i18n/el.js	library_manager/static/admin/js/vendor/select2/i18n/el.js
+R100	backend/static/admin/js/vendor/select2/i18n/en.js	library_manager/static/admin/js/vendor/select2/i18n/en.js
+R100	backend/static/admin/js/vendor/select2/i18n/es.js	library_manager/static/admin/js/vendor/select2/i18n/es.js
+R100	backend/static/admin/js/vendor/select2/i18n/et.js	library_manager/static/admin/js/vendor/select2/i18n/et.js
+R100	backend/static/admin/js/vendor/select2/i18n/eu.js	library_manager/static/admin/js/vendor/select2/i18n/eu.js
+R100	backend/static/admin/js/vendor/select2/i18n/fa.js	library_manager/static/admin/js/vendor/select2/i18n/fa.js
+R100	backend/static/admin/js/vendor/select2/i18n/fi.js	library_manager/static/admin/js/vendor/select2/i18n/fi.js
+R100	backend/static/admin/js/vendor/select2/i18n/fr.js	library_manager/static/admin/js/vendor/select2/i18n/fr.js
+R100	backend/static/admin/js/vendor/select2/i18n/gl.js	library_manager/static/admin/js/vendor/select2/i18n/gl.js
+R100	backend/static/admin/js/vendor/select2/i18n/he.js	library_manager/static/admin/js/vendor/select2/i18n/he.js
+R100	backend/static/admin/js/vendor/select2/i18n/hi.js	library_manager/static/admin/js/vendor/select2/i18n/hi.js
+R100	backend/static/admin/js/vendor/select2/i18n/hr.js	library_manager/static/admin/js/vendor/select2/i18n/hr.js
+R100	backend/static/admin/js/vendor/select2/i18n/hsb.js	library_manager/static/admin/js/vendor/select2/i18n/hsb.js
+R100	backend/static/admin/js/vendor/select2/i18n/hu.js	library_manager/static/admin/js/vendor/select2/i18n/hu.js
+R100	backend/static/admin/js/vendor/select2/i18n/hy.js	library_manager/static/admin/js/vendor/select2/i18n/hy.js
+R100	backend/static/admin/js/vendor/select2/i18n/id.js	library_manager/static/admin/js/vendor/select2/i18n/id.js
+R100	backend/static/admin/js/vendor/select2/i18n/is.js	library_manager/static/admin/js/vendor/select2/i18n/is.js
+R100	backend/static/admin/js/vendor/select2/i18n/it.js	library_manager/static/admin/js/vendor/select2/i18n/it.js
+R100	backend/static/admin/js/vendor/select2/i18n/ja.js	library_manager/static/admin/js/vendor/select2/i18n/ja.js
+R100	backend/static/admin/js/vendor/select2/i18n/ka.js	library_manager/static/admin/js/vendor/select2/i18n/ka.js
+R100	backend/static/admin/js/vendor/select2/i18n/km.js	library_manager/static/admin/js/vendor/select2/i18n/km.js
+R100	backend/static/admin/js/vendor/select2/i18n/ko.js	library_manager/static/admin/js/vendor/select2/i18n/ko.js
+R100	backend/static/admin/js/vendor/select2/i18n/lt.js	library_manager/static/admin/js/vendor/select2/i18n/lt.js
+R100	backend/static/admin/js/vendor/select2/i18n/lv.js	library_manager/static/admin/js/vendor/select2/i18n/lv.js
+R100	backend/static/admin/js/vendor/select2/i18n/mk.js	library_manager/static/admin/js/vendor/select2/i18n/mk.js
+R100	backend/static/admin/js/vendor/select2/i18n/ms.js	library_manager/static/admin/js/vendor/select2/i18n/ms.js
+R100	backend/static/admin/js/vendor/select2/i18n/nb.js	library_manager/static/admin/js/vendor/select2/i18n/nb.js
+R100	backend/static/admin/js/vendor/select2/i18n/ne.js	library_manager/static/admin/js/vendor/select2/i18n/ne.js
+R100	backend/static/admin/js/vendor/select2/i18n/nl.js	library_manager/static/admin/js/vendor/select2/i18n/nl.js
+R100	backend/static/admin/js/vendor/select2/i18n/pl.js	library_manager/static/admin/js/vendor/select2/i18n/pl.js
+R100	backend/static/admin/js/vendor/select2/i18n/ps.js	library_manager/static/admin/js/vendor/select2/i18n/ps.js
+R100	backend/static/admin/js/vendor/select2/i18n/pt-BR.js	library_manager/static/admin/js/vendor/select2/i18n/pt-BR.js
+R100	backend/static/admin/js/vendor/select2/i18n/pt.js	library_manager/static/admin/js/vendor/select2/i18n/pt.js
+R100	backend/static/admin/js/vendor/select2/i18n/ro.js	library_manager/static/admin/js/vendor/select2/i18n/ro.js
+R100	backend/static/admin/js/vendor/select2/i18n/ru.js	library_manager/static/admin/js/vendor/select2/i18n/ru.js
+R100	backend/static/admin/js/vendor/select2/i18n/sk.js	library_manager/static/admin/js/vendor/select2/i18n/sk.js
+R100	backend/static/admin/js/vendor/select2/i18n/sl.js	library_manager/static/admin/js/vendor/select2/i18n/sl.js
+R100	backend/static/admin/js/vendor/select2/i18n/sq.js	library_manager/static/admin/js/vendor/select2/i18n/sq.js
+R100	backend/static/admin/js/vendor/select2/i18n/sr-Cyrl.js	library_manager/static/admin/js/vendor/select2/i18n/sr-Cyrl.js
+R100	backend/static/admin/js/vendor/select2/i18n/sr.js	library_manager/static/admin/js/vendor/select2/i18n/sr.js
+R100	backend/static/admin/js/vendor/select2/i18n/sv.js	library_manager/static/admin/js/vendor/select2/i18n/sv.js
+R100	backend/static/admin/js/vendor/select2/i18n/th.js	library_manager/static/admin/js/vendor/select2/i18n/th.js
+R100	backend/static/admin/js/vendor/select2/i18n/tk.js	library_manager/static/admin/js/vendor/select2/i18n/tk.js
+R100	backend/static/admin/js/vendor/select2/i18n/tr.js	library_manager/static/admin/js/vendor/select2/i18n/tr.js
+R100	backend/static/admin/js/vendor/select2/i18n/uk.js	library_manager/static/admin/js/vendor/select2/i18n/uk.js
+R100	backend/static/admin/js/vendor/select2/i18n/vi.js	library_manager/static/admin/js/vendor/select2/i18n/vi.js
+R100	backend/static/admin/js/vendor/select2/i18n/zh-CN.js	library_manager/static/admin/js/vendor/select2/i18n/zh-CN.js
+R100	backend/static/admin/js/vendor/select2/i18n/zh-TW.js	library_manager/static/admin/js/vendor/select2/i18n/zh-TW.js
+R100	backend/static/admin/js/vendor/select2/select2.full.js	library_manager/static/admin/js/vendor/select2/select2.full.js
+R100	backend/static/admin/js/vendor/select2/select2.full.min.js	library_manager/static/admin/js/vendor/select2/select2.full.min.js
+R100	backend/static/admin/js/vendor/xregexp/LICENSE.txt	library_manager/static/admin/js/vendor/xregexp/LICENSE.txt
+R100	backend/static/admin/js/vendor/xregexp/xregexp.js	library_manager/static/admin/js/vendor/xregexp/xregexp.js
+R100	backend/static/admin/js/vendor/xregexp/xregexp.min.js	library_manager/static/admin/js/vendor/xregexp/xregexp.min.js
+R100	backend/static/assets/css/index.min.css	library_manager/static/assets/css/index.min.css
+R100	backend/static/assets/js/index.min.js	library_manager/static/assets/js/index.min.js
+R100	backend/static/django.svg	library_manager/static/django.svg
+R100	backend/static/index.html	library_manager/static/index.html
+A	library_manager/static/library_seal.jpg
+R100	backend/static/react.svg	library_manager/static/react.svg
+R100	backend/static/tull.svg	library_manager/static/tull.svg
+R100	backend/static/vite.svg	library_manager/static/vite.svg
+
+Author: Matt Ricote Kristiansen 
+Date:   2025-01-29 15:12:36 +0100
+Subject: fixed enviroment startup
+
+
+M	README.md
+
+Author: Matt Ricote Kristiansen 
+Date:   2025-01-29 12:59:32 +0100
+Subject: added validations for user register, (going to use later)
+
+
+A	backend/frontend/validations.py
+
+Author: Matt Ricote Kristiansen 
+Date:   2025-01-28 16:30:08 +0100
+Subject: linux /windows virtual enviroment
+
+
+M	README.md
+
+Author: Matt 
+Date:   2025-01-21 00:52:15 +0100
+Subject: typos
+
+
+M	README.md
+
+Author: Matt 
+Date:   2025-01-21 00:51:27 +0100
+Subject: fixed path
+
+
+M	backend/backend/urls.py
+A	package-lock.json
+M	requirements.txt
+
+Author: Matt Ricote Kristiansen 
+Date:   2025-01-20 10:47:17 +0100
+Subject: template initiated
+
+
+A	.gitignore
+A	README.md
+A	backend/backend/__init__.py
+A	backend/backend/asgi.py
+A	backend/backend/settings.py
+A	backend/backend/urls.py
+A	backend/backend/wsgi.py
+A	backend/db.sqlite3
+A	backend/frontend/__init__.py
+A	backend/frontend/admin.py
+A	backend/frontend/apps.py
+A	backend/frontend/frontend/.eslintrc.cjs
+A	backend/frontend/frontend/.gitignore
+A	backend/frontend/frontend/README.md
+A	backend/frontend/frontend/html/new.html
+A	backend/frontend/frontend/index.html
+A	backend/frontend/frontend/package-lock.json
+A	backend/frontend/frontend/package.json
+A	backend/frontend/frontend/public/django.svg
+A	backend/frontend/frontend/public/react.svg
+A	backend/frontend/frontend/public/tull.svg
+A	backend/frontend/frontend/public/vite.svg
+A	backend/frontend/frontend/src/App.css
+A	backend/frontend/frontend/src/App.tsx
+A	backend/frontend/frontend/src/index.css
+A	backend/frontend/frontend/src/main.tsx
+A	backend/frontend/frontend/src/vite-env.d.ts
+A	backend/frontend/frontend/tsconfig.json
+A	backend/frontend/frontend/tsconfig.node.json
+A	backend/frontend/frontend/vite.config.ts
+A	backend/frontend/migrations/__init__.py
+A	backend/frontend/models.py
+A	backend/frontend/tests.py
+A	backend/frontend/urls.py
+A	backend/frontend/views.py
+A	backend/manage.py
+A	backend/static/admin/css/autocomplete.css
+A	backend/static/admin/css/base.css
+A	backend/static/admin/css/changelists.css
+A	backend/static/admin/css/dark_mode.css
+A	backend/static/admin/css/dashboard.css
+A	backend/static/admin/css/forms.css
+A	backend/static/admin/css/login.css
+A	backend/static/admin/css/nav_sidebar.css
+A	backend/static/admin/css/responsive.css
+A	backend/static/admin/css/responsive_rtl.css
+A	backend/static/admin/css/rtl.css
+A	backend/static/admin/css/vendor/select2/LICENSE-SELECT2.md
+A	backend/static/admin/css/vendor/select2/select2.css
+A	backend/static/admin/css/vendor/select2/select2.min.css
+A	backend/static/admin/css/widgets.css
+A	backend/static/admin/img/LICENSE
+A	backend/static/admin/img/README.txt
+A	backend/static/admin/img/calendar-icons.svg
+A	backend/static/admin/img/gis/move_vertex_off.svg
+A	backend/static/admin/img/gis/move_vertex_on.svg
+A	backend/static/admin/img/icon-addlink.svg
+A	backend/static/admin/img/icon-alert.svg
+A	backend/static/admin/img/icon-calendar.svg
+A	backend/static/admin/img/icon-changelink.svg
+A	backend/static/admin/img/icon-clock.svg
+A	backend/static/admin/img/icon-deletelink.svg
+A	backend/static/admin/img/icon-hidelink.svg
+A	backend/static/admin/img/icon-no.svg
+A	backend/static/admin/img/icon-unknown-alt.svg
+A	backend/static/admin/img/icon-unknown.svg
+A	backend/static/admin/img/icon-viewlink.svg
+A	backend/static/admin/img/icon-yes.svg
+A	backend/static/admin/img/inline-delete.svg
+A	backend/static/admin/img/search.svg
+A	backend/static/admin/img/selector-icons.svg
+A	backend/static/admin/img/sorting-icons.svg
+A	backend/static/admin/img/tooltag-add.svg
+A	backend/static/admin/img/tooltag-arrowright.svg
+A	backend/static/admin/js/SelectBox.js
+A	backend/static/admin/js/SelectFilter2.js
+A	backend/static/admin/js/actions.js
+A	backend/static/admin/js/admin/DateTimeShortcuts.js
+A	backend/static/admin/js/admin/RelatedObjectLookups.js
+A	backend/static/admin/js/autocomplete.js
+A	backend/static/admin/js/calendar.js
+A	backend/static/admin/js/cancel.js
+A	backend/static/admin/js/change_form.js
+A	backend/static/admin/js/collapse.js
+A	backend/static/admin/js/core.js
+A	backend/static/admin/js/filters.js
+A	backend/static/admin/js/inlines.js
+A	backend/static/admin/js/jquery.init.js
+A	backend/static/admin/js/nav_sidebar.js
+A	backend/static/admin/js/popup_response.js
+A	backend/static/admin/js/prepopulate.js
+A	backend/static/admin/js/prepopulate_init.js
+A	backend/static/admin/js/theme.js
+A	backend/static/admin/js/urlify.js
+A	backend/static/admin/js/vendor/jquery/LICENSE.txt
+A	backend/static/admin/js/vendor/jquery/jquery.js
+A	backend/static/admin/js/vendor/jquery/jquery.min.js
+A	backend/static/admin/js/vendor/select2/LICENSE.md
+A	backend/static/admin/js/vendor/select2/i18n/af.js
+A	backend/static/admin/js/vendor/select2/i18n/ar.js
+A	backend/static/admin/js/vendor/select2/i18n/az.js
+A	backend/static/admin/js/vendor/select2/i18n/bg.js
+A	backend/static/admin/js/vendor/select2/i18n/bn.js
+A	backend/static/admin/js/vendor/select2/i18n/bs.js
+A	backend/static/admin/js/vendor/select2/i18n/ca.js
+A	backend/static/admin/js/vendor/select2/i18n/cs.js
+A	backend/static/admin/js/vendor/select2/i18n/da.js
+A	backend/static/admin/js/vendor/select2/i18n/de.js
+A	backend/static/admin/js/vendor/select2/i18n/dsb.js
+A	backend/static/admin/js/vendor/select2/i18n/el.js
+A	backend/static/admin/js/vendor/select2/i18n/en.js
+A	backend/static/admin/js/vendor/select2/i18n/es.js
+A	backend/static/admin/js/vendor/select2/i18n/et.js
+A	backend/static/admin/js/vendor/select2/i18n/eu.js
+A	backend/static/admin/js/vendor/select2/i18n/fa.js
+A	backend/static/admin/js/vendor/select2/i18n/fi.js
+A	backend/static/admin/js/vendor/select2/i18n/fr.js
+A	backend/static/admin/js/vendor/select2/i18n/gl.js
+A	backend/static/admin/js/vendor/select2/i18n/he.js
+A	backend/static/admin/js/vendor/select2/i18n/hi.js
+A	backend/static/admin/js/vendor/select2/i18n/hr.js
+A	backend/static/admin/js/vendor/select2/i18n/hsb.js
+A	backend/static/admin/js/vendor/select2/i18n/hu.js
+A	backend/static/admin/js/vendor/select2/i18n/hy.js
+A	backend/static/admin/js/vendor/select2/i18n/id.js
+A	backend/static/admin/js/vendor/select2/i18n/is.js
+A	backend/static/admin/js/vendor/select2/i18n/it.js
+A	backend/static/admin/js/vendor/select2/i18n/ja.js
+A	backend/static/admin/js/vendor/select2/i18n/ka.js
+A	backend/static/admin/js/vendor/select2/i18n/km.js
+A	backend/static/admin/js/vendor/select2/i18n/ko.js
+A	backend/static/admin/js/vendor/select2/i18n/lt.js
+A	backend/static/admin/js/vendor/select2/i18n/lv.js
+A	backend/static/admin/js/vendor/select2/i18n/mk.js
+A	backend/static/admin/js/vendor/select2/i18n/ms.js
+A	backend/static/admin/js/vendor/select2/i18n/nb.js
+A	backend/static/admin/js/vendor/select2/i18n/ne.js
+A	backend/static/admin/js/vendor/select2/i18n/nl.js
+A	backend/static/admin/js/vendor/select2/i18n/pl.js
+A	backend/static/admin/js/vendor/select2/i18n/ps.js
+A	backend/static/admin/js/vendor/select2/i18n/pt-BR.js
+A	backend/static/admin/js/vendor/select2/i18n/pt.js
+A	backend/static/admin/js/vendor/select2/i18n/ro.js
+A	backend/static/admin/js/vendor/select2/i18n/ru.js
+A	backend/static/admin/js/vendor/select2/i18n/sk.js
+A	backend/static/admin/js/vendor/select2/i18n/sl.js
+A	backend/static/admin/js/vendor/select2/i18n/sq.js
+A	backend/static/admin/js/vendor/select2/i18n/sr-Cyrl.js
+A	backend/static/admin/js/vendor/select2/i18n/sr.js
+A	backend/static/admin/js/vendor/select2/i18n/sv.js
+A	backend/static/admin/js/vendor/select2/i18n/th.js
+A	backend/static/admin/js/vendor/select2/i18n/tk.js
+A	backend/static/admin/js/vendor/select2/i18n/tr.js
+A	backend/static/admin/js/vendor/select2/i18n/uk.js
+A	backend/static/admin/js/vendor/select2/i18n/vi.js
+A	backend/static/admin/js/vendor/select2/i18n/zh-CN.js
+A	backend/static/admin/js/vendor/select2/i18n/zh-TW.js
+A	backend/static/admin/js/vendor/select2/select2.full.js
+A	backend/static/admin/js/vendor/select2/select2.full.min.js
+A	backend/static/admin/js/vendor/xregexp/LICENSE.txt
+A	backend/static/admin/js/vendor/xregexp/xregexp.js
+A	backend/static/admin/js/vendor/xregexp/xregexp.min.js
+A	backend/static/assets/css/index.min.css
+A	backend/static/assets/js/index.min.js
+A	backend/static/django.svg
+A	backend/static/index.html
+A	backend/static/react.svg
+A	backend/static/tull.svg
+A	backend/static/vite.svg
+A	requirements.txt
