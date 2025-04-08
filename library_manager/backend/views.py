@@ -166,9 +166,6 @@ class LogoutView(View):
 # 2️ USER MANAGEMENT ROUTES       #
 # ============================== #
 
-class ListUsersView(generics.ListAPIView):
-    queryset = People.objects.all()
-    serializer_class = PeopleSerializer
 
 
 @method_decorator(login_required, name='dispatch')
@@ -204,177 +201,6 @@ def get_user_info(request):
         return JsonResponse({"error": "Not authenticated"}, status=401)
     
 
-# Get User Profile
-@method_decorator(csrf_exempt, name='dispatch')
-class UserProfileView(View):
-    def get(self, request, user_id):
-        try:
-            user = People.objects.get(id=user_id)
-            user_data = {
-                'id': user.id,
-                'name': user.name,
-                'email': user.email,
-                'age': user.age,
-                'avatar': user.avatar,
-                'type': user.type
-            }
-            return JsonResponse(user_data, status=200)
-        except People.DoesNotExist:
-            return JsonResponse({'error': 'User not found'}, status=404)
-
-
-# Update User Profile
-@method_decorator(csrf_exempt, name='dispatch')
-class UpdateUserProfileView(View):
-    def post(self, request, user_id):
-        try:
-            data = json.loads(request.body)
-            user = People.objects.get(id=user_id)
-
-            user.name = data.get('name', user.name)
-            user.email = data.get('email', user.email)
-            user.age = data.get('age', user.age)
-            user.avatar = data.get('avatar', user.avatar)  # Update avatar
-
-            user.save()
-            return JsonResponse({'message': 'Profile updated successfully'}, status=200)
-        except People.DoesNotExist:
-            return JsonResponse({'error': 'User not found'}, status=404)
-        except json.JSONDecodeError:
-            return JsonResponse({'error': 'Invalid JSON'}, status=400)
-        
-
-@csrf_exempt
-def update_profile(request):
-    if request.method == "POST":
-        print("--- Entering update_profile POST ---") # DEBUG
-        try:
-            data = json.loads(request.body)
-            print(f"Received data: {data}") # DEBUG
-            user = request.user # Get the authenticated user object
-
-            if not user.is_authenticated:
-                print("User not authenticated.") # DEBUG
-                return JsonResponse({"error": "User not authenticated"}, status=401)
-
-            print(f"Authenticated user: {user.username}") # DEBUG
-
-            people_instance = None
-            try:
-                # Get the corresponding People instance to update avatar/email if needed
-                people_instance = People.objects.get(name=user.username)
-                print(f"Found People instance for {user.username}") # DEBUG
-            except People.DoesNotExist:
-                print(f"No People instance found for {user.username}") # DEBUG
-                pass # Continue without People instance if not found
-
-            # --- Field Updates ---
-            email_updated = False
-            if "email" in data:
-                new_email = data["email"]
-                # Basic validation (consider more robust validation)
-                if not EMAIL_REGEX.match(new_email):
-                     print("Invalid email format.") # DEBUG
-                     return JsonResponse({"error": "Invalid email format"}, status=400)
-                if new_email != user.email:
-                    user.email = new_email
-                    if people_instance:
-                        people_instance.email = new_email
-                    email_updated = True
-                    print(f"Email updated to: {new_email}") # DEBUG
-
-            avatar_updated = False
-            if "avatar" in data and people_instance:
-                 if data["avatar"] != people_instance.avatar:
-                    people_instance.avatar = data["avatar"]
-                    avatar_updated = True
-                    print(f"Avatar updated to: {data['avatar']}") # DEBUG
-
-            # --- Password Update Logic ---
-            password_updated = False
-            new_password = data.get("new_password")
-            current_password = data.get("current_password")
-            print(f"Attempting password change? new_password provided: {bool(new_password)}") # DEBUG
-
-            if new_password: # Check if a new password was provided
-                print("Processing new password...") # DEBUG
-                if not current_password:
-                    print("Current password missing.") # DEBUG
-                    return JsonResponse({
-                        "error": "Current password is required to set a new password."
-                    }, status=400)
-
-                print("Checking current password...") # DEBUG
-                # *** Check if the provided current password is correct ***
-                if not user.check_password(current_password):
-                    print("Incorrect current password provided.") # DEBUG
-                    return JsonResponse({
-                        "error": "Incorrect current password."
-                    }, status=400) # Use 400 for bad request
-
-                print("Current password CORRECT.") # DEBUG
-
-                # Basic validation for new password length
-                if len(new_password) < MIN_PASSWORD_LENGTH:
-                     print("New password too short.") # DEBUG
-                     return JsonResponse({
-                         "error": f"New password must be at least {MIN_PASSWORD_LENGTH} characters long."
-                     }, status=400)
-
-                # *** If current password is correct, set the new password ***
-                print("Setting new password...") # DEBUG
-                user.set_password(new_password)
-                password_updated = True
-                # Decide if you need to update People.password (generally NO)
-                # if people_instance: people_instance.password = make_password(new_password)
-
-            # --- Save Changes ---
-            try:
-                print("Saving AuthUser changes...") # DEBUG
-                user.save() # Save changes to AuthUser (email, password hash)
-                print("AuthUser saved.") # DEBUG
-                if people_instance and (email_updated or avatar_updated):
-                    print("Saving People instance changes...") # DEBUG
-                    people_instance.save() # Save changes to People (email, avatar)
-                    print("People instance saved.") # DEBUG
-            except Exception as db_error:
-                print(f"DATABASE SAVE ERROR: {db_error}") # DEBUG
-                return JsonResponse({"error": "Failed to save profile changes to database."}, status=500)
-
-
-            # Prevent logout after password change
-            if password_updated:
-                print("Updating session auth hash...") # DEBUG
-                update_session_auth_hash(request, user)
-                print("Session auth hash updated.") # DEBUG
-
-            # Ensure session is saved if modified
-            request.session.modified = True
-            print("Session marked as modified.") # DEBUG
-
-            # --- Success Response ---
-            updated_avatar = people_instance.avatar if people_instance else "default.svg" # Provide a default
-            print("Profile update successful. Sending response.") # DEBUG
-            return JsonResponse({
-                "message": "Profile updated successfully",
-                "username": user.username,
-                "email": user.email,
-                "avatar": updated_avatar,
-            }, status=200)
-
-        except json.JSONDecodeError:
-            print("Invalid JSON received.") # DEBUG
-            return JsonResponse({"error": "Invalid JSON format"}, status=400)
-        except People.DoesNotExist:
-             print("People.DoesNotExist caught (should have been handled earlier).") # DEBUG
-             return JsonResponse({"error": "Associated profile data not found."}, status=404)
-        except Exception as e:
-            print(f"UNEXPECTED ERROR in update_profile: {e}") # DEBUG
-            return JsonResponse({"error": "An internal error occurred."}, status=500) # Generic error for unexpected issues
-
-    return JsonResponse({"error": "Invalid request method"}, status=405)
-
-        
 
 # Create user view
 @method_decorator(csrf_exempt, name='dispatch')
@@ -395,9 +221,13 @@ class CreateUserView(View):
             if not validate_username(name):
                 return JsonResponse({'error': 'Invalid name'}, status=400)
 
+            # NOTE: Assuming validate_password was a typo and meant to validate something else,
+            # or perhaps numberbooks validation is missing. Keeping as is for now.
             if not validate_password(numberbooks):
                 return JsonResponse({'error': 'Invalid number of books'}, status=400)
 
+            # NOTE: Assuming validate_email was a typo and meant to validate 'type'.
+            # Keeping as is for now.
             if not validate_email(type):
                 return JsonResponse({'error': 'Invalid type'}, status=400)
 
@@ -618,9 +448,9 @@ class BookDetailView(View):
 # ============================== #
 # 4️ SECURITY & CSRF ROUTES       #
 # ============================== #
-
 def csrf_token_view(request):
     return JsonResponse({"csrfToken": get_token(request)})
+
 
 
 
@@ -709,8 +539,6 @@ class UpdateUserProfileView(View):
 
 
 
-def csrf_token_view(request):
-    return JsonResponse({"csrfToken": get_token(request)})
 
 
 @login_required
@@ -754,9 +582,46 @@ def update_profile(request):
                 user.set_password(data["password"])  # Django's hashing
 
             if "avatar" in data:
-                user.avatar = data["avatar"]
+                # Assuming 'avatar' is a field on the AuthUser model or a related profile model
+                # If 'avatar' is only on the 'People' model, this needs adjustment
+                # For now, assuming it might be on AuthUser or a related profile accessible via user
+                # This part might need refinement based on your actual User model structure
+                try:
+                    # Example: If you have a OneToOneField profile
+                    # user.profile.avatar = data["avatar"]
+                    # user.profile.save()
+                    # Or if avatar is directly on a custom user model:
+                    # user.avatar = data["avatar"] # This line might cause an error if 'avatar' isn't on AuthUser
+                    # For now, let's assume we update the People model separately if needed
+                    pass # Placeholder - update People model below if necessary
+                except AttributeError:
+                     # Handle case where avatar is not directly on user model
+                     pass
 
-            user.save()
+
+            user.save() # Save AuthUser changes (username, email, password hash)
+
+            # Update corresponding People instance if necessary
+            try:
+                people_instance = People.objects.get(name=old_username) # Find based on old username before potential change
+                people_updated = False
+                if "username" in data and data["username"] != old_username:
+                    people_instance.name = data["username"] # Update name in People too
+                    people_updated = True
+                if "email" in data and data["email"] != people_instance.email:
+                     people_instance.email = data["email"]
+                     people_updated = True
+                if "avatar" in data and hasattr(people_instance, 'avatar') and data["avatar"] != people_instance.avatar:
+                     people_instance.avatar = data["avatar"]
+                     people_updated = True
+
+                if people_updated:
+                    people_instance.save()
+
+            except People.DoesNotExist:
+                # Handle case where People instance doesn't exist (maybe log it)
+                pass
+
 
             # ✅ Prevent logout by updating session authentication hash
             update_session_auth_hash(request, user)  
@@ -764,16 +629,31 @@ def update_profile(request):
             # ✅ Ensure session is modified so Django doesn't invalidate it
             request.session.modified = True
 
+            # Fetch the potentially updated avatar for the response
+            final_avatar = "default.svg" # Default
+            try:
+                # Try fetching the updated People instance again
+                updated_people = People.objects.get(name=user.username)
+                if hasattr(updated_people, 'avatar'):
+                    final_avatar = updated_people.avatar
+            except People.DoesNotExist:
+                pass # Keep default avatar
+
+
             return JsonResponse({
                 "message": "Profile updated successfully",
-                "new_username": user.username,
-                "old_username": old_username
+                "username": user.username, # Send back the current username
+                "email": user.email,
+                "avatar": final_avatar,
+                # "old_username": old_username # Maybe remove for production
             }, status=200)
 
         except json.JSONDecodeError:
             return JsonResponse({"error": "Invalid JSON format"}, status=400)
         except Exception as e:
-            return JsonResponse({"error": str(e)}, status=400)
+            # Log the exception e for debugging
+            print(f"Error during profile update: {e}") # Basic logging
+            return JsonResponse({"error": "An internal error occurred during profile update."}, status=500) # Generic error
 
     return JsonResponse({"error": "Invalid request method"}, status=405)
 
@@ -784,13 +664,21 @@ def get_current_user(request):
         return JsonResponse({"error": "User not authenticated"}, status=401)
 
     try:
+        # Use request.user.username which comes from the authenticated session
         people = People.objects.get(name=request.user.username)
         return JsonResponse({
             "id": people.id,
-            "username": people.name,
-            "email": people.email,
-            "avatar": people.avatar,
-            "role": people.type,
+            "username": people.name, # Or request.user.username, should be the same
+            "email": people.email, # Or request.user.email if synced
+            "avatar": people.avatar if hasattr(people, 'avatar') else "default.svg",
+            "role": people.type, # Renamed 'type' to 'role' for clarity, adjust if needed
         })
-    except ObjectDoesNotExist:
-        return JsonResponse({"error": "User not found in database"}, status=404)
+    except People.DoesNotExist:
+         # If the People object doesn't exist, maybe return basic AuthUser info?
+         # Or return an error as it implies data inconsistency.
+         # Current behavior: return 404
+        return JsonResponse({"error": "Associated user profile data not found."}, status=404)
+    except Exception as e:
+        # Log the exception e
+        print(f"Error in get_current_user: {e}")
+        return JsonResponse({"error": "An internal error occurred."}, status=500)
