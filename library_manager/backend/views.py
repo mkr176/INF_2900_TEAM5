@@ -27,6 +27,9 @@ MIN_PASSWORD_LENGTH = 6
 EMAIL_REGEX = re.compile(r"^[^\s@]+@[^\s@]+\.[^\s@]+$")
 AuthUser = get_user_model() # Use Django's configured user model
 
+# Define the borrow limit constant
+MAX_BORROW_LIMIT = 3
+
 
 # Landing Page View
 def front(request, *args, **kwargs):
@@ -217,6 +220,12 @@ class CreateUserView(View):
             # Validate fields
             if not name or not type:
                 return JsonResponse({'error': 'All fields are required'}, status=400)
+            # --- Potential Simplification Suggestion ---
+            # The validation functions (validate_username, validate_password, validate_email)
+            # seem designed for the registration form (checking AuthUser, password complexity).
+            # Using them here for creating a 'People' instance might be confusing or incorrect.
+            # Consider if separate validation or direct checks are more appropriate here.
+            # For now, keeping the original logic but noting the potential issue.
 
             if not validate_username(name):
                 return JsonResponse({'error': 'Invalid name'}, status=400)
@@ -230,6 +239,16 @@ class CreateUserView(View):
             # Keeping as is for now.
             if not validate_email(type):
                 return JsonResponse({'error': 'Invalid type'}, status=400)
+            # Simplified checks for this context:
+            if People.objects.filter(name=name).exists():
+                 return JsonResponse({'error': 'Person with this name already exists'}, status=400)
+            if not isinstance(age, int) or age <= 0:
+                 return JsonResponse({'error': 'Invalid age'}, status=400)
+            if type not in [code for code, name in People.TYPES]:
+                 return JsonResponse({'error': 'Invalid type'}, status=400)
+            if AuthUser.objects.filter(username=name).exists():
+                 return JsonResponse({'error': 'Username already taken in Auth system'}, status=400)
+
 
         
             # Create user
@@ -263,6 +282,9 @@ class ListBooksView(View):
             "publisher", "publication_year", "copy_number"
         )
 
+        # Convert image path if needed (values() returns the string path)
+        # No conversion needed here as values() gets the DB value directly.
+
         return JsonResponse(list(books_data), safe=False, status=200)
 
 
@@ -284,23 +306,46 @@ class CreateBookView(View):
             publication_year = data.get('publicationYear') 
             copy_number = data.get('copyNumber') 
 
-            # Get current user from request
+            # --- Simplification Suggestion: Use request.user directly ---
+            # The 'user' field on the Book model seems to represent the *owner* or *adder*
+            # rather than the borrower. If the intent is to assign the currently logged-in
+            # user as the owner, we can use request.user.
+            # However, the Book model links 'user' to 'People', not 'AuthUser'.
+            # This implies a need to find the 'People' instance corresponding to 'request.user'.
+            # The current logic correctly fetches the People object.
+
             current_user_auth = request.user
             if not current_user_auth.is_authenticated:
                 return JsonResponse({'error': 'User not authenticated'}, status=401)
 
             # Fetch the People object associated with the authenticated user
             try:
-                current_user_people = People.objects.get(name=current_user_auth.username)
+                # Assuming 'user' field on Book means the person who added/owns it.
+                book_owner_people = People.objects.get(name=current_user_auth.username)
             except People.DoesNotExist:
+                # Decide how to handle this: error, or maybe allow creation without owner?
+                # Current logic returns an error, which is reasonable.
                 return JsonResponse({'error': 'People object not found for current user'}, status=404)
+            # Validate required fields
+            if not all([title, author, isbn, category, language, condition]):
+                 return JsonResponse({'error': 'Missing required book fields'}, status=400)
+
+            # Validate choices
+            if category not in [code for code, name in Book.CATEGORIES]:
+                 return JsonResponse({'error': 'Invalid category'}, status=400)
+            if condition not in [code for code, name in Book.CONDITIONS]:
+                 return JsonResponse({'error': 'Invalid condition'}, status=400)
+
+            # Check ISBN uniqueness before creation attempt
+            if Book.objects.filter(isbn=isbn).exists():
+                return JsonResponse({'error': 'Book with this ISBN already exists'}, status=400)
 
 
             # Create book, assigning the current user
             due_date = datetime.now() + timedelta(weeks=2)
             Book.objects.create(
                 title=title, author=author, isbn=isbn,due_date=due_date,
-                category=category, language=language, user=current_user_people, condition=condition, # Assign current_user_people
+                category=category, language=language, user=book_owner_people, condition=condition,
                 available=available, storage_location=storage_location,
                 publisher=publisher, publication_year=publication_year, copy_number=copy_number
             )
@@ -308,19 +353,33 @@ class CreateBookView(View):
 
         except json.JSONDecodeError:
             return JsonResponse({'error': 'Invalid JSON'}, status=400)
-        
-        
+        except Exception as e: # Catch other potential errors during creation
+            return JsonResponse({'error': f'An error occurred: {str(e)}'}, status=500)
+
+
 #Delete book view
 @method_decorator(csrf_exempt, name='dispatch')
 class DeleteBookView(View):
     def delete(self, request ,book_id):
         try:
+            # --- Robustness Suggestion: Add permission check ---
+            # Should only admins/librarians or maybe the owner be allowed to delete?
+            # Add logic here to check request.user's role (via People.type)
+            # Example (needs refinement based on actual roles):
+            # current_user_people = People.objects.get(name=request.user.username)
+            # if current_user_people.type not in ['AD', 'LB']:
+            #     return JsonResponse({'error': 'Permission denied'}, status=403)
+            # --- End Suggestion ---
+
             book = get_object_or_404(Book, id=book_id)
             book.delete()
             return JsonResponse({'message': 'Book deleted successfully'}, status=200)
+        except ObjectDoesNotExist: # More specific exception
+             return JsonResponse({'error': 'Book not found'}, status=404)
         except Exception as e:
-            return JsonResponse({'error': str(e)}, status=500)
-        
+            # Log the error e
+            return JsonResponse({'error': f'An error occurred: {str(e)}'}, status=500)
+
 
 
 
@@ -331,7 +390,7 @@ class BorrowBookView(View): # Changed to Class-based view
         try:
             data = json.loads(request.body)
             book_id = data.get('book_id')
-            user_id = data.get('user_id') # Get user_id from request
+            user_id = data.get('user_id') # Get user_id (People ID) from request
 
             if not book_id:
                 return JsonResponse({'error': 'Book ID is required'}, status=400)
@@ -348,52 +407,74 @@ class BorrowBookView(View): # Changed to Class-based view
             except People.DoesNotExist:
                 return JsonResponse({'error': 'User not found'}, status=404)
 
-            borrowed_by_current_user = book.borrower == user
+            # Determine if the request is from the user who currently borrowed the book
+            borrowed_by_requesting_user = book.borrower == user
 
-            if book.available: # Book is available, so borrow it
-                book.available = False
-                book.borrower = user # Assign the borrower
-                book.borrow_date = datetime.now().date() # Record borrow date
-                book.due_date = datetime.now().date() + timedelta(weeks=2) # Set due date to 2 weeks from now
-                book.save()
-                message = 'Book borrowed successfully' # Set success message
-                status_code = 200 # OK
-            elif borrowed_by_current_user: # Book is borrowed by the current user, so return it
+            message = ''
+            status_code = 200
+
+            if book.available: # Book is available, so attempt to borrow it
+                # **** START: Borrow Limit Check ****
+                current_borrow_count = Book.objects.filter(borrower=user, available=False).count()
+
+                if current_borrow_count >= MAX_BORROW_LIMIT:
+                    message = f'Borrow limit reached. Users can borrow a maximum of {MAX_BORROW_LIMIT} books.'
+                    status_code = 400 # Bad Request - User cannot borrow more
+                else:
+                    # Proceed with borrowing if limit not reached
+                    book.available = False
+                    book.borrower = user # Assign the borrower
+                    book.borrow_date = date.today() # Record borrow date using date directly
+                    book.due_date = date.today() + timedelta(weeks=2) # Set due date to 2 weeks from now
+                    book.save()
+                    message = 'Book borrowed successfully' # Set success message
+                    status_code = 200 # OK
+                # **** END: Borrow Limit Check ****
+
+            elif borrowed_by_requesting_user: # Book is borrowed by the requesting user, so return it
                 book.available = True
                 book.borrower = None # Clear borrower
                 book.borrow_date = None # Clear borrow date
-                # book.due_date = datetime.now().date() + timedelta(weeks=2) #reset due date for next borrow
+                book.due_date = None # Optionally clear or keep the last due date
                 book.save()
                 message = 'Book returned successfully' # Set return message
                 status_code = 200 # OK
             else: # Book is borrowed by another user
-                availability_date = book.due_date.strftime("%Y-%m-%d")
-                message = f'Book is currently unavailable. It will be available from {availability_date}' # Message for borrowed by others
-                status_code = 400 # Bad Request - client error
+                due_date_str = book.due_date.strftime("%Y-%m-%d") if book.due_date else "an unknown date"
+                message = f'Book is currently unavailable. It is due back around {due_date_str}.' # Message for borrowed by others
+                status_code = 400 # Bad Request - client error (cannot borrow)
 
 
-            book_data = { # Prepare book data for response
-                'id': book.id,
-                'title': book.title,
-                'author': book.author,
-                'isbn': book.isbn,
-                'category': book.category,
-                'language': book.language,
-                'user_id': book.user_id, # keep user_id for consistency if needed on frontend
-                'condition': book.condition,
-                'available': book.available,
-                'image': str(book.image), # serialize ImageField to string
-                'borrower_id': book.borrower.id if book.borrower else None, # Include borrower id
-                'borrow_date': book.borrow_date.isoformat() if book.borrow_date else None, # Include borrow date
-                'due_date': book.due_date.isoformat() # Include due_date in response
-            }
-            return JsonResponse({'message': message, 'book': book_data}, status=status_code) # Return success with appropriate message and book data
+            # Prepare book data for response only on success or relevant state change
+            book_data = None
+            if status_code == 200: # Only include book data on success
+                book_data = {
+                    'id': book.id,
+                    'title': book.title,
+                    'author': book.author,
+                    'isbn': book.isbn,
+                    'category': book.category,
+                    'language': book.language,
+                    'user_id': book.user_id, # keep owner_id for consistency if needed on frontend
+                    'condition': book.condition,
+                    'available': book.available,
+                    'image': str(book.image), # serialize ImageField to string
+                    'borrower_id': book.borrower.id if book.borrower else None, # Include borrower id
+                    'borrow_date': book.borrow_date.isoformat() if book.borrow_date else None, # Include borrow date
+                    'due_date': book.due_date.isoformat() if book.due_date else None # Include due_date in response
+                }
+                return JsonResponse({'message': message, 'book': book_data}, status=status_code)
+            else:
+                # For errors (like limit reached or book unavailable), just return the message
+                return JsonResponse({'error': message}, status=status_code)
 
 
         except json.JSONDecodeError:
             return JsonResponse({'error': 'Invalid JSON'}, status=400)
         except Exception as e:
-            return JsonResponse({'error': str(e)}, status=500)
+            # Log the error e
+            print(f"Error in BorrowBookView: {e}") # Basic logging
+            return JsonResponse({'error': 'An internal server error occurred.'}, status=500)
 
 
 # Update Book
@@ -401,18 +482,53 @@ class BorrowBookView(View): # Changed to Class-based view
 class UpdateBookView(View):
     def put(self, request, book_id): # Changed from post to put method
         try:
+            # --- Robustness Suggestion: Add permission check ---
+            # Similar to DeleteBookView, check if the user has permission to update.
+            # current_user_people = People.objects.get(name=request.user.username)
+            # if current_user_people.type not in ['AD', 'LB']:
+            #     return JsonResponse({'error': 'Permission denied'}, status=403)
+            # --- End Suggestion ---
+
             data = json.loads(request.body)
             book = get_object_or_404(Book, id=book_id)
 
+            # --- Robustness: Validate incoming data ---
+            # Example: Check if 'category' or 'condition' are valid choices if provided
+            if 'category' in data and data['category'] not in [code for code, name in Book.CATEGORIES]:
+                 return JsonResponse({'error': f"Invalid category: {data['category']}"}, status=400)
+            if 'condition' in data and data['condition'] not in [code for code, name in Book.CONDITIONS]:
+                 return JsonResponse({'error': f"Invalid condition: {data['condition']}"}, status=400)
+            if 'isbn' in data and data['isbn'] != book.isbn and Book.objects.filter(isbn=data['isbn']).exists():
+                 return JsonResponse({'error': f"ISBN {data['isbn']} already exists."}, status=400)
+            # ---
+
+            # Update fields present in the request data
             for field in ['title', 'author', 'isbn', 'category', 'language', 'condition', 'available', 'storage_location', 'publisher', 'publication_year', 'copy_number']:
                 if field in data:
                     setattr(book, field, data[field])
 
+            # Handle potential ForeignKey updates if needed (e.g., changing owner 'user')
+            # if 'user_id' in data:
+            #    try:
+            #        new_owner = People.objects.get(id=data['user_id'])
+            #        book.user = new_owner
+            #    except People.DoesNotExist:
+            #        return JsonResponse({'error': 'New owner (user) not found'}, status=404)
+
             book.save()
+            # Optionally return the updated book data
+            # serializer = BookSerializer(book)
+            # return JsonResponse({'message': 'Book updated successfully', 'book': serializer.data}, status=200)
             return JsonResponse({'message': 'Book updated successfully'}, status=200)
 
         except json.JSONDecodeError:
             return JsonResponse({'error': 'Invalid JSON'}, status=400)
+        except ObjectDoesNotExist: # More specific exception
+             return JsonResponse({'error': 'Book not found'}, status=404)
+        except Exception as e:
+            # Log the error e
+            print(f"Error in UpdateBookView: {e}")
+            return JsonResponse({'error': 'An internal server error occurred.'}, status=500)
 
 
 @method_decorator(csrf_exempt, name='dispatch')
@@ -427,22 +543,25 @@ class BookDetailView(View):
                 "isbn": book.isbn,
                 "category": book.category,
                 "language": book.language,
-                "user_id": book.user.id,  # Owner of the book
+                "user_id": book.user.id if book.user else None,  # Owner of the book
                 "condition": book.condition,
                 "available": book.available,
                 "image": str(book.image),  # Convert ImageField to string
                 "borrower_id": book.borrower.id if book.borrower else None,
                 "borrow_date": book.borrow_date.isoformat() if book.borrow_date else None,
-                "due_date": book.due_date.isoformat(),
+                "due_date": book.due_date.isoformat() if book.due_date else None, # Handle potential None due_date
                 "storage_location": book.storage_location,
                 "publisher": book.publisher,
                 "publication_year": book.publication_year,
                 "copy_number": book.copy_number,
             }
             return JsonResponse(book_data, status=200)
-
+        except ObjectDoesNotExist: # More specific exception
+             return JsonResponse({'error': 'Book not found'}, status=404)
         except Exception as e:
-            return JsonResponse({"error": str(e)}, status=500)
+            # Log the error e
+            print(f"Error in BookDetailView: {e}")
+            return JsonResponse({"error": "An internal server error occurred."}, status=500)
 
 
 # ============================== #
@@ -462,49 +581,54 @@ def csrf_token_view(request):
 # Delete user view
 @method_decorator(csrf_exempt, name='dispatch')
 class DeleteUserView(View):
-    def delete(self, request ,user_id):
+    def delete(self, request ,user_id): # user_id here refers to People.id
         try:
-            user = get_object_or_404(People, id=user_id)
-            user2 = get_object_or_404(AuthUser, username=user.name)
-            user2.delete()
-            user.delete()
+            # --- Robustness Suggestion: Add permission check ---
+            # Only Admins should likely be able to delete users.
+            # Check request.user's role.
+            # current_user_people = People.objects.get(name=request.user.username)
+            # if current_user_people.type != 'AD':
+            #     return JsonResponse({'error': 'Permission denied'}, status=403)
+            # Also, prevent users from deleting themselves?
+            # if current_user_people.id == user_id:
+            #     return JsonResponse({'error': 'Cannot delete yourself'}, status=400)
+            # --- End Suggestion ---
+
+            user_people = get_object_or_404(People, id=user_id)
+            # Find the corresponding AuthUser to delete as well
+            user_auth = get_object_or_404(AuthUser, username=user_people.name)
+
+            user_auth.delete() # Delete AuthUser first (or handle dependencies)
+            user_people.delete() # Then delete People instance
+
             return JsonResponse({'message': 'User deleted successfully'}, status=200)
+        except ObjectDoesNotExist:
+             return JsonResponse({'error': 'User not found'}, status=404)
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
         
-@method_decorator(login_required, name='dispatch')
-class CurrentUserView(View):
-    def get(self, request):
-        user = request.user
-        try:
-            people = People.objects.get(name=user.username)
-            user_data = {
-                'id': people.id, 
-                'username': user.username,
-                'type': people.type
-            }
-        except People.DoesNotExist:
-            # ✅ Return user details even if "People" entry is missing
-            user_data = {
-                'id': user.id,
-                'username': user.username,
-                'type': "Unknown"
-            }
-
-        return JsonResponse(user_data)
 
 
 class ListUsersView(generics.ListAPIView):
+    # --- Suggestion: Add Permissions ---
+    # Should listing all users be restricted? E.g., only Admins/Librarians?
+    # from rest_framework.permissions import IsAdminUser
+    # permission_classes = [IsAdminUser] # Example using DRF permissions
+    # ---
     queryset = People.objects.all()
     serializer_class = PeopleSerializer
 
 
 # Get User Profile
-@method_decorator(csrf_exempt, name='dispatch')
+@method_decorator(csrf_exempt, name='dispatch') # Should GET requests need csrf_exempt? Usually not.
 class UserProfileView(View):
-    def get(self, request, user_id):
+    def get(self, request, user_id): # user_id refers to People.id
         try:
-            user = People.objects.get(id=user_id)
+            # --- Suggestion: Add Permission Check? ---
+            # Should any logged-in user be able to view any profile?
+            # Or only their own / Admins?
+            # ---
+            user = get_object_or_404(People, id=user_id)
             user_data = {
                 'id': user.id,
                 'name': user.name,
@@ -514,72 +638,134 @@ class UserProfileView(View):
                 'type': user.type
             }
             return JsonResponse(user_data, status=200)
-        except People.DoesNotExist:
+        except ObjectDoesNotExist:
             return JsonResponse({'error': 'User not found'}, status=404)
+        except Exception as e:
+            print(f"Error in UserProfileView: {e}")
+            return JsonResponse({'error': 'An internal server error occurred.'}, status=500)
 
-# Update User Profile
+# Update User Profile (for a specific user by ID, likely by Admin)
 @method_decorator(csrf_exempt, name='dispatch')
 class UpdateUserProfileView(View):
-    def post(self, request, user_id):
+    # --- Suggestion: Use PUT or PATCH instead of POST for updates ---
+    # def put(self, request, user_id):
+    def post(self, request, user_id): # user_id refers to People.id
         try:
-            data = json.loads(request.body)
-            user = People.objects.get(id=user_id)
+            # --- Robustness Suggestion: Add permission check ---
+            # Only Admins should likely be able to update arbitrary users.
+            # current_user_people = People.objects.get(name=request.user.username)
+            # if current_user_people.type != 'AD':
+            #     return JsonResponse({'error': 'Permission denied'}, status=403)
+            # --- End Suggestion ---
 
+            data = json.loads(request.body)
+            user = get_object_or_404(People, id=user_id)
+            original_username = user.name # Store original username if it might change
+
+            # --- Robustness: Validate incoming data ---
+            if 'email' in data and People.objects.filter(email=data['email']).exclude(id=user_id).exists():
+                 return JsonResponse({'error': 'Email already in use by another user'}, status=400)
+            if 'name' in data and data['name'] != original_username:
+                 if People.objects.filter(name=data['name']).exists():
+                      return JsonResponse({'error': 'Name already in use by another user'}, status=400)
+                 if AuthUser.objects.filter(username=data['name']).exists():
+                      return JsonResponse({'error': 'Name already exists in authentication system'}, status=400)
+            if 'type' in data and data['type'] not in [code for code, name in People.TYPES]:
+                 return JsonResponse({'error': 'Invalid user type'}, status=400)
+            # ---
+
+            # Update fields from data
             user.name = data.get('name', user.name)
             user.email = data.get('email', user.email)
             user.age = data.get('age', user.age)
-            user.avatar = data.get('avatar', user.avatar)  # Update avatar
+            user.type = data.get('type', user.type) # Allow updating type
+            # user.avatar = data.get('avatar', user.avatar) # People model doesn't have 'avatar'
 
-            user.save()
+            # --- Sync with AuthUser if name/email changed ---
+            auth_user = None
+            try:
+                auth_user = AuthUser.objects.get(username=original_username)
+                auth_user_updated = False
+                if user.name != original_username:
+                    auth_user.username = user.name
+                    auth_user_updated = True
+                if 'email' in data and data['email'] != auth_user.email:
+                    auth_user.email = data['email']
+                    auth_user_updated = True
+                # Password update should likely be a separate endpoint/process
+                if auth_user_updated:
+                    auth_user.save()
+            except AuthUser.DoesNotExist:
+                print(f"Warning: AuthUser not found for People user {original_username} during update.")
+            # ---
+
+            user.save() # Save People instance changes
             return JsonResponse({'message': 'Profile updated successfully'}, status=200)
-        except People.DoesNotExist:
+        except ObjectDoesNotExist:
             return JsonResponse({'error': 'User not found'}, status=404)
         except json.JSONDecodeError:
             return JsonResponse({'error': 'Invalid JSON'}, status=400)
+        except Exception as e:
+            print(f"Error in UpdateUserProfileView: {e}")
+            return JsonResponse({'error': 'An internal server error occurred.'}, status=500)
 
 
 
 
-
-@login_required
-def get_user_info(request):
-    if request.user.is_authenticated:
-        try:
-            person = People.objects.get(name=request.user.username)
-            return JsonResponse({
-                "username": person.name,
-                "email": person.email,
-                "avatar": person.avatar if hasattr(person, 'avatar') else "default.svg",
-                "type": person.type,
-            })
-        except People.DoesNotExist:
-           
-            return JsonResponse({"error": "Unauthorized"}, status=401)
-    else:
-        return JsonResponse({"error": "Not authenticated"}, status=401)
-
-@csrf_exempt
+# Update Profile (for the currently logged-in user)
+@csrf_exempt # Keep for POST
 def update_profile(request):
     if request.method == "POST":
+        # --- Suggestion: Use PUT or PATCH for updates ---
+        # if request.method in ["PUT", "PATCH"]:
         try:
-            data = json.loads(request.body)
-            user = request.user
-
-            if not user.is_authenticated:
+            if not request.user.is_authenticated:
                 return JsonResponse({"error": "User not authenticated"}, status=401)
 
-            # Store old username for debugging
-            old_username = user.username  
+            data = json.loads(request.body)
+            user = request.user # This is the AuthUser instance
 
-            # Update fields
+            # Find the corresponding People instance
+            try:
+                people_instance = People.objects.get(name=user.username)
+            except People.DoesNotExist:
+                return JsonResponse({"error": "Associated profile data not found."}, status=404)
+
+
+            # --- Validate incoming data ---
+            new_username = data.get("username", user.username)
+            new_email = data.get("email", user.email)
+
+            if new_username != user.username:
+                 if AuthUser.objects.filter(username=new_username).exists():
+                      return JsonResponse({"error": "Username already taken"}, status=400)
+                 if People.objects.filter(name=new_username).exists():
+                      return JsonResponse({"error": "Username already taken in People records"}, status=400)
+
+            if new_email != user.email:
+                 if AuthUser.objects.filter(email=new_email).exists():
+                      return JsonResponse({"error": "Email already in use"}, status=400)
+                 if People.objects.filter(email=new_email).exists():
+                      return JsonResponse({"error": "Email already in use in People records"}, status=400)
+            # ---
+
+            # Update AuthUser fields
+            auth_user_updated = False
             if "username" in data and data["username"] != user.username:
                 user.username = data["username"]
+                auth_user_updated = True
 
-            if "email" in data:
+            if "email" in data and data["email"] != user.email:
                 user.email = data["email"]
+                auth_user_updated = True
 
-            if "password" in data and data["password"] != "":
-                user.set_password(data["password"])  # Django's hashing
+            if "password" in data and data["password"]: # Check if password is provided and not empty
+                # Add password validation here if desired (e.g., complexity)
+                user.set_password(data["password"])  # Hash password
+                auth_user_updated = True
+            if auth_user_updated:
+                user.save()
+
 
             if "avatar" in data:
                 # Assuming 'avatar' is a field on the AuthUser model or a related profile model
@@ -605,15 +791,19 @@ def update_profile(request):
             try:
                 people_instance = People.objects.get(name=old_username) # Find based on old username before potential change
                 people_updated = False
-                if "username" in data and data["username"] != old_username:
-                    people_instance.name = data["username"] # Update name in People too
+                if "username" in data and data["username"] != people_instance.name:
+                    people_instance.name = data["username"] # Keep People.name in sync
                     people_updated = True
                 if "email" in data and data["email"] != people_instance.email:
-                     people_instance.email = data["email"]
-                     people_updated = True
-                if "avatar" in data and hasattr(people_instance, 'avatar') and data["avatar"] != people_instance.avatar:
-                     people_instance.avatar = data["avatar"]
-                     people_updated = True
+                    people_instance.email = data["email"] # Keep People.email in sync
+                    people_updated = True
+                if "age" in data and data["age"] != people_instance.age:
+                    people_instance.age = data["age"]
+                    people_updated = True
+                # Add other People fields if they are updatable via this endpoint (e.g., 'avatar' if added)
+                # if "avatar" in data and hasattr(people_instance, 'avatar') and data["avatar"] != people_instance.avatar:
+                #      people_instance.avatar = data["avatar"]
+                #      people_updated = True
 
                 if people_updated:
                     people_instance.save()
@@ -623,8 +813,9 @@ def update_profile(request):
                 pass
 
 
-            # ✅ Prevent logout by updating session authentication hash
-            update_session_auth_hash(request, user)  
+            # Update session hash if password or username changed to prevent logout
+            if "password" in data and data["password"] or ("username" in data and data["username"] != request.user.username):
+                 update_session_auth_hash(request, user)
 
             # ✅ Ensure session is modified so Django doesn't invalidate it
             request.session.modified = True
@@ -658,6 +849,7 @@ def update_profile(request):
     return JsonResponse({"error": "Invalid request method"}, status=405)
 
 
+# NOTE: NEEDS REFACTORING! Duplicate get_current_user definition. The CurrentUserView class handles this.
 
 def get_current_user(request):
     if not request.user.is_authenticated:
