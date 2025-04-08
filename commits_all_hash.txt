@@ -58,7 +58,7 @@ A	library_manager/static/images/covers/SoftwareEngineeringAPracticalFunIntroduct
 A	library_manager/static/images/covers/SoftwareEngineeringAPracticalIntroduction_cover.jpg
 A	library_manager/static/images/covers/TheCaseoftheFrozenFirewallAnIneArvolaMystery_cover.jpg
 
-Author: Matt Ricote Kristiansen 
+Author: Matt 
 Date:   2025-04-01 16:03:16 +0200
 Subject: Updated  to safely fetch user role and avatar from People table, Fix navbar visibility for Manage Users button (only for Admins and Librarians)
 
@@ -67,7 +67,7 @@ M	library_manager/backend/views.py
 M	library_manager/frontend/src/components/NavBar/NavBar.tsx
 M	library_manager/frontend/src/context/AuthContext.tsx
 
-Author: Matt Ricote Kristiansen 
+Author: Matt 
 Date:   2025-04-01 13:11:25 +0200
 Subject: Scrum-71 Finished, Added button for lib and admin to use when logging in for managing users, Updated authentication. Frontend: Adding/Deleting Users for Admin and Librarian view
 
@@ -75,7 +75,7 @@ Subject: Scrum-71 Finished, Added button for lib and admin to use when logging i
 M	library_manager/frontend/src/components/NavBar/NavBar.tsx
 M	library_manager/frontend/src/context/AuthContext.tsx
 
-Author: Matt Ricote Kristiansen 
+Author: Matt 
 Date:   2025-04-01 13:09:53 +0200
 Subject: updated routing and views for deleting users
 
@@ -83,7 +83,7 @@ Subject: updated routing and views for deleting users
 M	library_manager/backend/urls.py
 M	library_manager/backend/views.py
 
-Author: Matt Ricote Kristiansen 
+Author: Matt 
 Date:   2025-04-01 13:09:03 +0200
 Subject: Frontend: Adding/Deleting Users for Admin and Librarian view
 
@@ -248,7 +248,7 @@ M	library_manager/backend/urls.py
 M	library_manager/frontend/src/pages/PrincipalPage/BookCard.tsx
 M	library_manager/frontend/src/pages/PrincipalPage/PrincipalPage.tsx
 
-Author: guti-1 
+Author: Carlos 
 Date:   2025-03-25 10:18:07 +0100
 Subject: someone check if it works for AD and LB
 
@@ -257,7 +257,7 @@ M	library_manager/frontend/src/pages/BookDetailPage/BookDetailPage.tsx
 M	library_manager/frontend/src/pages/PrincipalPage/BookCard.tsx
 M	library_manager/frontend/src/pages/PrincipalPage/PrincipalPage.tsx
 
-Author: guti-1 
+Author: Carlos 
 Date:   2025-03-24 18:15:19 +0100
 Subject: some changes not finished
 
@@ -324,7 +324,7 @@ M	library_manager/frontend/package.json
 D	library_manager/frontend/tests/component/App.test.tsx
 M	run_tests.py
 
-Author: Matt Ricote Kristiansen 
+Author: Matt 
 Date:   2025-03-20 11:28:19 +0100
 Subject: added more component/pages, not imported yet
 
@@ -348,7 +348,7 @@ M	library_manager/frontend/tsconfig.json
 A	library_manager/frontend/vitest.config.ts
 M	run_tests.py
 
-Author: Matt Ricote Kristiansen 
+Author: Matt 
 Date:   2025-03-19 14:51:53 +0100
 Subject: minor frontend fix and remove of duplicate code in the princiapl page for better readbility
 
@@ -356,21 +356,21 @@ Subject: minor frontend fix and remove of duplicate code in the princiapl page f
 M	library_manager/frontend/src/pages/PrincipalPage/PrincipalPage.css
 M	library_manager/frontend/src/pages/PrincipalPage/PrincipalPage.tsx
 
-Author: Matt Ricote Kristiansen 
+Author: Matt 
 Date:   2025-03-19 14:02:07 +0100
 Subject: SCRUM-51 Implemented Book dtails to display when hovering over a card, + aligned button with card
 
 
 M	library_manager/frontend/src/pages/PrincipalPage/PrincipalPage.css
 
-Author: Matt Ricote Kristiansen 
+Author: Matt 
 Date:   2025-03-19 14:00:00 +0100
 Subject: SCRUM-51 Implemented Book dtails to display when hovering over a card, + aligned button with card
 
 
 M	library_manager/frontend/src/pages/PrincipalPage/PrincipalPage.css
 
-Author: Matt Ricote Kristiansen 
+Author: Matt 
 Date:   2025-03-19 13:56:16 +0100
 Subject: SCRUM-51 Implemented Book dtails to display when hovering over a card
 
@@ -378,7 +378,7 @@ Subject: SCRUM-51 Implemented Book dtails to display when hovering over a card
 M	library_manager/frontend/src/pages/PrincipalPage/PrincipalPage.css
 M	library_manager/frontend/src/pages/PrincipalPage/PrincipalPage.tsx
 
-Author: Matt Ricote Kristiansen 
+Author: Matt 
 Date:   2025-03-19 12:51:18 +0100
 Subject: SCRUM-50 updated the borrow button and unavailability indicator to be green for available books and red for unavailable books.
 
@@ -386,7 +386,7 @@ Subject: SCRUM-50 updated the borrow button and unavailability indicator to be g
 M	library_manager/frontend/src/pages/PrincipalPage/PrincipalPage.css
 M	library_manager/frontend/src/pages/PrincipalPage/PrincipalPage.tsx
 
-Author: Matt Ricote Kristiansen 
+Author: Matt 
 Date:   2025-03-19 12:32:47 +0100
 Subject:  Modifyied list_books to Support Category Filtering, changed from function to a class
 
@@ -394,7 +394,7 @@ Subject:  Modifyied list_books to Support Category Filtering, changed from funct
 M	library_manager/backend/urls.py
 M	library_manager/backend/views.py
 
-Author: Matt Ricote Kristiansen 
+Author: Matt 
 Date:   2025-03-19 12:26:36 +0100
 Subject:  Show Borrowed books
 
@@ -402,7 +402,7 @@ Subject:  Show Borrowed books
 M	library_manager/backend/urls.py
 M	library_manager/backend/views.py
 
-Author: guti-1 
+Author: Carlos 
 Date:   2025-03-19 12:07:18 +0100
 Subject: added terms of service and privacy policy page
 
@@ -418,14 +418,14 @@ A	library_manager/frontend/src/pages/PrivacyPolicyPage/PolicyPage.tsx
 A	library_manager/frontend/src/pages/TermsofServicePage/ServicePage.css
 A	library_manager/frontend/src/pages/TermsofServicePage/ServicePage.tsx
 
-Author: Matt Ricote Kristiansen 
+Author: Matt 
 Date:   2025-03-19 10:36:22 +0100
 Subject:  Added search functionality for books by title and author in list_books API
 
 
 M	library_manager/backend/views.py
 
-Author: Matt Ricote Kristiansen 
+Author: Matt 
 Date:   2025-03-19 10:32:13 +0100
 Subject:  Added API endpoint to retrieve full book details by ID, including borrower info and availability status
 
@@ -434,7 +434,7 @@ M	library_manager/backend/urls.py
 M	library_manager/backend/views.py
 A	library_manager/frontend/src/components/BookUpdateForm/BookUpdateform.tsx
 
-Author: Matt Ricote Kristiansen 
+Author: Matt 
 Date:   2025-03-19 10:22:33 +0100
 Subject: Added API for updating books - backend
 
@@ -442,12 +442,12 @@ Subject: Added API for updating books - backend
 M	library_manager/backend/urls.py
 M	library_manager/backend/views.py
 
-Author: Matt Ricote Kristiansen 
+Author: Matt 
 Date:   2025-03-19 10:14:21 +0100
 Subject: Cleaned and structured backend files
 
 
-Author: Matt Ricote Kristiansen 
+Author: Matt 
 Date:   2025-03-19 09:32:41 +0100
 Subject: Small restructure and cleanup on backend files
 
@@ -462,7 +462,7 @@ Subject: Fix Borrow Frontend: CurrentUserView to return People ID instead of Use
 
 M	library_manager/backend/views.py
 
-Author: AlvaroBarragan 
+Author: Alvaro 
 Date:   2025-03-18 13:47:42 +0100
 Subject: Update the default page when logged in and avoiding the use of browser arrowa
 
@@ -507,7 +507,7 @@ Subject: testviews: update logout response message
 
 M	library_manager/backend/tests/functional/test_views.py
 
-Author: Matt Ricote Kristiansen 
+Author: Matt 
 Date:   2025-03-17 11:18:10 +0100
 Subject: fixed authenticated issue logout, when editing username/password/email
 
@@ -519,7 +519,7 @@ A	library_manager/frontend/src/components/UserCard/UserCard.css
 A	library_manager/frontend/src/components/UserCard/UserCard.tsx
 M	library_manager/frontend/src/pages/ProfilePage/ProfilePage.tsx
 
-Author: Matt Ricote Kristiansen 
+Author: Matt 
 Date:   2025-03-17 10:33:54 +0100
 Subject: sycnronized navbar and userprofile when loggin out
 
@@ -532,12 +532,12 @@ M	library_manager/frontend/src/pages/App.css
 M	library_manager/frontend/src/pages/LoginPage/LoginPage.tsx
 M	library_manager/frontend/src/pages/ProfilePage/ProfilePage.tsx
 
-Author: Matt Ricote Kristiansen 
+Author: Matt 
 Date:   2025-03-14 14:00:19 +0100
 Subject: Merged SCRUM-22: Updated profile page and navbar to reflect login/logout state dynamically
 
 
-Author: Matt Ricote Kristiansen 
+Author: Matt 
 Date:   2025-03-14 14:00:07 +0100
 Subject: Updated user profile and navbar to reflect login state dynamically
 
@@ -576,14 +576,14 @@ Subject: feat: enhance error handling for book data fetching on PrincipalPage
 
 M	library_manager/frontend/src/pages/PrincipalPage/PrincipalPage.tsx
 
-Author: Matt Ricote Kristiansen 
+Author: Matt 
 Date:   2025-03-13 09:06:17 +0100
 Subject: fix, accidently removed moving effects for homepage
 
 
 M	library_manager/frontend/src/pages/WelcomePage/WelcomePage.tsx
 
-Author: Matt Ricote Kristiansen 
+Author: Matt 
 Date:   2025-03-12 21:06:09 +0100
 Subject: Added About Us Page
 
@@ -594,7 +594,7 @@ A	library_manager/frontend/src/pages/AboutPage/AboutPage.tsx
 M	library_manager/frontend/src/pages/App.css
 M	library_manager/frontend/src/pages/App.tsx
 
-Author: Matt Ricote Kristiansen 
+Author: Matt 
 Date:   2025-03-12 20:21:21 +0100
 Subject: Added new components: Navbar, Footer, and Button for the contact page
 
@@ -616,7 +616,7 @@ A	library_manager/frontend/src/pages/ContactPage/ContactPage.tsx
 M	library_manager/frontend/src/pages/WelcomePage/WelcomePage.css
 M	library_manager/frontend/src/pages/WelcomePage/WelcomePage.tsx
 
-Author: Matt Ricote Kristiansen 
+Author: Matt 
 Date:   2025-03-12 17:56:31 +0100
 Subject: Updated homepage UI with login/signup and footer
 
@@ -694,7 +694,7 @@ M	library_manager/backend/tests/functional/test_views.py
 M	library_manager/backend/tests/unit/test_models.py
 M	library_manager/backend/views.py
 
-Author: AlvaroBarragan 
+Author: Alvaro 
 Date:   2025-03-08 21:00:40 +0100
 Subject: registration of users
 
@@ -709,12 +709,12 @@ M	library_manager/frontend/src/pages/LoginPage/LoginPage.tsx
 M	library_manager/frontend/src/pages/PrincipalPage/PrincipalPage.tsx
 M	library_manager/frontend/src/pages/SignUpPage/SignUpPage.tsx
 
-Author: guti-1 
+Author: Carlos 
 Date:   2025-03-08 20:36:41 +0100
 Subject: mini change again
 
 
-Author: guti-1 
+Author: Carlos 
 Date:   2025-03-08 20:27:19 +0100
 Subject: carrusell now is workin
 
@@ -728,7 +728,7 @@ M	library_manager/frontend/package.json
 M	library_manager/frontend/src/pages/PrincipalPage/PrincipalPage.css
 M	library_manager/frontend/src/pages/PrincipalPage/PrincipalPage.tsx
 
-Author: AlvaroBarragan 
+Author: Alvaro 
 Date:   2025-03-08 20:14:38 +0100
 Subject: registration of users  and small changes
 
@@ -747,7 +747,7 @@ M	library_manager/frontend/src/pages/SignUpPage/SignUpPage.tsx
 M	node_modules/.package-lock.json
 M	package-lock.json
 
-Author: AlvaroBarragan 
+Author: Alvaro 
 Date:   2025-03-08 18:35:29 +0100
 Subject: Merge branch 'main' of https://github.com/mkr176/INF_2900_TEAM5
 
@@ -787,21 +787,21 @@ M	Windows_start_frontend.bat
 M	library_manager/frontend/package-lock.json
 M	run_tests.py
 
-Author: Matt Ricote Kristiansen 
+Author: Matt 
 Date:   2025-03-06 09:52:08 +0100
 Subject: update readme linux start
 
 
 M	README.md
 
-Author: Matt Ricote Kristiansen 
+Author: Matt 
 Date:   2025-03-06 09:45:59 +0100
 Subject: Updated readme for linux startup
 
 
 M	README.md
 
-Author: Matt Ricote Kristiansen 
+Author: Matt 
 Date:   2025-03-06 09:45:31 +0100
 Subject: Added figures for Userprofile
 
@@ -824,7 +824,7 @@ A	library_manager/static/images/avatars/account-avatar-profile-user-9-svgrepo-co
 A	library_manager/static/images/avatars/account-avatar-profile-user-svgrepo-com.svg
 A	library_manager/static/images/avatars/default.svg
 
-Author: Matt Ricote Kristiansen 
+Author: Matt 
 Date:   2025-03-06 09:44:46 +0100
 Subject: Moved all linux startup for a cleaner root directory
 
@@ -834,7 +834,7 @@ R090	Linux_run_tests.sh	Linux_Start/Linux_run_tests.sh
 R096	Linux_start_backend.sh	Linux_Start/Linux_start_backend.sh
 R082	Linux_start_frontend.sh	Linux_Start/Linux_start_frontend.sh
 
-Author: AlvaroBarragan 
+Author: Alvaro 
 Date:   2025-03-04 13:25:25 +0100
 Subject: Fixed images on the list of books
 
@@ -843,12 +843,12 @@ A	library_manager/backend/migrations/0003_alter_book_image.py
 M	library_manager/backend/models.py
 M	library_manager/backend/seeds.py
 
-Author: AlvaroBarragan 
+Author: Alvaro 
 Date:   2025-03-04 13:11:13 +0100
 Subject: Merge branch 'main' of https://github.com/mkr176/INF_2900_TEAM5
 
 
-Author: AlvaroBarragan 
+Author: Alvaro 
 Date:   2025-03-04 13:11:10 +0100
 Subject: Conection to the database to see books
 
@@ -872,7 +872,7 @@ Subject: Update test execution scripts to use Django's manage.py for running tes
 M	Windows_RUN_ALL.bat
 M	Windows_run_tests.bat
 
-Author: guti-1 
+Author: Carlos 
 Date:   2025-03-04 10:17:58 +0100
 Subject: display the books and added a search bar
 
@@ -880,7 +880,7 @@ Subject: display the books and added a search bar
 A	library_manager/frontend/src/pages/PrincipalPage/PrincipalPage.css
 M	library_manager/frontend/src/pages/PrincipalPage/PrincipalPage.tsx
 
-Author: guti-1 
+Author: Carlos 
 Date:   2025-03-04 09:23:42 +0100
 Subject: changes in the readme
 
@@ -987,7 +987,7 @@ Subject: Refactor User and Book model tests for improved readability and consist
 
 M	library_manager/backend/tests/unit/test_models.py
 
-Author: guti-1 
+Author: Carlos 
 Date:   2025-03-03 19:59:50 +0100
 Subject: display of books
 
@@ -1048,7 +1048,7 @@ M	library_manager/backend/urls.py
 M	library_manager/frontend/html/startpage.html
 A	library_manager/frontend/public/favicon.ico
 
-Author: AlvaroBarragan 
+Author: Alvaro 
 Date:   2025-02-27 10:29:20 +0100
 Subject: Update names
 
@@ -1058,7 +1058,7 @@ M	library_manager/backend/migrations/0001_initial.py
 M	library_manager/backend/models.py
 M	library_manager/backend/seeds.py
 
-Author: guti-1 
+Author: Carlos 
 Date:   2025-02-27 10:13:11 +0100
 Subject: first try of the background change (not succesfull)
 
@@ -1068,7 +1068,7 @@ M	library_manager/frontend/package.json
 A	library_manager/frontend/public/image2vector.svg
 M	library_manager/frontend/src/pages/LoginPage/LoginPage.css
 
-Author: AlvaroBarragan 
+Author: Alvaro 
 Date:   2025-02-27 09:47:48 +0100
 Subject: Migrations removed and fixed the populate
 
@@ -1098,7 +1098,7 @@ Subject: Refactor validation tests: add comprehensive unit tests for username, p
 M	library_manager/backend/tests/functional/test_views.py
 R058	library_manager/backend/tests.py	library_manager/backend/tests/unit/test_validations.py
 
-Author: Matt Ricote Kristiansen 
+Author: Matt 
 Date:   2025-02-20 12:57:00 +0100
 Subject: Update frontend startup for linux
 
@@ -1113,14 +1113,14 @@ Subject: Add README_TEST.md for test instructions and update requirements.txt
 A	README_TEST.md
 M	requirements.txt
 
-Author: guti-1 
+Author: Carlos 
 Date:   2025-02-18 22:50:03 +0100
 Subject: last change
 
 
 M	library_manager/frontend/src/pages/LoginPage/LoginPage.tsx
 
-Author: guti-1 
+Author: Carlos 
 Date:   2025-02-18 22:15:24 +0100
 Subject: some reac changes to make it more visual attractive and more dynamic
 
@@ -1159,14 +1159,14 @@ A	library_manager/frontend/tests/__init__.py
 M	library_manager/frontend/vite.config.ts
 A	run_tests.py
 
-Author: Matt Ricote Kristiansen 
+Author: Matt 
 Date:   2025-02-18 15:53:07 +0100
 Subject: fixed issue with api
 
 
 M	library_manager/backend/views.py
 
-Author: Matt Ricote Kristiansen 
+Author: Matt 
 Date:   2025-02-18 15:39:27 +0100
 Subject:  API Endpoint for Listing Users
 
@@ -1175,7 +1175,7 @@ M	library_manager/backend/serializers.py
 M	library_manager/backend/urls.py
 M	library_manager/backend/views.py
 
-Author: Matt Ricote Kristiansen 
+Author: Matt 
 Date:   2025-02-18 14:55:34 +0100
 Subject: , Backend api routing, Updated tests, URLs, validations, and views for SCRUM-11
 
@@ -1185,7 +1185,7 @@ M	library_manager/backend/urls.py
 M	library_manager/backend/validations.py
 M	library_manager/backend/views.py
 
-Author: Matt Ricote Kristiansen 
+Author: Matt 
 Date:   2025-02-18 12:16:51 +0100
 Subject: updated script for linux
 
@@ -1193,19 +1193,19 @@ Subject: updated script for linux
 M	Linux_start_backend.sh
 M	Linux_start_frontend.sh
 
-Author: AlvaroBarragan 
+Author: Alvaro 
 Date:   2025-02-18 11:43:21 +0100
 Subject: Small error
 
 
 M	library_manager/backend/seeds.py
 
-Author: AlvaroBarragan 
+Author: Alvaro 
 Date:   2025-02-18 11:42:11 +0100
 Subject: Merge branch 'main' of https://github.com/mkr176/INF_2900_TEAM5
 
 
-Author: AlvaroBarragan 
+Author: Alvaro 
 Date:   2025-02-18 11:41:28 +0100
 Subject: Populate the database
 
@@ -1227,21 +1227,21 @@ M	Windows_start_frontend.bat
 M	library_manager/frontend/package-lock.json
 M	library_manager/frontend/package.json
 
-Author: Matt Ricote Kristiansen 
+Author: Matt 
 Date:   2025-02-17 19:16:18 +0100
 Subject: port issue, fixed for windows but not linux
 
 
 M	library_manager/backend/settings.py
 
-Author: Matt Ricote Kristiansen 
+Author: Matt 
 Date:   2025-02-17 19:12:46 +0100
 Subject: .
 
 
 M	library_manager/backend/settings.py
 
-Author: Matt Ricote Kristiansen 
+Author: Matt 
 Date:   2025-02-17 18:59:21 +0100
 Subject: Fix: seperated react and django completely
 
@@ -1304,33 +1304,33 @@ M	README.md
 A	Windows_start_backend.bat
 A	Windows_start_frontend.bat
 
-Author: guti-1 
+Author: Carlos 
 Date:   2025-02-17 15:05:18 +0100
 Subject: corrected the port of settings.py
 
 
 M	library_manager/backend/settings.py
 
-Author: Matt Ricote Kristiansen 
+Author: Matt 
 Date:   2025-02-17 13:10:36 +0100
 Subject: fixed order
 
 
 M	README.md
 
-Author: Matt Ricote Kristiansen 
+Author: Matt 
 Date:   2025-02-17 12:49:56 +0100
 Subject: right order
 
 
 M	README.md
 
-Author: Matt Ricote Kristiansen 
+Author: Matt 
 Date:   2025-02-17 12:47:21 +0100
 Subject: Merge branch file_sctructure_cleanup and resolve conflicts
 
 
-Author: Matt Ricote Kristiansen 
+Author: Matt 
 Date:   2025-02-17 12:38:28 +0100
 Subject: cleanup
 
@@ -1379,7 +1379,7 @@ M	package-lock.json
 M	package.json
 D	query
 
-Author: guti-1 
+Author: Carlos 
 Date:   2025-02-17 12:11:52 +0100
 Subject: more visual login and more restriction
 
@@ -1388,7 +1388,7 @@ M	library_manager/frontend/src/pages/LoginPage/LoginPage.css
 M	library_manager/frontend/src/pages/LoginPage/LoginPage.tsx
 M	library_manager/frontend/src/pages/SignUpPage/SignUpPage.tsx
 
-Author: guti-1 
+Author: Carlos 
 Date:   2025-02-17 10:45:09 +0100
 Subject: added some more restrictions but it doesnt respond well
 
@@ -1404,28 +1404,28 @@ Subject: meeting doc
 
 A	docs/protocols_of_meetings/25-2-13.pdf
 
-Author: guti-1 
+Author: Carlos 
 Date:   2025-02-11 14:34:11 +0100
 Subject: migrations
 
 
 M	README.md
 
-Author: guti-1 
+Author: Carlos 
 Date:   2025-02-11 14:27:30 +0100
 Subject: new databse connect version of readme miss click the port
 
 
 M	README.md
 
-Author: guti-1 
+Author: Carlos 
 Date:   2025-02-11 14:20:07 +0100
 Subject: connect to the database
 
 
 M	README.md
 
-Author: guti-1 
+Author: Carlos 
 Date:   2025-02-11 14:18:47 +0100
 Subject: HOW TO CONNECT TO DATABASE
 
@@ -1434,12 +1434,12 @@ M	README.md
 A	library_manager/query
 A	query
 
-Author: AlvaroBarragan 
+Author: Alvaro 
 Date:   2025-02-11 13:13:33 +0100
 Subject: Merge branch 'main' of https://github.com/mkr176/INF_2900_TEAM5
 
 
-Author: AlvaroBarragan 
+Author: Alvaro 
 Date:   2025-02-11 13:12:46 +0100
 Subject: Requirements update
 
@@ -1453,7 +1453,7 @@ Subject: Update README to reflect correct Django server directory
 
 M	README.md
 
-Author: AlvaroBarragan 
+Author: Alvaro 
 Date:   2025-02-11 10:24:15 +0100
 Subject: Database conection
 
@@ -1835,14 +1835,14 @@ A	node_modules/typescript/package.json
 M	package-lock.json
 A	package.json
 
-Author: guti-1 
+Author: Carlos 
 Date:   2025-02-09 16:42:07 +0100
 Subject: change of the button
 
 
 M	library_manager/frontend/js/sign.js
 
-Author: guti-1 
+Author: Carlos 
 Date:   2025-02-09 16:34:17 +0100
 Subject: made the sign in for resgiter and login but need to figure out how to connect bia url when i click the button to redirect to the pages.
 
@@ -1927,7 +1927,7 @@ A	library_manager/frontend/tests/component/App.test.tsx
 A	library_manager/frontend/tests/endtoend/login.cy.ts
 A	library_manager/frontend/tests/performance/performance.test.js
 
-Author: guti-1 
+Author: Carlos 
 Date:   2025-02-07 11:51:59 +0100
 Subject: add login and sign.js add some css and html, but needs to connecto properly to the action i want. need to finish the sign
 
@@ -1964,7 +1964,7 @@ A	library_manager/frontend/html/startpage.html
 R100	library_manager/static/library_seal.jpg	library_manager/frontend/public/images/library_seal.jpg
 M	library_manager/frontend/views.py
 
-Author: Matt Ricote Kristiansen 
+Author: Matt 
 Date:   2025-02-04 12:10:37 +0100
 Subject: SCRUM-2: Set up Git repository and link to Jira
 
@@ -2190,21 +2190,21 @@ R100	backend/static/react.svg	library_manager/static/react.svg
 R100	backend/static/tull.svg	library_manager/static/tull.svg
 R100	backend/static/vite.svg	library_manager/static/vite.svg
 
-Author: Matt Ricote Kristiansen 
+Author: Matt 
 Date:   2025-01-29 15:12:36 +0100
 Subject: fixed enviroment startup
 
 
 M	README.md
 
-Author: Matt Ricote Kristiansen 
+Author: Matt 
 Date:   2025-01-29 12:59:32 +0100
 Subject: added validations for user register, (going to use later)
 
 
 A	backend/frontend/validations.py
 
-Author: Matt Ricote Kristiansen 
+Author: Matt 
 Date:   2025-01-28 16:30:08 +0100
 Subject: linux /windows virtual enviroment
 
@@ -2227,7 +2227,7 @@ M	backend/backend/urls.py
 A	package-lock.json
 M	requirements.txt
 
-Author: Matt Ricote Kristiansen 
+Author: Matt 
 Date:   2025-01-20 10:47:17 +0100
 Subject: template initiated
 
