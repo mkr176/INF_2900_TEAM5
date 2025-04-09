@@ -72,10 +72,14 @@ class BorrowReturnViewsTestCase(LibraryAPITestCaseBase):
         # Borrow books up to the limit - 1
         # Create MAX_BORROW_LIMIT - 1 more available books
         available_books = []
+        base_isbn = 9980000000000 # Use a base number for ISBNs
         for i in range(MAX_BORROW_LIMIT - 1):
+             # Generate a unique 13-digit ISBN for each book
+             test_isbn = str(base_isbn + i)
              book = Book.objects.create(
                  title=f'Limit Test Book {i+1}', author='Limit Author',
-                 isbn=f'998-0-00-00000{i}-0', category='TXT', language='Test', condition='NW'
+                 isbn=test_isbn, # Use the generated short ISBN
+                 category='TXT', language='Test', condition='NW'
              )
              available_books.append(book)
              # Borrow the book
@@ -97,6 +101,15 @@ class BorrowReturnViewsTestCase(LibraryAPITestCaseBase):
 
         # Clean up extra books created for this test
         for book in available_books:
+            # Need to ensure the book is available before deleting if FK constraints exist
+            # Refresh state before checking availability
+            book.refresh_from_db()
+            if not book.available:
+                 book.available = True
+                 book.borrower = None
+                 book.borrow_date = None
+                 book.due_date = None
+                 book.save()
             book.delete()
 
     def test_borrow_book_not_found(self):

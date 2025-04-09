@@ -459,7 +459,9 @@ class BookViewsTestCase(LibraryAPITestCaseBase):
         """Verify admins can delete books."""
         self._login_user('admin')
         # Create a temporary book to delete
-        temp_book = Book.objects.create(title='Temp Delete', author='Temp', isbn='999-9-99-999999-0', category='TXT', language='None', condition='PO')
+        # Shorten the ISBN to prevent DataError
+        temp_isbn = '9999999999990' # Changed to 13 digits
+        temp_book = Book.objects.create(title='Temp Delete', author='Temp', isbn=temp_isbn, category='TXT', language='None', condition='PO')
         url = self.book_detail_url(temp_book.id)
         initial_book_count = Book.objects.count()
         response = self.client.delete(url)

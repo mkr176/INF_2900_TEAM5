@@ -136,24 +136,24 @@ class LibraryAPITestCaseBase(APITestCase):
 
         # --- Define URLs (using reverse for maintainability) ---
         # Auth
-        cls.register_url = reverse('backend:register')
-        cls.login_url = reverse('backend:login')
-        cls.logout_url = reverse('backend:logout')
+        cls.register_url = reverse('register') # Removed 'backend:'
+        cls.login_url = reverse('login')       # Removed 'backend:'
+        cls.logout_url = reverse('logout')     # Removed 'backend:'
         # User Management
-        cls.user_list_url = reverse('backend:user-list')
-        cls.current_user_url = reverse('backend:current-user')
-        cls.current_user_update_url = reverse('backend:current-user-update')
+        cls.user_list_url = reverse('user-list') # Removed 'backend:'
+        cls.current_user_url = reverse('current-user') # Removed 'backend:'
+        cls.current_user_update_url = reverse('current-user-update') # Removed 'backend:'
         # Detail URLs need an ID, generated within tests using reverse
-        cls.user_detail_url = lambda user_id: reverse('backend:user-detail', kwargs={'id': user_id})
+        cls.user_detail_url = lambda user_id: reverse('user-detail', kwargs={'id': user_id}) # Removed 'backend:'
         # Book Management
-        cls.book_list_create_url = reverse('backend:book-list-create')
-        cls.borrowed_books_list_url = reverse('backend:borrowed-books-list')
+        cls.book_list_create_url = reverse('book-list-create') # Removed 'backend:'
+        cls.borrowed_books_list_url = reverse('borrowed-books-list') # Removed 'backend:'
         # Detail/Action URLs need an ID, generated within tests using reverse
-        cls.book_detail_url = lambda book_id: reverse('backend:book-detail', kwargs={'id': book_id})
-        cls.book_borrow_url = lambda book_id: reverse('backend:book-borrow', kwargs={'book_id': book_id})
-        cls.book_return_url = lambda book_id: reverse('backend:book-return', kwargs={'book_id': book_id})
+        cls.book_detail_url = lambda book_id: reverse('book-detail', kwargs={'id': book_id}) # Removed 'backend:'
+        cls.book_borrow_url = lambda book_id: reverse('book-borrow', kwargs={'book_id': book_id}) # Removed 'backend:'
+        cls.book_return_url = lambda book_id: reverse('book-return', kwargs={'book_id': book_id}) # Removed 'backend:'
         # Security
-        cls.csrf_token_url = reverse('backend:csrf-token')
+        cls.csrf_token_url = reverse('csrf-token') # Removed 'backend:'
 
     def setUp(self):
         """
