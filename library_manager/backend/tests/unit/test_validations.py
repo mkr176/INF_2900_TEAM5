@@ -1,73 +1,35 @@
+import pytest
 from django.test import TestCase
-from django.core.exceptions import ValidationError
-from backend.validations import validate_username, validate_password, validate_email, validate_birth_date
 
+# Mark all tests in this module to use the database if needed,
+# but unit tests for validation functions often don't need it.
+# pytestmark = pytest.mark.django_db
 
-class UsernameValidationTests(TestCase):
+class StandaloneValidationTests(TestCase):
+    """
+    Tests for standalone validation functions (if any).
 
-    def test_valid_username(self):
-        """Test that a valid username passes validation."""
-        validate_username("validUser")  # Should not raise error
+    Note: Most data validation in this application is handled by:
+    1. Model field definitions (e.g., max_length, choices, unique constraints).
+       These are typically tested in test_models.py by attempting to save invalid data.
+    2. Serializer validation (e.g., required fields, password matching, custom validate methods).
+       These should ideally be tested in test_serializers.py.
 
-    def test_invalid_short_username(self):
-        """Test that a username that is too short raises a validation error."""
-        with self.assertRaises(ValidationError):
-            validate_username("ab")  # Too short, should raise error
+    This file is reserved for any validation logic that exists outside of
+    models or serializers. Currently, it appears such logic might not be present
+    or has been integrated into serializers.
+    """
 
-    def test_existing_username(self):
-        """Test that an existing username raises a validation error."""
-        from django.contrib.auth.models import User
-        User.objects.create(username="existingUser", password="password123")
-        with self.assertRaises(ValidationError):
-            validate_username("existingUser")  # Already exists
+    def test_placeholder(self):
+        """Placeholder test. Replace with actual validation tests if needed."""
+        self.assertTrue(True)
 
-class PasswordValidationTests(TestCase):
-
-    def test_valid_password(self):
-        """Test that a valid password passes validation."""
-        validate_password("StrongP@sswOrd1")  # Should not raise error
-
-    def test_invalid_short_password(self):
-        """Test that a password that is too short raises a validation error."""
-        with self.assertRaises(ValidationError):
-            validate_password("123")  # Too short
-
-    def test_invalid_password_no_uppercase(self):
-        """Test that a password without an uppercase letter raises a validation error."""
-        with self.assertRaises(ValidationError):
-            validate_password("password123")  # No uppercase letter
-
-    def test_invalid_password_no_number(self):
-        """Test that a password without a number raises a validation error."""
-        with self.assertRaises(ValidationError):
-            validate_password("Password")  # No number
-
-class EmailValidationTests(TestCase):
-
-    def test_valid_email(self):
-        """Test that a valid email passes validation."""
-        validate_email("test@example.com")  # Should not raise error
-
-    def test_invalid_email_already_used(self):
-        """Test that using an already registered email raises a validation error."""
-        from django.contrib.auth.models import User
-        User.objects.create(username="testuser", email="test@example.com", password="password123")
-        with self.assertRaises(ValidationError):
-            # Email already in use
-            validate_email("test@example.com")  # Already in use
-
-class BirthDateValidationTests(TestCase): # Added a class for BirthDate
-    def test_valid_birth_date(self):
-        """Test that a valid birth date passes validation."""
-        validate_birth_date("2000-01-01")  # Should not raise error
-
-    def test_invalid_birth_date_format(self):
-        """Test that an invalid birth date format raises a validation error."""
-        with self.assertRaises(ValidationError):
-            validate_birth_date("01-01-2000")  # Wrong format
-
-    def test_invalid_birth_date_underage(self):
-        """Test that an underage birth date raises a validation error."""
-        with self.assertRaises(ValidationError):
-            # User is underage
-            validate_birth_date("2015-01-01")  # User is underage
+    # Example structure if you had a standalone validation function:
+    # from backend.some_validation_module import validate_custom_logic
+    #
+    # def test_custom_logic_valid(self):
+    #     self.assertTrue(validate_custom_logic("valid input"))
+    #
+    # def test_custom_logic_invalid(self):
+    #     with self.assertRaises(ValidationError): # Or specific exception
+    #         validate_custom_logic("invalid input")

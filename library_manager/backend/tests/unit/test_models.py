@@ -1,330 +1,197 @@
+import pytest
 from django.test import TestCase
-from backend.models import People, Book
+from django.contrib.auth import get_user_model
 from django.db import IntegrityError
-from datetime import date
 from django.core.exceptions import ValidationError
-from django.utils import timezone  # Use timezone for consistency if needed
 
+from backend.models import UserProfile, Book
 
-class UserModelTest(TestCase):
-    """
-    Test suite for the People model.
-    """
+# Get the User model
+User = get_user_model()
 
-    # Suggestion 1: Use setUpTestData for efficiency if data doesn't change per test
-    # Or setUp if modifications are needed per test method
-    @classmethod
-    def setUpTestData(cls):
-        cls.user_data = {
-            "name": "Test User",
-            "numberbooks": 3,
-            "type": "US",
-            "age": 25,
-            "email": "test@example.com",  # Added email for completeness
-            "password": "password123",  # Added password for completeness
-        }
-        cls.user = People.objects.create(**cls.user_data)
+# Mark all tests in this module to use the database
+pytestmark = pytest.mark.django_db
 
-    def test_user_creation(self):
-        """
-        Test successful creation of a People instance.
-        """
-        self.assertEqual(self.user.name, self.user_data["name"])
-        self.assertEqual(self.user.numberbooks, self.user_data["numberbooks"])
-        self.assertEqual(self.user.type, self.user_data["type"])
-        self.assertEqual(self.user.age, self.user_data["age"])
-        self.assertEqual(self.user.email, self.user_data["email"])
-        # Avoid testing plain text password storage directly if possible
-        # self.assertEqual(self.user.password, self.user_data["password"])
-        self.assertEqual(str(self.user), self.user_data["name"])  # Test __str__ method
+# --- UserProfile Model Tests ---
 
-    def test_user_fields_types(self):
-        """
-        Test the data types of People model fields.
-        """
-        # User created in setUpTestData
-        self.assertIsInstance(self.user.id, int)
-        self.assertIsInstance(self.user.name, str)
-        self.assertIsInstance(self.user.numberbooks, int)
-        self.assertIsInstance(self.user.type, str)
-        self.assertIsInstance(self.user.age, int)
-        self.assertIsInstance(self.user.email, str)
-        self.assertIsInstance(self.user.password, str)
-
-    def test_user_type_choices_valid(self):
-        """
-        Test that User type field accepts valid choices.
-        """
-        valid_types = ["AD", "US", "LB"]
-        for i, user_type in enumerate(valid_types):
-            # Use different names/emails to avoid potential unique constraints if added later
-            People.objects.create(
-                name=f"Valid Type User {user_type}_{i}",
-                numberbooks=0,
-                type=user_type,
-                age=35 + i,
-                email=f"valid_{i}@example.com",
-            )
-        # Check count if needed
-        self.assertEqual(
-            People.objects.count(), 1 + len(valid_types)
-        )  # 1 from setUpTestData
-
-    def test_user_type_choices_invalid(self):
-        """
-        Test that User type field rejects invalid choices during validation.
-        """
-        with self.assertRaises(ValidationError):
-            # Create an instance but don't save yet
-            invalid_user = People(
-                name="Invalid Type User",
-                numberbooks=0,
-                type="XX",  # XX is not a valid choice
-                age=40,
-                email="invalid@example.com",
-            )
-            # Explicitly call full_clean to trigger model validation
-            invalid_user.full_clean()
-            # No need to save, validation should fail before save
-
-
-class BookModelTest(TestCase):
-    """
-    Test suite for the Book model.
-    """
+class UserProfileModelTests(TestCase):
+    """Tests for the UserProfile model."""
 
     @classmethod
     def setUpTestData(cls):
-        """
-        Set up a user instance and today's date for creating book instances.
-        """
-        cls.user = People.objects.create(
-            name="Test User",
-            numberbooks=0,
-            type="US",
-            age=22,
-            email="bookuser@example.com",
+        """Set up non-modified objects used by all test methods."""
+        cls.user = User.objects.create_user(
+            username='testuser',
+            password='password123',
+            email='test@example.com'
         )
-        # Suggestion 2: Define today in setUpTestData
-        cls.today = date.today()
-        # Suggestion 3: Define default book data
-        cls.default_book_data = {
-            "title": "Default Book Title",
-            "author": "Default Author",
-            "due_date": cls.today,
-            "isbn": "1111111111111",
-            "category": "MY",
-            "language": "English",
-            "user": cls.user,
-            "condition": "GD",
-            "available": True,
-            "storage_location": "Shelf A1",
-            "publisher": "Default Publisher",
-            "publication_year": 2022,
-            "copy_number": 1,
-        }
+        # UserProfile is automatically created via a signal or needs manual creation?
+        # Assuming manual creation is needed if no signal exists.
+        # If a signal creates it, this might raise an IntegrityError or we fetch the existing one.
+        # Let's assume manual creation for now, adjust if needed based on actual implementation.
+        try:
+            cls.profile = UserProfile.objects.create(
+                user=cls.user,
+                type='US',
+                age=30
+            )
+        except IntegrityError: # Handle case where profile might be auto-created
+             cls.profile = UserProfile.objects.get(user=cls.user)
 
-    # Suggestion 3: Helper method to create books
-    def _create_book(self, **kwargs):
-        """Helper method to create a book instance with overrides."""
-        data = self.default_book_data.copy()
-        data.update(kwargs)
-        # Ensure ISBN is unique for each creation if not provided
-        if "isbn" not in kwargs:
-            # Generate a unique ISBN based on current count or timestamp
-            timestamp_isbn = str(timezone.now().timestamp()).replace(".", "")[:13]
-            data["isbn"] = timestamp_isbn.ljust(13, "0")  # Pad if needed
-            # Or use Book.objects.count() + some base number if preferred and reliable
-            # data['isbn'] = f"978000000000{Book.objects.count() + 1}"[-13:]
 
-        # Handle potential user override
-        if "user" in kwargs and kwargs["user"] is None:
-            data["user"] = None  # Allow setting user to None if explicitly passed
-        elif "user" not in kwargs:
-            data["user"] = self.user  # Default to the test user if not specified
+    def test_user_profile_creation(self):
+        """Test that a UserProfile is linked correctly to a User."""
+        self.assertEqual(UserProfile.objects.count(), 1)
+        profile = UserProfile.objects.get(user=self.user)
+        self.assertEqual(profile.user, self.user)
+        self.assertEqual(profile.pk, self.user.pk) # Check if user_id is the primary key
 
-        return Book.objects.create(**data)
+    def test_user_profile_default_type(self):
+        """Test the default type for a new UserProfile."""
+        user2 = User.objects.create_user(username='testuser2', password='password123')
+        # Assuming manual creation or fetching if auto-created
+        try:
+            profile2 = UserProfile.objects.create(user=user2)
+        except IntegrityError:
+            profile2 = UserProfile.objects.get(user=user2)
+        self.assertEqual(profile2.type, 'US') # Default should be 'User'
+
+    def test_user_profile_type_choices(self):
+        """Test the choices for the type field."""
+        self.profile.type = 'AD'
+        self.profile.save()
+        self.assertEqual(self.profile.get_type_display(), 'Admin')
+
+        self.profile.type = 'LB'
+        self.profile.save()
+        self.assertEqual(self.profile.get_type_display(), 'Librarian')
+
+        # Test invalid choice
+        with self.assertRaises(ValidationError):
+             # Direct assignment might bypass validation depending on Django version/setup
+             # A full_clean() call is often needed to trigger model validation
+             self.profile.type = 'INVALID'
+             self.profile.full_clean()
+
+
+    def test_user_profile_str_representation(self):
+        """Test the __str__ method of UserProfile."""
+        expected_str = f"{self.user.username}'s Profile ({self.profile.get_type_display()})"
+        self.assertEqual(str(self.profile), expected_str)
+
+    def test_user_profile_on_delete_cascade(self):
+        """Test that deleting the User also deletes the UserProfile."""
+        user_id = self.user.id
+        self.user.delete()
+        with self.assertRaises(UserProfile.DoesNotExist):
+            UserProfile.objects.get(user_id=user_id)
+
+
+# --- Book Model Tests ---
+
+class BookModelTests(TestCase):
+    """Tests for the Book model."""
+
+    @classmethod
+    def setUpTestData(cls):
+        """Set up non-modified objects used by all test methods."""
+        cls.user1 = User.objects.create_user(username='librarian', password='password123')
+        UserProfile.objects.create(user=cls.user1, type='LB') # Create profile for user
+
+        cls.user2 = User.objects.create_user(username='borrower', password='password123')
+        UserProfile.objects.create(user=cls.user2, type='US') # Create profile for user
+
+        cls.book = Book.objects.create(
+            title="Test Book One",
+            author="Test Author",
+            isbn="9780000000001",
+            category="SF",
+            language="English",
+            added_by=cls.user1,
+            condition='GD',
+            publisher="Test Publisher",
+            publication_year=2023
+        )
 
     def test_book_creation(self):
-        """
-        Test successful creation of a Book instance using helper.
-        """
-        book_data = {
-            "title": "Test Book Creation",
-            "author": "Test Author",
-            "isbn": "1234567890123",  # Specific ISBN for this test
-            "category": "SF",
-            "available": False,
-            "copy_number": 5,
-        }
-        book = self._create_book(**book_data)
+        """Test creating a Book instance."""
+        self.assertEqual(Book.objects.count(), 1)
+        book = Book.objects.get(isbn="9780000000001")
+        self.assertEqual(book.title, "Test Book One")
+        self.assertEqual(book.author, "Test Author")
+        self.assertEqual(book.added_by, self.user1)
+        self.assertEqual(book.category, "SF")
+        self.assertEqual(book.get_category_display(), "Science Fiction") # Check display name
+        self.assertEqual(book.condition, "GD")
+        self.assertEqual(book.get_condition_display(), "Good") # Check display name
 
-        self.assertEqual(book.title, book_data["title"])
-        self.assertEqual(book.author, book_data["author"])
-        self.assertEqual(book.due_date, self.today)  # From default data
-        self.assertEqual(book.isbn, book_data["isbn"])
-        self.assertEqual(book.category, book_data["category"])
-        self.assertEqual(
-            book.language, self.default_book_data["language"]
-        )  # From default
-        self.assertEqual(book.user, self.user)  # From default
-        self.assertEqual(
-            book.condition, self.default_book_data["condition"]
-        )  # From default
-        self.assertEqual(book.available, book_data["available"])
-        self.assertEqual(
-            book.storage_location, self.default_book_data["storage_location"]
-        )
-        self.assertEqual(book.publisher, self.default_book_data["publisher"])
-        self.assertEqual(
-            book.publication_year, self.default_book_data["publication_year"]
-        )
-        self.assertEqual(book.copy_number, book_data["copy_number"])
-        self.assertEqual(str(book), book_data["title"])  # Test __str__ method
+    def test_book_default_values(self):
+        """Test the default values for a new Book."""
+        self.assertTrue(self.book.available)
+        self.assertIsNone(self.book.borrower)
+        self.assertIsNone(self.book.borrow_date)
+        self.assertIsNone(self.book.due_date)
+        # Check default image path if applicable (requires setup for media files in tests)
+        # self.assertEqual(self.book.image.name, 'static/images/library_seal.jpg')
 
-    def test_book_fields_types(self):
-        """
-        Test the data types of Book model fields using helper.
-        """
-        # Create a book using the helper with a unique ISBN for this test
-        book = self._create_book(isbn="9876543210987")
+    def test_book_str_representation(self):
+        """Test the __str__ method of Book."""
+        self.assertEqual(str(self.book), "Test Book One")
 
-        self.assertIsInstance(book.id, int)
-        self.assertIsInstance(book.title, str)
-        self.assertIsInstance(book.author, str)
-        # Allow due_date to be None as per model definition (null=True, blank=True)
-        self.assertTrue(isinstance(book.due_date, date) or book.due_date is None)
-        self.assertIsInstance(book.isbn, str)
-        self.assertIsInstance(book.category, str)
-        self.assertIsInstance(book.language, str)
-        # Allow user to be None as per model definition (null=True, blank=True)
-        self.assertTrue(isinstance(book.user, People) or book.user is None)
-        if book.user:  # Check user.id only if user is not None
-            self.assertIsInstance(book.user.id, int)
-        self.assertIsInstance(book.condition, str)
-        self.assertIsInstance(book.available, bool)
-        # Allow optional fields to be None
-        self.assertTrue(
-            isinstance(book.storage_location, str) or book.storage_location is None
-        )
-        self.assertTrue(isinstance(book.publisher, str) or book.publisher is None)
-        self.assertTrue(
-            isinstance(book.publication_year, int) or book.publication_year is None
-        )
-        self.assertTrue(isinstance(book.copy_number, int) or book.copy_number is None)
-        # Allow borrower to be None
-        self.assertTrue(isinstance(book.borrower, People) or book.borrower is None)
-        if book.borrower:
-            self.assertIsInstance(book.borrower.id, int)
-        # Allow borrow_date to be None
-        self.assertTrue(isinstance(book.borrow_date, date) or book.borrow_date is None)
-
-    def test_book_category_choices_valid(self):
-        """
-        Test that Book category field accepts valid choices.
-        """
-        valid_categories = ["CK", "CR", "MY", "SF", "FAN", "HIS", "ROM", "TXT"]
-        initial_book_count = Book.objects.count()
-        for i, category in enumerate(valid_categories):
-            # Use helper, provide unique ISBN and the category
-            self._create_book(
-                title=f"Valid Category Book {category}",
-                isbn=f"333{i:010d}",  # Generate unique ISBNs
-                category=category,
-            )
-        self.assertEqual(
-            Book.objects.count(), initial_book_count + len(valid_categories)
-        )
-
-    def test_book_category_choices_invalid(self):
-        """
-        Test that Book category field rejects invalid choices during validation.
-        """
-        with self.assertRaises(ValidationError):
-            # Use helper to get default data, then modify category before full_clean
-            invalid_data = self.default_book_data.copy()
-            invalid_data["category"] = "XXX"  # Invalid choice
-            invalid_data["isbn"] = "4440000000000"  # Unique ISBN
-            # Need to handle the user ForeignKey correctly when creating instance directly
-            invalid_data["user"] = self.user
-
-            book = Book(**invalid_data)
-            book.full_clean()  # Explicitly call full_clean
-
-    def test_book_condition_choices_valid(self):
-        """
-        Test that Book condition field accepts valid choices.
-        """
-        valid_conditions = ["NW", "GD", "FR", "PO"]
-        initial_book_count = Book.objects.count()
-        for i, condition in enumerate(valid_conditions):
-            self._create_book(
-                title=f"Valid Condition Book {condition}",
-                isbn=f"555{i:010d}",  # Generate unique ISBNs
-                condition=condition,
-            )
-        self.assertEqual(
-            Book.objects.count(), initial_book_count + len(valid_conditions)
-        )
-
-    def test_book_condition_choices_invalid(self):
-        """
-        Test that Book condition field rejects invalid choices during validation.
-        """
-        with self.assertRaises(ValidationError):
-            invalid_data = self.default_book_data.copy()
-            invalid_data["condition"] = "BAD"  # Invalid choice
-            invalid_data["isbn"] = "6660000000000"  # Unique ISBN
-            invalid_data["user"] = self.user
-
-            book = Book(**invalid_data)
-            book.full_clean()
-
-    def test_book_isbn_unique(self):
-        """
-        Test that Book ISBN field enforces uniqueness at the database level.
-        """
-        unique_isbn = "7777777777777"
-        # Create the first book using the helper
-        self._create_book(isbn=unique_isbn, title="Book 1")
-
-        # Attempt to create a second book with the same ISBN
+    def test_book_isbn_uniqueness(self):
+        """Test the unique constraint on the ISBN field."""
         with self.assertRaises(IntegrityError):
-            self._create_book(isbn=unique_isbn, title="Book 2")
+            Book.objects.create(
+                title="Test Book Two",
+                author="Another Author",
+                isbn="9780000000001", # Same ISBN as self.book
+                category="FAN",
+                language="English",
+                added_by=self.user1,
+                condition='NW'
+            )
 
-    def test_book_optional_fields_can_be_null(self):
-        """
-        Test that fields allowing null/blank can be saved as such.
-        """
-        isbn = "8888888888888"
-        book = self._create_book(
-            isbn=isbn,
-            due_date=None,
-            user=None,  # Explicitly set user to None
-            borrower=None,
-            borrow_date=None,
-            storage_location=None,
-            publisher=None,
-            publication_year=None,
-            copy_number=None,
-        )
-        # Refresh from DB to be sure
-        book.refresh_from_db()
-        self.assertIsNone(book.due_date)
-        self.assertIsNone(book.user)
-        self.assertIsNone(book.borrower)
-        self.assertIsNone(book.borrow_date)
-        self.assertIsNone(book.storage_location)
-        self.assertIsNone(book.publisher)
-        self.assertIsNone(book.publication_year)
-        self.assertIsNone(book.copy_number)
+    def test_book_category_choices(self):
+        """Test the choices for the category field."""
+        self.book.category = 'HIS'
+        self.book.save()
+        self.assertEqual(self.book.get_category_display(), 'History')
 
-    def test_book_image_default(self):
-        """
-        Test that the image field has the correct default value.
-        """
-        book = self._create_book(isbn="9999999999999")
-        # Check the name/path of the default image field
-        # Note: This checks the string representation stored in the DB,
-        # not the actual file existence unless specifically needed.
-        self.assertEqual(book.image.name, "static/images/library_seal.jpg")
+        # Test invalid choice
+        with self.assertRaises(ValidationError):
+             self.book.category = 'INVALID'
+             self.book.full_clean() # Trigger validation
+
+    def test_book_condition_choices(self):
+        """Test the choices for the condition field."""
+        self.book.condition = 'PO'
+        self.book.save()
+        self.assertEqual(self.book.get_condition_display(), 'Poor')
+
+        # Test invalid choice
+        with self.assertRaises(ValidationError):
+             self.book.condition = 'INVALID'
+             self.book.full_clean() # Trigger validation
+
+    def test_book_added_by_on_delete_set_null(self):
+        """Test on_delete=SET_NULL for the added_by field."""
+        book_id = self.book.id
+        self.user1.delete() # Delete the user who added the book
+        book = Book.objects.get(id=book_id)
+        self.assertIsNone(book.added_by) # added_by should be set to NULL
+
+    def test_book_borrower_on_delete_set_null(self):
+        """Test on_delete=SET_NULL for the borrower field."""
+        # Assign a borrower first
+        self.book.borrower = self.user2
+        self.book.available = False
+        self.book.save()
+
+        book_id = self.book.id
+        borrower_id = self.user2.id
+        self.user2.delete() # Delete the borrower
+
+        book = Book.objects.get(id=book_id)
+        self.assertIsNone(book.borrower) # borrower should be set to NULL
+        # Optional: Check if the book becomes available again upon borrower deletion (depends on requirements)
+        # self.assertTrue(book.available) # This depends on desired logic
