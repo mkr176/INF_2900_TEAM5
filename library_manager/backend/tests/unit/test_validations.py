@@ -1,6 +1,10 @@
-import pytest
+# Remove pytest import
+# import pytest
 from django.test import TestCase
+# Import ValidationError if needed for example tests
+# from django.core.exceptions import ValidationError
 
+# Remove pytest marker comment
 # Mark all tests in this module to use the database if needed,
 # but unit tests for validation functions often don't need it.
 # pytestmark = pytest.mark.django_db

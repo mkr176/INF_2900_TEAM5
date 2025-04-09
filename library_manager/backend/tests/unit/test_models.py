@@ -1,4 +1,3 @@
-import pytest
 from django.test import TestCase
 from django.contrib.auth import get_user_model
 from django.db import IntegrityError
@@ -9,8 +8,6 @@ from backend.models import UserProfile, Book
 # Get the User model
 User = get_user_model()
 
-# Mark all tests in this module to use the database
-pytestmark = pytest.mark.django_db
 
 # --- UserProfile Model Tests ---
 
@@ -25,18 +22,24 @@ class UserProfileModelTests(TestCase):
             password='password123',
             email='test@example.com'
         )
-        # UserProfile is automatically created via a signal or needs manual creation?
-        # Assuming manual creation is needed if no signal exists.
-        # If a signal creates it, this might raise an IntegrityError or we fetch the existing one.
-        # Let's assume manual creation for now, adjust if needed based on actual implementation.
-        try:
-            cls.profile = UserProfile.objects.create(
-                user=cls.user,
-                type='US',
-                age=30
-            )
-        except IntegrityError: # Handle case where profile might be auto-created
-             cls.profile = UserProfile.objects.get(user=cls.user)
+        # Simplify profile creation: Assume manual creation for unit tests.
+        # If a signal *must* be tested, that might belong in integration tests
+        # or require a different setup strategy. For model unit tests,
+        # directly creating the related object is often clearer.
+        cls.profile = UserProfile.objects.create(
+            user=cls.user,
+            type='US', # Explicitly set type even if default exists, for clarity
+            age=30
+        )
+        # Remove the try-except block for simplicity in this context
+        # try:
+        #     cls.profile = UserProfile.objects.create(
+        #         user=cls.user,
+        #         type='US',
+        #         age=30
+        #     )
+        # except IntegrityError: # Handle case where profile might be auto-created
+        #      cls.profile = UserProfile.objects.get(user=cls.user)
 
 
     def test_user_profile_creation(self):
@@ -49,11 +52,12 @@ class UserProfileModelTests(TestCase):
     def test_user_profile_default_type(self):
         """Test the default type for a new UserProfile."""
         user2 = User.objects.create_user(username='testuser2', password='password123')
-        # Assuming manual creation or fetching if auto-created
-        try:
-            profile2 = UserProfile.objects.create(user=user2)
-        except IntegrityError:
-            profile2 = UserProfile.objects.get(user=user2)
+        # Simplify profile creation here as well
+        profile2 = UserProfile.objects.create(user=user2) # Rely on model default
+        # try:
+        #     profile2 = UserProfile.objects.create(user=user2)
+        # except IntegrityError:
+        #     profile2 = UserProfile.objects.get(user=user2)
         self.assertEqual(profile2.type, 'US') # Default should be 'User'
 
     def test_user_profile_type_choices(self):
@@ -96,6 +100,7 @@ class BookModelTests(TestCase):
     def setUpTestData(cls):
         """Set up non-modified objects used by all test methods."""
         cls.user1 = User.objects.create_user(username='librarian', password='password123')
+        # Assuming UserProfile needs manual creation based on the pattern above
         UserProfile.objects.create(user=cls.user1, type='LB') # Create profile for user
 
         cls.user2 = User.objects.create_user(username='borrower', password='password123')

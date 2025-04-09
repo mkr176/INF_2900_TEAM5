@@ -21,11 +21,11 @@ LIBRARIAN_TYPE = 'LB'
 USER_TYPE = 'US'
 
 # Define constants for book details
-TEST_BOOK_ISBN = '978-3-16-148410-0'
-TEST_BOOK_ISBN_2 = '978-1-23-456789-7'
-TEST_BOOK_ISBN_3 = '978-0-00-000000-3' # For borrowed book
-TEST_BOOK_ISBN_4 = '978-1-11-111111-1' # For creation tests
-TEST_BOOK_ISBN_5 = '978-2-22-222222-2' # For filtering/searching
+TEST_BOOK_ISBN = '9783161484100'
+TEST_BOOK_ISBN_2 = '9781234567897'
+TEST_BOOK_ISBN_3 = '9780000000003' # For borrowed book
+TEST_BOOK_ISBN_4 = '9781111111111' # For creation tests
+TEST_BOOK_ISBN_5 = '9782222222222' # For filtering/searching
 
 class LibraryAPITestCaseBase(APITestCase):
     """
