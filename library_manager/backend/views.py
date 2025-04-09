@@ -87,12 +87,13 @@ class IsSelfOrAdmin(permissions.BasePermission):
 
 # --- Frontend Views ---
 
-def front(request, *args, **kwargs):
-    return render(request, 'startpage.html')  # Changed template name
+# Removed the redundant 'front' function view
+# def front(request, *args, **kwargs):
+#     return render(request, 'startpage.html')
 
 
 class FrontendAppView(TemplateView):
-    template_name = "frontend/index.html"
+    template_name = "frontend/index.html" # Default, overridden in urls.py
 
     def get(self, request, *args, **kwargs):
         return super().get(request, *args, **kwargs)
@@ -175,10 +176,14 @@ class CurrentUserUpdateView(generics.RetrieveUpdateAPIView):
         return self.request.user
 
     def perform_update(self, serializer):
+        # Update base User fields first
         user = serializer.save()
         # Handle password change - update session hash
         password = self.request.data.get('password')
         if password:
+            # Note: Password validation should ideally happen in the serializer's validate method
+            # if the password field was made explicitly available for update there.
+            # Here, we assume the password provided is intended for update.
             user.set_password(password)
             user.save()
             update_session_auth_hash(self.request, user)
@@ -186,13 +191,16 @@ class CurrentUserUpdateView(generics.RetrieveUpdateAPIView):
         # Handle profile updates (if UserSerializer is enhanced to accept profile data)
         profile_data = self.request.data.get('profile', {})
         if profile_data and hasattr(user, 'profile'):
-            profile_serializer = UserProfileSerializer(user.profile, data=profile_data, partial=True, context={'request': self.request})
-            if profile_serializer.is_valid():
-                profile_serializer.save()
-            else:
-                # Handle profile validation errors if necessary
-                # This might require merging errors into the main response
-                pass
+            profile_serializer = UserProfileSerializer(
+                user.profile,
+                data=profile_data,
+                partial=True, # Allow partial updates
+                context={'request': self.request}
+            )
+            # Validate and save the profile, raising errors if invalid
+            if profile_serializer.is_valid(raise_exception=True):
+                 profile_serializer.save()
+            # No need for else block, raise_exception=True handles it
 
 
 # ============================== #
@@ -297,6 +305,7 @@ class BorrowedBooksListView(drf_views.APIView):
     Lists borrowed books.
     - For regular users: lists books borrowed by them.
     - For Admins/Librarians: lists all borrowed books, grouped by user.
+    Includes derived fields like days_left, overdue status via BookSerializer.
     """
     permission_classes = [permissions.IsAuthenticated]
 
@@ -321,17 +330,8 @@ class BorrowedBooksListView(drf_views.APIView):
                         "books": []
                     }
 
-                days_left = (book.due_date - today).days if book.due_date else 0
-                overdue = days_left < 0
-                days_overdue = abs(days_left) if overdue else 0
-
+                # Serialize book data - derived fields are now included by the serializer
                 book_data = BookSerializer(book, context={'request': request}).data
-                # Add calculated fields to the serialized data
-                book_data['days_left'] = days_left
-                book_data['overdue'] = overdue
-                book_data['days_overdue'] = days_overdue
-                book_data['due_today'] = days_left == 0
-
                 grouped_books[borrower_name]["books"].append(book_data)
 
             # Convert dict to list for response
@@ -342,20 +342,9 @@ class BorrowedBooksListView(drf_views.APIView):
             # Regular users see only their borrowed books
             user_borrowed_books = Book.objects.filter(borrower=user, available=False).select_related('borrower', 'borrower__profile').order_by('due_date')
 
-            book_list = []
-            for book in user_borrowed_books:
-                days_left = (book.due_date - today).days if book.due_date else 0
-                overdue = days_left < 0
-                days_overdue = abs(days_left) if overdue else 0
-
-                book_data = BookSerializer(book, context={'request': request}).data
-                book_data['days_left'] = days_left
-                book_data['overdue'] = overdue
-                book_data['days_overdue'] = days_overdue
-                book_data['due_today'] = days_left == 0
-                book_list.append(book_data)
-
-            return Response({"my_borrowed_books": book_list}, status=status.HTTP_200_OK)
+            # Serialize the list of books - derived fields are included by the serializer
+            serializer = BookSerializer(user_borrowed_books, many=True, context={'request': request})
+            return Response({"my_borrowed_books": serializer.data}, status=status.HTTP_200_OK)
 
 
 # ============================== #
