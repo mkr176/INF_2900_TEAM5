@@ -79,14 +79,29 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
+# DATABASES = {
+#         'default': {
+#             'ENGINE': 'django.db.backends.mysql',
+#             'NAME': 'library',
+#             'USER': 'root',
+#             'PASSWORD': 'SoftwareUser',
+#             'HOST': 'localhost',
+#             'PORT': '3305',
+#         }
+#     }
+
 DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.mysql',
-            'NAME': 'library',
+            'NAME': 'library_test', # <<< CHANGED FROM 'library' TO 'library_test'
             'USER': 'root',
-            'PASSWORD': 'SoftwareUser',
+            'PASSWORD': 'SoftwareUser', # Consider using environment variables for sensitive data
             'HOST': 'localhost',
             'PORT': '3305',
+            # Add options for UTF8 support if needed
+            'OPTIONS': {
+                'charset': 'utf8mb4',
+            },
         }
     }
 
