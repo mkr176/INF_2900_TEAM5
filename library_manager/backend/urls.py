@@ -8,7 +8,8 @@ from django.views.generic.base import RedirectView
 # Import the new DRF views
 from .views import (
     # Frontend
-    front, FrontendAppView,
+    # front, <--- REMOVE THIS LINE
+    FrontendAppView,
     # Auth
     RegisterView, LoginView, LogoutView,
     # User Management
