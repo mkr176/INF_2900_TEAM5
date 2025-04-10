@@ -14,3 +14,4 @@ django-nose==1.4.7
 coverage==7.5.1
 pynose==1.5.1
 cryptography
+django-filter

@@ -48,8 +48,8 @@ class AuthViewsTestCase(LibraryAPITestCaseBase):
         data = {
             'username': self.user1.username, # Existing username
             'email': 'unique@example.com',
-            'password': 'password123',
-            'password2': 'password123',
+            'password': 'aVeryStrongPassword123!', # Changed password
+            'password2': 'aVeryStrongPassword123!', # Changed password
         }
         response = self.client.post(self.register_url, data)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -60,8 +60,8 @@ class AuthViewsTestCase(LibraryAPITestCaseBase):
         data = {
             'username': 'anothernewuser',
             'email': self.user1.email, # Existing email
-            'password': 'password123',
-            'password2': 'password123',
+            'password': 'aVeryStrongPassword123!', # Changed password
+            'password2': 'aVeryStrongPassword123!', # Changed password
         }
         response = self.client.post(self.register_url, data)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)

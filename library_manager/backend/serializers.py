@@ -103,15 +103,27 @@ class RegisterSerializer(serializers.ModelSerializer):
             "last_name": {"required": False},
         }
 
+    def validate_username(self, value):
+        """Check that the username is not already taken."""
+        if User.objects.filter(username__iexact=value).exists(): # Case-insensitive check
+            raise serializers.ValidationError("A user with that username already exists.")
+        return value
+
+    def validate_email(self, value):
+        """Check that the email is not already taken."""
+        if User.objects.filter(email__iexact=value).exists(): # Case-insensitive check
+            raise serializers.ValidationError("A user with that email address already exists.")
+        return value
+
     def validate(self, attrs):
-        # Check if passwords match
+        # Check if passwords match (keep this check)
         if attrs["password"] != attrs["password2"]:
             raise serializers.ValidationError(
                 {"password": "Password fields didn't match."}
             )
         # Remove confirmation password field after validation
         attrs.pop("password2")
-        # Username and Email uniqueness are handled by the model's unique=True constraints implicitly
+        # Username and Email uniqueness are now handled by validate_username/validate_email
         return attrs
 
     def create(self, validated_data):

@@ -102,7 +102,7 @@ class BookViewsTestCase(LibraryAPITestCaseBase):
         user = self._login_user('admin')
         initial_book_count = Book.objects.count()
         # Use a different ISBN to avoid conflict with librarian test if run together
-        admin_isbn = '978-9-99-999999-9'
+        admin_isbn = '9789999999999' # <<< PROPOSED FIX: Valid 13-digit ISBN
         book_data = {
             'title': 'Admin Added Book', 'author': 'Admin Author', 'isbn': admin_isbn,
             'category': 'HIS', 'language': 'German', 'condition': 'PO', 'publication_year': 1999

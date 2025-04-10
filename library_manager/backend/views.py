@@ -191,6 +191,9 @@ class CurrentUserUpdateView(generics.RetrieveUpdateAPIView):
         # Handle profile updates (if UserSerializer is enhanced to accept profile data)
         profile_data = self.request.data.get('profile', {})
         if profile_data and hasattr(user, 'profile'):
+            # <<< PROPOSED FIX: Prevent users from changing their own type >>>
+            profile_data.pop('type', None) # Remove 'type' if present in the request data
+
             profile_serializer = UserProfileSerializer(
                 user.profile,
                 data=profile_data,
