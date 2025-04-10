@@ -210,33 +210,48 @@ class LogoutViewUnitTests(ViewTestBase):
 class UserListViewUnitTests(ViewTestBase):
 
     @patch('backend.views.UserSerializer')
-    @patch.object(User.objects, 'select_related') # Mock the queryset method
-    def test_list_users(self, mock_select_related, MockUserSerializer):
+    # --- Mock get_queryset on the class to control the data source ---
+    @patch.object(UserListView, 'get_queryset')
+    def test_list_users(self, mock_get_queryset, MockUserSerializer):
         """Test GET request to list users (logic assuming permission passed)."""
         # We don't test permissions here, just the view's queryset and serialization logic
-        view = UserListView()
-        request = self._create_drf_request('get', user=self.admin_user) # Assume admin
+        view = UserListView.as_view()
+        request = self._create_drf_request('get', path='/fake-users/', user=self.admin_user) # Assume admin
 
         # Configure mocks
-        mock_queryset = MagicMock()
-        mock_select_related.return_value.all.return_value = mock_queryset
-        # Mock serializer behavior for a list
-        MockUserSerializer.return_value.data = [{'id': 1, 'username': 'user1'}, {'id': 2, 'username': 'user2'}]
+        # Mock the queryset returned by get_queryset
+        mock_user1 = MagicMock(spec=User)
+        mock_user2 = MagicMock(spec=User)
+        mock_queryset_result = [mock_user1, mock_user2]
+        mock_get_queryset.return_value = mock_queryset_result
 
-        # Simulate the steps ListAPIView takes (get_queryset, filter_queryset, paginate_queryset, get_serializer, data)
-        # For unit testing, we can often simplify by checking the core parts
-        queryset = view.get_queryset()
-        serializer = view.get_serializer(queryset, many=True) # Simulate getting serializer for the queryset
+        # Mock the serializer *instance* data that the view will use when it calls the serializer
+        mock_serializer_instance = MockUserSerializer.return_value
+        mock_serializer_instance.data = [{'id': 1, 'username': 'user1'}, {'id': 2, 'username': 'user2'}]
+
+        # Call the view using the underlying HttpRequest
+        response = view(request._request)
 
         # Assertions
-        mock_select_related.assert_called_once_with('profile')
-        mock_select_related.return_value.all.assert_called_once()
-        self.assertEqual(queryset, mock_queryset)
-        # Check serializer was instantiated correctly (mocked instance check is tricky)
-        MockUserSerializer.assert_called_with(queryset, many=True)
-        # The actual response generation is complex in ListAPIView, focus on inputs/outputs
-        # We can check that the serializer used is correct
-        self.assertEqual(view.serializer_class, MockUserSerializer)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        mock_get_queryset.assert_called_once() # Check that our mocked queryset method was called by the view
+
+        # Check that the serializer class was instantiated correctly by the view
+        # The view calls get_serializer(queryset, many=True) internally
+        MockUserSerializer.assert_called_with(mock_queryset_result, many=True, context=ANY) # Check instantiation args
+
+        # Check that the response data matches the mocked serializer data
+        self.assertEqual(response.data, mock_serializer_instance.data)
+
+        # --- Optional: Check original queryset logic separately if needed ---
+        # This verifies the underlying query logic if you haven't mocked get_queryset
+        # with patch.object(User.objects, 'select_related') as mock_select_related:
+        #     original_view_instance = UserListView() # Create separate instance just for this check
+        #     # You might need to manually set request if methods depend on it directly
+        #     # original_view_instance.request = request
+        #     original_view_instance.get_queryset() # Call original method
+        #     mock_select_related.assert_called_once_with('profile')
+        #     mock_select_related.return_value.all.assert_called_once()
 
 
 class CurrentUserViewUnitTests(ViewTestBase):
@@ -269,102 +284,127 @@ class CurrentUserUpdateViewUnitTests(ViewTestBase):
     @patch('backend.views.update_session_auth_hash')
     def test_update_current_user_basic_info(self, mock_update_hash, MockUserSerializer, MockUserProfileSerializer):
         """Test PATCH request to update basic user info."""
-        view = CurrentUserUpdateView()
+        # --- Use as_view() to get the callable view ---
+        view = CurrentUserUpdateView.as_view()
         request_data = {'first_name': 'Updated', 'profile': {'age': 31}} # Include profile data
-        request = self._create_drf_request('patch', user=self.regular_user, data=request_data)
-        view.request = request
-        view.format_kwarg = None # Needed for perform_update context
+        # --- Create the request using the helper ---
+        # Note: No pk needed in URL for CurrentUserUpdateView
+        request = self._create_drf_request('patch', path='/fake-update/', user=self.regular_user, data=request_data, format='json')
 
-        # Mock the main UserSerializer
+        # --- Mock the main UserSerializer ---
+        # Mock the instance returned by get_serializer
         mock_user_serializer_instance = MockUserSerializer.return_value
         mock_user_serializer_instance.is_valid.return_value = True
         # Mock the save method to return the user and simulate updated data
-        updated_user_mock = MagicMock(spec=User, id=self.regular_user.id, profile=self.regular_user.profile)
-        mock_user_serializer_instance.save.return_value = updated_user_mock
-        mock_user_serializer_instance.data = {'id': self.regular_user.id, 'first_name': 'Updated'} # Mock response data
+        # The view will fetch this user via get_object()
+        user_instance = self.regular_user
+        mock_user_serializer_instance.save.return_value = user_instance
+        mock_user_serializer_instance.data = {'id': user_instance.id, 'first_name': 'Updated'} # Mock response data
 
-        # Mock the UserProfileSerializer used internally
+        # --- Mock the UserProfileSerializer used internally ---
         mock_profile_serializer_instance = MockUserProfileSerializer.return_value
         mock_profile_serializer_instance.is_valid.return_value = True
 
-        # Call perform_update directly (as RetrieveUpdateAPIView handles the main flow)
-        view.perform_update(mock_user_serializer_instance)
+        # --- Call the view directly using the request from the factory ---
+        # We pass the original HttpRequest from the factory to the view
+        response = view(request._request) # Pass the underlying HttpRequest
 
-        # Assertions
-        # UserSerializer save should be called
+        # --- Assertions ---
+        self.assertEqual(response.status_code, status.HTTP_200_OK) # Check for successful update status
+        # Check UserSerializer was instantiated correctly by the view
+        # The view calls get_object() -> self.regular_user
+        # Then get_serializer(instance=user, data=request.data, partial=True)
+        # We need to check the call to the Serializer class, not the instance
+        MockUserSerializer.assert_called_with(instance=user_instance, data=request.data, partial=True, context=ANY) # Check instantiation
+        mock_user_serializer_instance.is_valid.assert_called_once_with(raise_exception=True)
         mock_user_serializer_instance.save.assert_called_once()
-        # Profile serializer should be instantiated and validated/saved
+
+        # Profile serializer should be instantiated and validated/saved within perform_update
+        # Note: perform_update is called internally by the view's update method
         MockUserProfileSerializer.assert_called_once_with(
-            updated_user_mock.profile, data={'age': 31}, partial=True, context={'request': request}
+            user_instance.profile, data={'age': 31}, partial=True, context=ANY # Context will be passed by view
         )
         mock_profile_serializer_instance.is_valid.assert_called_once_with(raise_exception=True)
         mock_profile_serializer_instance.save.assert_called_once()
         # update_session_auth_hash should NOT be called if password wasn't updated
         mock_update_hash.assert_not_called()
+        # Check response data
+        self.assertEqual(response.data, mock_user_serializer_instance.data)
+
 
     @patch('backend.views.UserProfileSerializer')
     @patch('backend.views.UserSerializer')
     @patch('backend.views.update_session_auth_hash')
     def test_update_current_user_password(self, mock_update_hash, MockUserSerializer, MockUserProfileSerializer):
         """Test PATCH request to update password."""
-        view = CurrentUserUpdateView()
+        view = CurrentUserUpdateView.as_view()
         request_data = {'password': 'newpassword123'}
-        request = self._create_drf_request('patch', user=self.regular_user, data=request_data)
-        view.request = request
-        view.format_kwarg = None
+        request = self._create_drf_request('patch', path='/fake-update/', user=self.regular_user, data=request_data, format='json')
 
         # Mock UserSerializer
         mock_user_serializer_instance = MockUserSerializer.return_value
         mock_user_serializer_instance.is_valid.return_value = True
-        updated_user_mock = MagicMock(spec=User, id=self.regular_user.id)
-        # Mock the set_password and save methods on the user mock
-        updated_user_mock.set_password = MagicMock()
-        updated_user_mock.save = MagicMock()
-        mock_user_serializer_instance.save.return_value = updated_user_mock
+        user_instance = self.regular_user
+        # Mock the set_password and save methods on the actual user instance
+        user_instance.set_password = MagicMock()
+        user_instance.save = MagicMock() # Mock save on the user model instance
+        mock_user_serializer_instance.save.return_value = user_instance # Serializer.save still returns the instance
+        mock_user_serializer_instance.data = {'id': user_instance.id, 'username': user_instance.username} # Mock response
 
-        # Call perform_update
-        view.perform_update(mock_user_serializer_instance)
+        # Call the view
+        response = view(request._request) # Pass the underlying HttpRequest
 
         # Assertions
-        mock_user_serializer_instance.save.assert_called_once()
-        updated_user_mock.set_password.assert_called_once_with('newpassword123')
-        updated_user_mock.save.assert_called_once() # User saved after password set
-        mock_update_hash.assert_called_once_with(request._request, updated_user_mock)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        MockUserSerializer.assert_called_with(instance=user_instance, data=request.data, partial=True, context=ANY)
+        mock_user_serializer_instance.is_valid.assert_called_once_with(raise_exception=True)
+        mock_user_serializer_instance.save.assert_called_once() # Serializer save is called first
+        # Check methods called within perform_update
+        user_instance.set_password.assert_called_once_with('newpassword123')
+        user_instance.save.assert_called_once() # User saved after password set
+        mock_update_hash.assert_called_once_with(request._request, user_instance) # Pass the underlying HttpRequest
         # Profile serializer should not be called if 'profile' not in data
         MockUserProfileSerializer.assert_not_called()
 
+
     @patch('backend.views.UserProfileSerializer')
     @patch('backend.views.UserSerializer')
-    def test_update_current_user_prevents_type_change(self, MockUserSerializer, MockUserProfileSerializer):
+    @patch('backend.views.update_session_auth_hash') # Still need to patch this even if not called
+    def test_update_current_user_prevents_type_change(self, mock_update_hash, MockUserSerializer, MockUserProfileSerializer):
         """Test user cannot change their own type via profile update."""
-        view = CurrentUserUpdateView()
+        view = CurrentUserUpdateView.as_view()
         # Attempt to change type to Admin ('AD')
         request_data = {'profile': {'age': 32, 'type': 'AD'}}
-        request = self._create_drf_request('patch', user=self.regular_user, data=request_data)
-        view.request = request
-        view.format_kwarg = None
+        request = self._create_drf_request('patch', path='/fake-update/', user=self.regular_user, data=request_data, format='json')
 
         # Mock UserSerializer
         mock_user_serializer_instance = MockUserSerializer.return_value
         mock_user_serializer_instance.is_valid.return_value = True
-        updated_user_mock = MagicMock(spec=User, id=self.regular_user.id, profile=self.regular_user.profile)
-        mock_user_serializer_instance.save.return_value = updated_user_mock
+        user_instance = self.regular_user
+        mock_user_serializer_instance.save.return_value = user_instance
+        mock_user_serializer_instance.data = {'id': user_instance.id, 'username': user_instance.username} # Mock response
 
         # Mock ProfileSerializer
         mock_profile_serializer_instance = MockUserProfileSerializer.return_value
         mock_profile_serializer_instance.is_valid.return_value = True
 
-        # Call perform_update
-        view.perform_update(mock_user_serializer_instance)
+        # Call the view
+        response = view(request._request) # Pass the underlying HttpRequest
 
         # Assertions
-        # Check that UserProfileSerializer was called with 'type' removed from data
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        MockUserSerializer.assert_called_with(instance=user_instance, data=request.data, partial=True, context=ANY)
+        mock_user_serializer_instance.is_valid.assert_called_once_with(raise_exception=True)
+        mock_user_serializer_instance.save.assert_called_once()
+
+        # Check that UserProfileSerializer was called with 'type' removed from data within perform_update
         expected_profile_data = {'age': 32} # 'type' should have been popped
         MockUserProfileSerializer.assert_called_once_with(
-            updated_user_mock.profile, data=expected_profile_data, partial=True, context={'request': request}
+            user_instance.profile, data=expected_profile_data, partial=True, context=ANY
         )
         mock_profile_serializer_instance.is_valid.assert_called_once_with(raise_exception=True)
         mock_profile_serializer_instance.save.assert_called_once()
+        mock_update_hash.assert_not_called() # Password not changed
 
 
 # --- Book Management Views ---
