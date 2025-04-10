@@ -4,12 +4,30 @@ import AvatarSelector from "../../components/AvatarSelector/AvatarSelector";
 // Removed UserCard import as it wasn't used
 import { useNavigate } from "react-router-dom";
 import "./ProfilePage.css";
-
+import Slider from "react-slick";
+import BookCard from "../PrincipalPage/BookCard"; // ✅ Import BookCard component
 // Removed avatars array as it's handled within AvatarSelector
 
 const MIN_PASSWORD_LENGTH = 6; // Define minimum password length
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // Basic email format regex
-
+interface Book {
+  id: number;
+  title: string;
+  author: string;
+  isbn: string;
+  category: string;
+  language: string;
+  user_id: number;
+  condition: string;
+  available: boolean;
+  image?: string;
+  borrower_id: number | null; // Add borrower_id to Book interface
+  due_date: string; // Ensure due_date is a string to handle date format from backend
+  publisher: string;
+  publication_year: number;
+  copy_number: string;
+  storage_location: string; // Add storage_location property
+}
 const ProfilePage: React.FC = () => {
   const navigate = useNavigate();
   // Get username directly from context, it won't be editable locally
@@ -24,6 +42,8 @@ const ProfilePage: React.FC = () => {
   const [newPassword, setNewPassword] = useState(""); // For entering a new password
   const [currentPassword, setCurrentPassword] = useState(""); // Required for email/password changes
   const [selectedAvatar, setSelectedAvatar] = useState("default.svg"); // Use context avatar initially
+  const [mybooks, setMybooks] =   useState<Book[]>([]);
+   // State for filtered books
 
   useEffect(() => {
     // Initialize avatar from context
@@ -40,7 +60,7 @@ const ProfilePage: React.FC = () => {
           setEmail(user.email || "");
           setOriginalEmail(user.email || "");
           setSelectedAvatar(user.avatar || avatar || "default.svg");
-          // Username comes from context, no need to set it here
+                   // Username comes from context, no need to set it here
         } else {
           // If fetching fails (e.g., not logged in), rely on context or redirect
           if (!username) { // Check if context also lacks username
@@ -54,6 +74,18 @@ const ProfilePage: React.FC = () => {
         }
       } finally {
         setIsLoading(false); // Stop loading
+      }
+      try {
+        const response = await fetch("/api/mybooks/", { credentials: "include" });
+        if (response.ok) {
+          const data = await response.json();
+          console.log("Books fetched:", data.borrowed_books); // Depuración
+          setMybooks(data.borrowed_books); // Asegúrate de que sea un array
+        } else {
+          console.error("Error fetching books:", response.statusText);
+        }
+      } catch (error) {
+        console.error("Error fetching books:", error);
       }
     };
 
@@ -69,7 +101,27 @@ const ProfilePage: React.FC = () => {
     setNewPassword(""); // Clear password fields
     setCurrentPassword(""); // Clear password fields
   };
-
+  const settings = {
+    dots: true,
+    infinite: true,
+    speed: 800,
+    slidesToShow: 3,
+    slidesToScroll: 2,
+    responsive: [
+      {
+        breakpoint: 1200,
+        settings: {
+          slidesToShow: 3,
+        },
+      },
+      {
+        breakpoint: 900, // For smaller screens
+        settings: {
+          slidesToShow: 2,
+        },
+      },
+    ],
+  };
   const saveProfile = async () => {
     const isEmailChanged = email !== originalEmail;
     const isPasswordChanged = newPassword !== "";
@@ -231,9 +283,26 @@ const ProfilePage: React.FC = () => {
               Logout
             </button>
           </div>
-        </>
-      )}
-    </div>
+            <div className="carousel-container">
+            {Array.isArray(mybooks) && mybooks.length > 1 ? (
+              <Slider {...settings}>
+                {mybooks.map((book: Book) => (
+                  <BookCard key={book.id} book={book} />
+                ))}
+              </Slider>
+            ) : Array.isArray(mybooks) && mybooks.length === 1 ? (
+              <div className="single-book-container">
+                <BookCard book={mybooks[0]} />
+              </div>
+            ) : (
+              <p className="no-results">No books found</p>
+            )}
+          </div>
+                  </>
+                )}
+              </div>
+    
+    
   );
 };
 

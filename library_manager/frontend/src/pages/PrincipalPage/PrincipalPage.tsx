@@ -269,53 +269,55 @@ const BookDisplayPage: React.FC = () => {
 
   return (
     <div>
-      {/* Search bar */}
-      <div className="search-container">
+      <div
+        className="header-container"
+        style={{ display: 'center', justifyContent: 'right', alignItems: 'center' }} // Alineación horizontal
+      >
+      {/* Search bar and Category Dropdown */}
+      <div className="search-container" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '10px', margin: '20px auto', maxWidth: '800px' }}> {/* Centrado en la página */}
         <input
           type="text"
           placeholder="Search books by title or author..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           className="search-bar"
+          style={{ flex: 1, maxWidth: '400px', marginRight: '10px' }}
         />
-      </div>
-      {/* Category Dropdown */}
-      <div className="category-container"> {/* Added container for category dropdown */}
-        <label htmlFor="category-select">Filter by Category:</label> {/* Label for dropdown */}
-        <select
-          id="category-select"
-          value={selectedCategory} // Use selectedCategory state for value
-          onChange={handleCategoryChange} // Attach onChange handler
-        >
-          {bookCategories.map((cat) => (
-            <option key={cat.value} value={cat.value}>{cat.label}</option>
-          ))}
-        </select>
-      </div>
-
-      {/* Create book button for Admins and Librarians */}
-      {currentUser && (currentUser.type === "AD" || currentUser.type === "LB") && (
-        <div className="create-book-container">
-          <button onClick={handleCreateBook} className="button button-primary">
-            {showAddBookForm ? "Hide Book Form" : "Create Book"} {/* Toggle button text */}
-          </button>
+        <div className="category-container" style={{ display: 'flex', alignItems: 'center' }}>
+          <label htmlFor="category-select" style={{ marginRight: '10px', fontWeight: 'bold' }}>Filter by Category:</label>
+          <select
+            id="category-select"
+            value={selectedCategory}
+            onChange={handleCategoryChange}
+            style={{ padding: '5px', borderRadius: '5px', border: '1px solid #ccc' }}
+          >
+            {bookCategories.map((cat) => (
+              <option key={cat.value} value={cat.value}>{cat.label}</option>
+            ))}
+          </select>
         </div>
-      )}
-      {/* Add Book Form and Edit Book Form */}
-      {showAddBookForm && currentUser && <AddBookForm onBookCreated={handleBookCreated} />}
-      {showEditBookForm && editingBook && currentUser && (
-        <EditBookForm book={editingBook} onBookUpdated={handleBookUpdated} onCancel={handleEditFormCancel} />
-      )}
-
-      {/* Borrowed Books View Button */}
-      {currentUser && (currentUser.type === "AD" || currentUser.type === "LB" || currentUser.type === "US") && ( // ✅ Show for all user types for now, adjust if needed
-        <div className="borrowed-books-button-container">
-          <button onClick={toggleBorrowedBooksView} className="button button-secondary">
-            {showBorrowedBooks ? "Hide Borrowed Books" : "View Borrowed Books"}
-          </button>
-        </div>
-      )}
-
+      </div>
+      </div>
+      <div className="book-display-container" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        {/* Create book button for Admins and Librarians */}
+        {currentUser && (currentUser.type == "AD" || currentUser.type === "LB") && (
+          <div className="button-container" style={{ display: 'flex', justifyContent: 'center', gap: '10px' }}> {/* Botones alineados horizontalmente */}
+            <button onClick={handleCreateBook} className="button button-primary">
+              {showAddBookForm ? "Hide Book Form" : "Create Book"} {/* Toggle button text */}
+            </button>
+            {currentUser && (currentUser.type === "AD" || currentUser.type === "LB" || currentUser.type === "US") && (
+              <button onClick={toggleBorrowedBooksView} className="button button-secondary">
+                {showBorrowedBooks ? "Hide Borrowed Books" : "View Borrowed Books"}
+              </button>
+            )}
+          </div>
+        )}
+        {/* Add Book Form and Edit Book Form */}
+        {showAddBookForm && currentUser && <AddBookForm onBookCreated={handleBookCreated} />}
+        {showEditBookForm && editingBook && currentUser && (
+          <EditBookForm book={editingBook} onBookUpdated={handleBookUpdated} onCancel={handleEditFormCancel} />
+        )}
+      </div>
       {/* Borrowed Books List Component */}
       {showBorrowedBooks && currentUser && ( // ✅ Conditionally render BorrowedBooksList
         <BorrowedBooksList currentUser={currentUser} /> // ✅ Pass currentUser to BorrowedBooksList

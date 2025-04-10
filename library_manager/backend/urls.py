@@ -20,7 +20,7 @@ from django.views.generic import TemplateView
 from .views import( 
     RegisterView, LoginView, LogoutView, ListUsersView, 
     UserProfileView, CurrentUserView,  CreateUserView, UpdateUserProfileView, DeleteUserView,
-    ListBooksView, BorrowBookView, CreateBookView, DeleteBookView, UpdateBookView, BookDetailView, BorrowedBooksView,
+    ListBooksView, BorrowBookView, CreateBookView, DeleteBookView, UpdateBookView, BookDetailView, BorrowedBooksView,MyBorrowedBooksView,
     csrf_token_view, 
     get_user_info, update_profile
 )
@@ -66,6 +66,7 @@ urlpatterns = [
     path("api/update_book/<int:book_id>/", UpdateBookView.as_view(), name="update-book"),
     path("api/book/<int:book_id>/", BookDetailView.as_view(), name="book-detail"),
     path("api/borrowed_books/", BorrowedBooksView.as_view(), name="borrowed-books"),
+    path("api/mybooks/", MyBorrowedBooksView.as_view(), name="my-books"),  # Added route for borrowed books
 
 
     # ============================== #

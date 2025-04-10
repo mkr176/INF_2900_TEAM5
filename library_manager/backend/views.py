@@ -154,6 +154,37 @@ class BorrowedBooksView(View):
         return JsonResponse({"borrowed_books_by_user": grouped_borrowed_books},  status=200)
 
 
+@method_decorator(login_required, name='dispatch')
+class MyBorrowedBooksView(View):
+    def get(self, request):
+        user = request.user
+        try:
+            people_user = People.objects.get(id=user.id)
+
+            # Filtrar los libros que están prestados al usuario actual
+            borrowed_books = Book.objects.filter(borrower=people_user, available=False)
+
+            # Serializar los datos de los libros
+            borrowed_books_data = [
+                {
+                    "id": book.id,
+                    "title": book.title,
+                    "author": book.author,
+                    "isbn": book.isbn,
+                    "category": book.category,
+                    "language": book.language,
+                    "condition": book.condition,
+                    "image": str(book.image),
+                    "due_date": book.due_date.isoformat(),
+                }
+                for book in borrowed_books
+            ]
+
+            return JsonResponse({"borrowed_books": borrowed_books_data}, status=200)
+        except People.DoesNotExist:
+            return JsonResponse({"error": "User profile not found"}, status=404)
+
+
 # Logout View
 @method_decorator(csrf_exempt, name="dispatch")
 class LogoutView(View):

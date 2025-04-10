@@ -1,7 +1,7 @@
 const updateBook = async (bookId: number, updatedData: Partial<Book>) => {
     try {
         const response = await fetch(`/api/update_book/${bookId}/`, {
-            method: "POST",
+            method: "PUT",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(updatedData),
         });
@@ -17,3 +17,4 @@ const updateBook = async (bookId: number, updatedData: Partial<Book>) => {
         console.error("Error updating book:", error);
     }
 };
+
