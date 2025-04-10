@@ -261,8 +261,27 @@ const BookDisplayPage: React.FC = () => {
   };
   const toggleBorrowedBooksView = () => { // ✅ Function to toggle borrowed books view
     setShowBorrowedBooks(!showBorrowedBooks);
-  };
 
+    // Recargar libros después de alternar la vista
+    const fetchUrl = selectedCategory
+      ? `/api/principal/?category=${selectedCategory}`
+      : '/api/principal/';
+
+    fetch(fetchUrl)
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("Fetched book data after toggling view:", data); // Log fetched book data
+        const sortedBooks = data.sort((a: Book, b: Book) => {
+          const categoryComparison = a.category.localeCompare(b.category);
+          if (categoryComparison !== 0) {
+            return categoryComparison; // Sort by category first
+          }
+          return a.title.localeCompare(b.title); // Then sort by title alphabetically
+        });
+        setBookList(sortedBooks); // Actualiza la lista de libros
+      })
+      .catch((error) => console.error("Error fetching or sorting books after toggling view:", error));
+};
 
 
 

@@ -363,6 +363,7 @@ class BorrowBookView(View): # Changed to Class-based view
             data = json.loads(request.body)
             book_id = data.get('book_id')
             user_id = data.get('user_id') # Get user_id from request
+            new_condition = data.get('condition') # Get new condition from request
 
             if not book_id:
                 return JsonResponse({'error': 'Book ID is required'}, status=400)
@@ -393,6 +394,7 @@ class BorrowBookView(View): # Changed to Class-based view
                 book.available = True
                 book.borrower = None # Clear borrower
                 book.borrow_date = None # Clear borrow date
+                book.condition = new_condition # Update condition if provided
                 # book.due_date = datetime.now().date() + timedelta(weeks=2) #reset due date for next borrow
                 book.save()
                 message = 'Book returned successfully' # Set return message

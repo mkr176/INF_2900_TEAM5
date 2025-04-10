@@ -135,12 +135,14 @@ const BookCard: React.FC<BookCardProps> = ({ book, onBorrow, currentUser, onEdit
 
       {/* Book Actions */}
       <div className="book-actions">
-        <button
-          onClick={onBorrow}
-          className={getBorrowButtonClassName()} // Use function to get class names
-        >
-          {getBorrowButtonText()} {/* Use function to get button text */}
-        </button>
+  {currentUser?.type !== "LB" && ( // Condición para ocultar el botón si el usuario es "LB"
+    <button
+      onClick={onBorrow}
+      className={getBorrowButtonClassName()} // Use function to get class names
+    >
+      {getBorrowButtonText()} {/* Use function to get button text */}
+    </button>
+  )}
         {/* ✅ Conditionally render Edit button for Librarians and Admins */}
         {currentUser && (currentUser.type === "AD" || currentUser.type === "LB") && (
           <div>
