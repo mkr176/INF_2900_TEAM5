@@ -131,9 +131,9 @@ class TestSeedDatabase(TestCase):
         # Assertions for User creation/update
         self.assertEqual(MockUserObjects.update_or_create.call_count, 3)
         MockUserObjects.update_or_create.assert_has_calls([
-            call(username='AdminUser', defaults={'email': 'admin@example.com', 'first_name': 'Admin', 'last_name': 'User'}),
-            call(username='RegularUser', defaults={'email': 'user@example.com', 'first_name': 'Regular', 'last_name': 'User'}),
-            call(username='LibrarianUser', defaults={'email': 'librarian@example.com', 'first_name': 'Librarian', 'last_name': 'User'}),
+            call(username='AdminUser', defaults={'username': 'AdminUser', 'email': 'admin@example.com', 'first_name': 'Admin', 'last_name': 'User'}),
+            call(username='RegularUser', defaults={'username': 'RegularUser', 'email': 'user@example.com', 'first_name': 'Regular', 'last_name': 'User'}),
+            call(username='LibrarianUser', defaults={'username': 'LibrarianUser', 'email': 'librarian@example.com', 'first_name': 'Librarian', 'last_name': 'User'}),
         ], any_order=False) # Order matters here based on the loop in seeds.py
 
         # Assertions for set_password and save

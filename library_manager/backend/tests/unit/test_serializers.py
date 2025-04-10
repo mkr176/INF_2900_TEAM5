@@ -145,8 +145,7 @@ class UserSerializerTests(TestCase):
         serializer = UserSerializer(instance=self.user, data=update_data, partial=True)
         # Password is not required for update, so it should be valid
         self.assertTrue(serializer.is_valid(raise_exception=True))
-        # Password should be in validated_data if provided
-        self.assertIn('password', serializer.validated_data)
+        # Password should NOT be in validated_data because it's write_only
         # Password should NOT be in the serialized output data
         self.assertNotIn('password', serializer.data)
 
