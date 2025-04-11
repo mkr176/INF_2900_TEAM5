@@ -527,7 +527,7 @@ class BookListCreateViewUnitTests(ViewTestBase):
         # Check that the serializer was instantiated with the request data
         MockBookSerializer.assert_called_with(data=request.data, context=ANY)
         # Check that is_valid was called
-        mock_serializer_instance.is_valid.assert_called_once_with(raise_exception=True) # Generic views call with raise_exception=True
+        mock_serializer_instance.is_valid.assert_called_once_with()
         # Check that serializer.save() was called with added_by set correctly
         # This happens inside perform_create, which is called by the view's create method
         mock_serializer_instance.save.assert_called_once_with(added_by=self.librarian_user)
