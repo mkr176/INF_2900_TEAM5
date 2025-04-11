@@ -484,22 +484,38 @@ class CurrentUserUpdateViewUnitTests(ViewTestBase):
 
 class BookListCreateViewUnitTests(ViewTestBase):
 
+    # --- MODIFIED TEST ---
+    @patch('backend.views.BookListCreateView.permission_classes', [permissions.AllowAny]) # Bypass permissions
     @patch('backend.views.BookSerializer')
-    def test_perform_create_sets_added_by(self, MockBookSerializer):
+    def test_perform_create_sets_added_by(self, MockBookSerializer, mock_perms): # Add mock_perms arg
         """Test perform_create sets added_by to the request user."""
-        view = BookListCreateView()
-        request = self._create_drf_request('post', user=self.librarian_user)
-        view.request = request # Set request on view instance
+        # Use as_view() to get the callable view function
+        view_func = BookListCreateView.as_view()
+        # Create a request with the librarian user and some minimal valid data
+        request_data = {'title': 'Test Book', 'author': 'Test', 'isbn': '9999999999999', 'category': 'SF', 'language': 'Test', 'condition': 'GD'}
+        request = self._create_drf_request('post', user=self.librarian_user, data=request_data, format='json')
 
-        # Mock the serializer instance passed to perform_create
+        # Mock the serializer instance that the view will create and use
         mock_serializer_instance = MockBookSerializer.return_value
+        mock_serializer_instance.is_valid.return_value = True
+        # Mock the .data attribute for the response after creation
+        mock_serializer_instance.data = {'id': 99, **request_data} # Simulate response data
 
-        # Call perform_create
-        view.perform_create(mock_serializer_instance)
+        # Call the view function with the underlying HttpRequest
+        response = view_func(request._request)
 
         # Assertions
-        # Check that serializer.save() was called with added_by set
+        # Check the response status code indicates successful creation
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        # Check that the serializer was instantiated with the request data
+        MockBookSerializer.assert_called_with(data=request.data, context=ANY)
+        # Check that is_valid was called
+        mock_serializer_instance.is_valid.assert_called_once_with()
+        # Check that serializer.save() was called with added_by set correctly
+        # This happens inside perform_create, which is called by the view's create method
         mock_serializer_instance.save.assert_called_once_with(added_by=self.librarian_user)
+        # Check the response data matches the mocked serializer data
+        self.assertEqual(response.data, mock_serializer_instance.data)
 
 
 class BorrowBookViewUnitTests(ViewTestBase):
