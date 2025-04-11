@@ -121,7 +121,8 @@ class LoginView(drf_views.APIView):
 
         user = authenticate(request, username=username, password=password)
         if user:
-            login(request, user)
+            # <<< FIX: Pass the underlying HttpRequest to login >>>
+            login(request._request, user) # Use request._request here
             serializer = UserSerializer(user, context={'request': request}) # Use UserSerializer to return user data
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
@@ -359,7 +360,8 @@ class BorrowedBooksListView(drf_views.APIView):
 def csrf_token_view(request):
     """Provides the CSRF token needed for authenticated POST/PUT/DELETE requests."""
     # Pass the underlying HttpRequest to get_token
-    return Response({"csrfToken": get_token(request._request)}) # <-- FIX: Use request._request
+    # request here is DRF Request, get_token needs HttpRequest
+    return Response({"csrfToken": get_token(request._request)}) # This was already correct
 
 # Note: The old `validations.py` functions are generally superseded by serializer validation.
 # If specific complex validations were needed outside a serializer context, they could remain,
