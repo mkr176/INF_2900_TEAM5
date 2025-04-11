@@ -358,7 +358,8 @@ class BorrowedBooksListView(drf_views.APIView):
 @drf_permission_classes([permissions.AllowAny]) # Anyone can get the CSRF token
 def csrf_token_view(request):
     """Provides the CSRF token needed for authenticated POST/PUT/DELETE requests."""
-    return Response({"csrfToken": get_token(request)})
+    # Pass the underlying HttpRequest to get_token
+    return Response({"csrfToken": get_token(request._request)}) # <-- FIX: Use request._request
 
 # Note: The old `validations.py` functions are generally superseded by serializer validation.
 # If specific complex validations were needed outside a serializer context, they could remain,

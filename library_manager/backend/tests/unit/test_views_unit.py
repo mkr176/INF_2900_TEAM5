@@ -55,13 +55,23 @@ class ViewTestBase(TestCase):
         factory_method = getattr(self.factory, method)
         # For POST/PUT/PATCH etc., pass data; for GET, pass data as query params
         if method.lower() in ['post', 'put', 'patch', 'delete']:
-            request = factory_method(path, data=data, content_type=f'application/{format}')
+            # Ensure data is serialized if it's a dict and format is json
+            content_type = f'application/{format}'
+            if isinstance(data, dict) and format == 'json':
+                data = json.dumps(data)
+            else:
+                # Handle form data etc. if needed, otherwise pass as is
+                content_type = 'application/x-www-form-urlencoded' # Or multipart/form-data
+
+            request = factory_method(path, data=data, content_type=content_type)
         else:
             request = factory_method(path, data=data) # GET data becomes query params
 
         request.user = user
         # Wrap with DRF Request
         drf_request = DRFRequest(request)
+        # Also attach the original user to the DRF request explicitly if needed, though it should proxy
+        # drf_request.user = user
         return drf_request
 
 # --- Authentication Views ---
@@ -87,11 +97,14 @@ class RegisterViewUnitTests(ViewTestBase):
         # Mock the .data attribute for the response
         mock_serializer_instance.data = {'id': 1, 'username': 'newuser'} # Simplified response data
 
-        response = view(request)
+        # --- FIX: Pass request._request ---
+        response = view(request._request)
 
         # Assertions
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        MockRegisterSerializer.assert_called_once_with(data=request_data)
+        # --- FIX: Pass request.data when checking serializer call ---
+        # DRF extracts data from request._request internally
+        MockRegisterSerializer.assert_called_once_with(data=request.data)
         mock_serializer_instance.is_valid.assert_called_once_with()
         mock_serializer_instance.save.assert_called_once()
         # Check response data matches serializer's mocked .data
@@ -110,6 +123,8 @@ class RegisterViewUnitTests(ViewTestBase):
         """Test registration POST request with invalid data."""
         view = RegisterView.as_view()
         request_data = {'username': 'bad'} # Incomplete data
+        # --- Store the original data dictionary ---
+        original_request_data = request_data.copy()
         request = self._create_drf_request('post', data=request_data)
 
         # Configure the mock serializer for invalid data
@@ -117,11 +132,13 @@ class RegisterViewUnitTests(ViewTestBase):
         mock_serializer_instance.is_valid.return_value = False
         mock_serializer_instance.errors = {'password': ['This field is required.']} # Example errors
 
-        response = view(request)
+        # --- FIX: Pass request._request ---
+        response = view(request._request)
 
         # Assertions
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        MockRegisterSerializer.assert_called_once_with(data=request_data)
+        # --- FIX: Assert serializer was called with the original data dict ---
+        MockRegisterSerializer.assert_called_once_with(data=original_request_data)
         mock_serializer_instance.is_valid.assert_called_once_with()
         mock_serializer_instance.save.assert_not_called() # Save should not be called
         self.assertEqual(response.data, mock_serializer_instance.errors)
@@ -144,13 +161,21 @@ class LoginViewUnitTests(ViewTestBase):
         mock_serializer_instance = MockUserSerializer.return_value
         mock_serializer_instance.data = {'id': 1, 'username': 'testuser', 'profile': {}} # Mocked response
 
-        response = view(request)
+        # --- FIX: Pass request._request ---
+        response = view(request._request)
 
         # Assertions
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        # --- FIX: Pass request._request to authenticate ---
         mock_authenticate.assert_called_once_with(request._request, username='testuser', password='password123')
         mock_login.assert_called_once_with(request._request, mock_user)
-        MockUserSerializer.assert_called_once_with(mock_user, context={'request': request})
+        # --- FIX: Serializer context should contain the DRF request ---
+        # The view internally creates a DRF request, so we check context contains ANY DRF request
+        MockUserSerializer.assert_called_once_with(mock_user, context=ANY)
+        # Check that the context passed contains a DRF request object
+        context_arg = MockUserSerializer.call_args.kwargs.get('context', {})
+        self.assertIn('request', context_arg)
+        self.assertIsInstance(context_arg['request'], DRFRequest)
         self.assertEqual(response.data, mock_serializer_instance.data)
 
     @patch('backend.views.authenticate')
@@ -164,10 +189,12 @@ class LoginViewUnitTests(ViewTestBase):
         # Configure mocks
         mock_authenticate.return_value = None # Simulate failed authentication
 
-        response = view(request)
+        # --- FIX: Pass request._request ---
+        response = view(request._request)
 
         # Assertions
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        # --- FIX: Pass request._request to authenticate ---
         mock_authenticate.assert_called_once_with(request._request, username='testuser', password='wrongpassword')
         mock_login.assert_not_called() # Login should not be called
         self.assertEqual(response.data, {'error': 'Invalid credentials'})
@@ -178,13 +205,15 @@ class LoginViewUnitTests(ViewTestBase):
 
         # Missing password
         request_no_pw = self._create_drf_request('post', data={'username': 'testuser'})
-        response_no_pw = view(request_no_pw)
+        # --- FIX: Pass request._request ---
+        response_no_pw = view(request_no_pw._request)
         self.assertEqual(response_no_pw.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response_no_pw.data, {'error': 'Username and password are required'})
 
         # Missing username
         request_no_user = self._create_drf_request('post', data={'password': 'password123'})
-        response_no_user = view(request_no_user)
+        # --- FIX: Pass request._request ---
+        response_no_user = view(request_no_user._request)
         self.assertEqual(response_no_user.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response_no_user.data, {'error': 'Username and password are required'})
 
@@ -198,7 +227,8 @@ class LogoutViewUnitTests(ViewTestBase):
         # Assume user is authenticated (permissions checked separately)
         request = self._create_drf_request('post', user=self.regular_user)
 
-        response = view(request)
+        # --- FIX: Pass request._request ---
+        response = view(request._request)
 
         # Assertions
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -226,10 +256,14 @@ class UserListViewUnitTests(ViewTestBase):
         mock_get_queryset.return_value = mock_queryset_result
 
         # Mock the serializer *instance* data that the view will use when it calls the serializer
-        mock_serializer_instance = MockUserSerializer.return_value
+        # --- FIX: Mock the data attribute of the serializer instance ---
+        mock_serializer_instance = MagicMock() # Create a mock instance
         mock_serializer_instance.data = [{'id': 1, 'username': 'user1'}, {'id': 2, 'username': 'user2'}]
+        # Configure the Serializer Class mock to return this instance
+        MockUserSerializer.return_value = mock_serializer_instance
 
         # Call the view using the underlying HttpRequest
+        # --- FIX: Pass request._request ---
         response = view(request._request)
 
         # Assertions
@@ -238,7 +272,12 @@ class UserListViewUnitTests(ViewTestBase):
 
         # Check that the serializer class was instantiated correctly by the view
         # The view calls get_serializer(queryset, many=True) internally
+        # --- FIX: Check context contains a DRF request ---
         MockUserSerializer.assert_called_with(mock_queryset_result, many=True, context=ANY) # Check instantiation args
+        context_arg = MockUserSerializer.call_args.kwargs.get('context', {})
+        self.assertIn('request', context_arg)
+        self.assertIsInstance(context_arg['request'], DRFRequest)
+
 
         # Check that the response data matches the mocked serializer data
         self.assertEqual(response.data, mock_serializer_instance.data)
@@ -259,22 +298,34 @@ class CurrentUserViewUnitTests(ViewTestBase):
     @patch('backend.views.UserSerializer')
     def test_get_current_user(self, MockUserSerializer):
         """Test GET request for the current user."""
-        view = CurrentUserView()
+        # --- FIX: Use as_view() ---
+        view_func = CurrentUserView.as_view()
         request = self._create_drf_request('get', user=self.regular_user)
-        view.request = request # Set request on the view instance
+        # --- FIX: Don't set request on view instance manually ---
+        # view.request = request # Set request on the view instance
 
         # Configure mocks
         mock_serializer_instance = MockUserSerializer.return_value
         mock_serializer_instance.data = {'id': self.regular_user.id, 'username': self.regular_user.username}
 
-        # Test get_object
-        obj = view.get_object()
-        self.assertEqual(obj, self.regular_user)
+        # --- FIX: Call the view function with request._request ---
+        response = view_func(request._request)
 
-        # Test the response generation (simplified)
-        serializer = view.get_serializer(obj)
-        self.assertEqual(serializer.data, mock_serializer_instance.data)
-        # The RetrieveAPIView handles the response creation, we tested the key parts
+        # Assertions
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        # Check serializer was called with the correct user
+        # The view internally calls get_object() which returns request.user
+        MockUserSerializer.assert_called_once_with(self.regular_user, context=ANY)
+        context_arg = MockUserSerializer.call_args.kwargs.get('context', {})
+        self.assertIn('request', context_arg)
+        self.assertIsInstance(context_arg['request'], DRFRequest)
+        self.assertEqual(response.data, mock_serializer_instance.data)
+
+        # --- Test get_object separately if needed, but calling the view is better ---
+        # view_instance = CurrentUserView()
+        # view_instance.request = request # Need DRF request here for get_object
+        # obj = view_instance.get_object()
+        # self.assertEqual(obj, self.regular_user)
 
 
 class CurrentUserUpdateViewUnitTests(ViewTestBase):
@@ -315,15 +366,25 @@ class CurrentUserUpdateViewUnitTests(ViewTestBase):
         # The view calls get_object() -> self.regular_user
         # Then get_serializer(instance=user, data=request.data, partial=True)
         # We need to check the call to the Serializer class, not the instance
+        # --- FIX: Check context contains DRF request ---
         MockUserSerializer.assert_called_with(instance=user_instance, data=request.data, partial=True, context=ANY) # Check instantiation
+        context_arg_user = MockUserSerializer.call_args.kwargs.get('context', {})
+        self.assertIn('request', context_arg_user)
+        self.assertIsInstance(context_arg_user['request'], DRFRequest)
+
         mock_user_serializer_instance.is_valid.assert_called_once_with(raise_exception=True)
         mock_user_serializer_instance.save.assert_called_once()
 
         # Profile serializer should be instantiated and validated/saved within perform_update
         # Note: perform_update is called internally by the view's update method
+        # --- FIX: Check context contains DRF request ---
         MockUserProfileSerializer.assert_called_once_with(
             user_instance.profile, data={'age': 31}, partial=True, context=ANY # Context will be passed by view
         )
+        context_arg_profile = MockUserProfileSerializer.call_args.kwargs.get('context', {})
+        self.assertIn('request', context_arg_profile)
+        self.assertIsInstance(context_arg_profile['request'], DRFRequest)
+
         mock_profile_serializer_instance.is_valid.assert_called_once_with(raise_exception=True)
         mock_profile_serializer_instance.save.assert_called_once()
         # update_session_auth_hash should NOT be called if password wasn't updated
@@ -357,6 +418,10 @@ class CurrentUserUpdateViewUnitTests(ViewTestBase):
         # Assertions
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         MockUserSerializer.assert_called_with(instance=user_instance, data=request.data, partial=True, context=ANY)
+        context_arg = MockUserSerializer.call_args.kwargs.get('context', {})
+        self.assertIn('request', context_arg)
+        self.assertIsInstance(context_arg['request'], DRFRequest)
+
         mock_user_serializer_instance.is_valid.assert_called_once_with(raise_exception=True)
         mock_user_serializer_instance.save.assert_called_once() # Serializer save is called first
         # Check methods called within perform_update
@@ -394,6 +459,10 @@ class CurrentUserUpdateViewUnitTests(ViewTestBase):
         # Assertions
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         MockUserSerializer.assert_called_with(instance=user_instance, data=request.data, partial=True, context=ANY)
+        context_arg_user = MockUserSerializer.call_args.kwargs.get('context', {})
+        self.assertIn('request', context_arg_user)
+        self.assertIsInstance(context_arg_user['request'], DRFRequest)
+
         mock_user_serializer_instance.is_valid.assert_called_once_with(raise_exception=True)
         mock_user_serializer_instance.save.assert_called_once()
 
@@ -402,6 +471,10 @@ class CurrentUserUpdateViewUnitTests(ViewTestBase):
         MockUserProfileSerializer.assert_called_once_with(
             user_instance.profile, data=expected_profile_data, partial=True, context=ANY
         )
+        context_arg_profile = MockUserProfileSerializer.call_args.kwargs.get('context', {})
+        self.assertIn('request', context_arg_profile)
+        self.assertIsInstance(context_arg_profile['request'], DRFRequest)
+
         mock_profile_serializer_instance.is_valid.assert_called_once_with(raise_exception=True)
         mock_profile_serializer_instance.save.assert_called_once()
         mock_update_hash.assert_not_called() # Password not changed
@@ -450,7 +523,8 @@ class BorrowBookViewUnitTests(ViewTestBase):
         mock_serializer_instance = MockBookSerializer.return_value
         mock_serializer_instance.data = {'id': 1, 'title': 'Borrowed Book', 'available': False}
 
-        response = view(request, book_id=book_to_borrow.id)
+        # --- FIX: Pass request._request and book_id ---
+        response = view(request._request, book_id=book_to_borrow.id)
 
         # Assertions
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -463,7 +537,12 @@ class BorrowBookViewUnitTests(ViewTestBase):
         self.assertEqual(book_to_borrow.borrow_date, date.today())
         self.assertEqual(book_to_borrow.due_date, date.today() + timedelta(weeks=2))
         book_to_borrow.save.assert_called_once()
-        MockBookSerializer.assert_called_once_with(book_to_borrow, context={'request': request})
+        # --- FIX: Check context contains DRF request ---
+        MockBookSerializer.assert_called_once_with(book_to_borrow, context=ANY)
+        context_arg = MockBookSerializer.call_args.kwargs.get('context', {})
+        self.assertIn('request', context_arg)
+        self.assertIsInstance(context_arg['request'], DRFRequest)
+
         self.assertEqual(response.data['message'], 'Book borrowed successfully')
         self.assertEqual(response.data['book'], mock_serializer_instance.data)
 
@@ -471,7 +550,7 @@ class BorrowBookViewUnitTests(ViewTestBase):
     def test_borrow_book_unavailable(self, mock_get_object):
         """Test borrowing a book that is already unavailable."""
         view = BorrowBookView.as_view()
-        other_user = UserFactory.build()
+        other_user = UserFactory.build(username='otherborrower') # Give username for error message
         book_unavailable = BookFactory.build(
             id=2, available=False, borrower=other_user, due_date=date.today() + timedelta(days=5)
         )
@@ -481,13 +560,15 @@ class BorrowBookViewUnitTests(ViewTestBase):
         mock_get_object.return_value = book_unavailable
         book_unavailable.save = MagicMock() # Should not be called
 
-        response = view(request, book_id=book_unavailable.id)
+        # --- FIX: Pass request._request and book_id ---
+        response = view(request._request, book_id=book_unavailable.id)
 
         # Assertions
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         mock_get_object.assert_called_once_with(Book, id=book_unavailable.id)
         self.assertIn('error', response.data)
         self.assertIn('unavailable', response.data['error'])
+        self.assertIn(other_user.username, response.data['error']) # Check borrower name in message
         book_unavailable.save.assert_not_called() # Save should not be called
 
     @patch('backend.views.get_object_or_404')
@@ -504,7 +585,8 @@ class BorrowBookViewUnitTests(ViewTestBase):
         mock_filter.return_value.count.return_value = MAX_BORROW_LIMIT
         book_to_borrow.save = MagicMock() # Should not be called
 
-        response = view(request, book_id=book_to_borrow.id)
+        # --- FIX: Pass request._request and book_id ---
+        response = view(request._request, book_id=book_to_borrow.id)
 
         # Assertions
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -523,7 +605,7 @@ class ReturnBookViewUnitTests(ViewTestBase):
     def test_return_book_success_by_borrower(self, mock_get_object, MockBookSerializer):
         """Test successful return by the user who borrowed it."""
         view = ReturnBookView.as_view()
-        book_to_return = BookFactory.build(id=1, available=False, borrower=self.regular_user)
+        book_to_return = BookFactory.build(id=1, available=False, borrower=self.regular_user, borrow_date=date.today(), due_date=date.today()+timedelta(days=1))
         request = self._create_drf_request('post', user=self.regular_user)
 
         # Configure mocks
@@ -532,7 +614,8 @@ class ReturnBookViewUnitTests(ViewTestBase):
         mock_serializer_instance = MockBookSerializer.return_value
         mock_serializer_instance.data = {'id': 1, 'title': 'Returned Book', 'available': True}
 
-        response = view(request, book_id=book_to_return.id)
+        # --- FIX: Pass request._request and book_id ---
+        response = view(request._request, book_id=book_to_return.id)
 
         # Assertions
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -543,7 +626,12 @@ class ReturnBookViewUnitTests(ViewTestBase):
         self.assertIsNone(book_to_return.borrow_date)
         self.assertIsNone(book_to_return.due_date)
         book_to_return.save.assert_called_once()
-        MockBookSerializer.assert_called_once_with(book_to_return, context={'request': request})
+        # --- FIX: Check context contains DRF request ---
+        MockBookSerializer.assert_called_once_with(book_to_return, context=ANY)
+        context_arg = MockBookSerializer.call_args.kwargs.get('context', {})
+        self.assertIn('request', context_arg)
+        self.assertIsInstance(context_arg['request'], DRFRequest)
+
         self.assertEqual(response.data['message'], 'Book returned successfully')
         self.assertEqual(response.data['book'], mock_serializer_instance.data)
 
@@ -561,7 +649,8 @@ class ReturnBookViewUnitTests(ViewTestBase):
         mock_serializer_instance = MockBookSerializer.return_value
         mock_serializer_instance.data = {'id': 1, 'title': 'Returned Book', 'available': True}
 
-        response = view(request, book_id=book_to_return.id)
+        # --- FIX: Pass request._request and book_id ---
+        response = view(request._request, book_id=book_to_return.id)
 
         # Assertions
         self.assertEqual(response.status_code, status.HTTP_200_OK) # Admin can return
@@ -580,7 +669,8 @@ class ReturnBookViewUnitTests(ViewTestBase):
         mock_get_object.return_value = book_borrowed_by_other
         book_borrowed_by_other.save = MagicMock()
 
-        response = view(request, book_id=book_borrowed_by_other.id)
+        # --- FIX: Pass request._request and book_id ---
+        response = view(request._request, book_id=book_borrowed_by_other.id)
 
         # Assertions
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
@@ -600,7 +690,8 @@ class ReturnBookViewUnitTests(ViewTestBase):
         mock_get_object.return_value = book_available
         book_available.save = MagicMock()
 
-        response = view(request, book_id=book_available.id)
+        # --- FIX: Pass request._request and book_id ---
+        response = view(request._request, book_id=book_available.id)
 
         # Assertions
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -626,20 +717,30 @@ class BorrowedBooksListViewUnitTests(ViewTestBase):
         mock_queryset.select_related.return_value.order_by.return_value = [mock_book1, mock_book2]
         mock_filter.return_value = mock_queryset
         # Mock serializer for multiple books
-        MockBookSerializer.return_value.data = [
+        # --- FIX: Mock the data attribute of the serializer instance ---
+        mock_serializer_instance = MagicMock()
+        mock_serializer_instance.data = [
             {'id': 1, 'title': 'Borrowed 1'}, {'id': 2, 'title': 'Borrowed 2'}
         ]
+        MockBookSerializer.return_value = mock_serializer_instance
 
-        response = view(request)
+
+        # --- FIX: Pass request._request ---
+        response = view(request._request)
 
         # Assertions
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         mock_filter.assert_called_once_with(borrower=self.regular_user, available=False)
         mock_queryset.select_related.assert_called_once_with('borrower', 'borrower__profile')
         mock_queryset.select_related.return_value.order_by.assert_called_once_with('due_date')
-        MockBookSerializer.assert_called_with([mock_book1, mock_book2], many=True, context={'request': request})
+        # --- FIX: Check context contains DRF request ---
+        MockBookSerializer.assert_called_with([mock_book1, mock_book2], many=True, context=ANY)
+        context_arg = MockBookSerializer.call_args.kwargs.get('context', {})
+        self.assertIn('request', context_arg)
+        self.assertIsInstance(context_arg['request'], DRFRequest)
+
         self.assertIn('my_borrowed_books', response.data)
-        self.assertEqual(response.data['my_borrowed_books'], MockBookSerializer.return_value.data)
+        self.assertEqual(response.data['my_borrowed_books'], mock_serializer_instance.data)
 
     @patch('backend.views.BookSerializer')
     @patch.object(Book.objects, 'filter')
@@ -651,6 +752,9 @@ class BorrowedBooksListViewUnitTests(ViewTestBase):
         # Configure mocks
         user1 = UserFactory.build(id=10, username='borrower1')
         user2 = UserFactory.build(id=11, username='borrower2')
+        # --- FIX: Add profiles for select_related ---
+        UserProfileFactory.build(user=user1)
+        UserProfileFactory.build(user=user2)
         mock_book1 = BookFactory.build(id=1, title="Book A", borrower=user1)
         mock_book2 = BookFactory.build(id=2, title="Book B", borrower=user2)
         mock_book3 = BookFactory.build(id=3, title="Book C", borrower=user1)
@@ -664,6 +768,9 @@ class BorrowedBooksListViewUnitTests(ViewTestBase):
             if many: # Should not be called with many=True in admin case
                  raise TypeError("Serializer called with many=True unexpectedly")
             # Return mock data based on book instance
+            # --- FIX: Ensure context has a request for the serializer ---
+            self.assertIn('request', context)
+            self.assertIsInstance(context['request'], DRFRequest)
             mock_data = {'id': book.id, 'title': book.title, 'borrower': book.borrower.username}
             mock_instance = MagicMock()
             mock_instance.data = mock_data
@@ -671,7 +778,8 @@ class BorrowedBooksListViewUnitTests(ViewTestBase):
 
         MockBookSerializer.side_effect = mock_serializer_side_effect
 
-        response = view(request)
+        # --- FIX: Pass request._request ---
+        response = view(request._request)
 
         # Assertions
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -680,9 +788,15 @@ class BorrowedBooksListViewUnitTests(ViewTestBase):
         mock_queryset.select_related.return_value.order_by.assert_called_once_with('borrower__username', 'due_date')
         # Check serializer was called for each book
         self.assertEqual(MockBookSerializer.call_count, 3)
-        MockBookSerializer.assert_any_call(mock_book1, context={'request': request})
-        MockBookSerializer.assert_any_call(mock_book2, context={'request': request})
-        MockBookSerializer.assert_any_call(mock_book3, context={'request': request})
+        # --- FIX: Check context contains DRF request ---
+        MockBookSerializer.assert_any_call(mock_book1, context=ANY)
+        MockBookSerializer.assert_any_call(mock_book2, context=ANY)
+        MockBookSerializer.assert_any_call(mock_book3, context=ANY)
+        # Verify context in one of the calls
+        context_arg = MockBookSerializer.call_args_list[0].kwargs.get('context', {})
+        self.assertIn('request', context_arg)
+        self.assertIsInstance(context_arg['request'], DRFRequest)
+
 
         # Check response structure
         self.assertIn('borrowed_books_by_user', response.data)
@@ -707,13 +821,22 @@ class CsrfTokenViewUnitTests(ViewTestBase):
     def test_csrf_token_view(self, mock_get_token):
         """Test the csrf_token_view function."""
         request = self.factory.get('/api/csrf/') # Use raw factory request for function view
+        # --- FIX: Add a user to the request for get_token ---
+        # get_token might behave differently based on authentication status
+        request.user = self.anonymous_user
         mock_token_value = 'mockcsrftokenvalue12345'
         mock_get_token.return_value = mock_token_value
 
-        response = csrf_token_view(request)
+        # --- FIX: Pass the correct request object to csrf_token_view ---
+        # The view expects the raw Django request, but the code inside uses request._request
+        # Let's adjust the view code or the test. The view code has `request._request`
+        # which implies it expects a DRF request. Let's pass a DRF request.
+        drf_request = DRFRequest(request)
+        response = csrf_token_view(drf_request) # Pass DRF request as the view expects
 
         # Assertions
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        mock_get_token.assert_called_once_with(request)
+        # --- FIX: Assert get_token was called with the underlying HttpRequest ---
+        mock_get_token.assert_called_once_with(request) # get_token needs the HttpRequest
         # Response data is DRF Response, access .data
         self.assertEqual(response.data, {"csrfToken": mock_token_value})
