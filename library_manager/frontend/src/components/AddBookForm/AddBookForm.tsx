@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import "./AddBookForm.css"; // ✅ Import CSS for styling
+import React, { useState } from 'react'; // Removed useEffect as CSRF is handled by context
+import { useAuth } from '../../context/AuthContext'; // Import useAuth to get CSRF token
+import "./AddBookForm.css";
 
 interface AddBookFormProps {
     onBookCreated?: () => void; // Optional callback after book creation
@@ -29,16 +30,38 @@ const AddBookForm: React.FC<AddBookFormProps> = ({ onBookCreated }) => {
     const [isbn, setIsbn] = useState('');
     const [category, setCategory] = useState(bookCategories[0].value); // Default to first category
     const [language, setLanguage] = useState('English'); // Default value
-    const [condition, setCondition] = useState(bookConditions[0].value); // Default to 'Good' (GD) - now using first condition
+    const [condition, setCondition] = useState(bookConditions[1].value); // Default to 'Good'
     const [storageLocation, setStorageLocation] = useState('Shelf A1'); // Default value
     const [publisher, setPublisher] = useState('Tromsø University Press');
-    const [publicationYear, setPublicationYear] = useState('2025');
-    const [copyNumber, setCopyNumber] = useState('1');
-    const [available, setAvailable] = useState(true);
+    const [publicationYear, setPublicationYear] = useState<number | string>(''); // Allow number or string for input, send number
+    const [copyNumber, setCopyNumber] = useState<number | string>(1); // Default to 1, send number
+    // 'available' state is removed as it's read-only in the serializer for creation
 
+    const { getCSRFToken } = useAuth(); // Get CSRF token function from context
 
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
+
+        // --- Get CSRF Token ---
+        const csrfToken = await getCSRFToken();
+        if (!csrfToken) {
+            alert("Error: Could not verify security token. Please refresh and try again.");
+            return;
+        }
+        // --- End CSRF Token ---
+
+        // Convert year and copy number to numbers, handle potential errors
+        const year = publicationYear ? parseInt(String(publicationYear), 10) : null;
+        const copyNum = copyNumber ? parseInt(String(copyNumber), 10) : null;
+
+        if (publicationYear && isNaN(year as number)) {
+            alert("Please enter a valid publication year.");
+            return;
+        }
+        if (copyNumber && isNaN(copyNum as number)) {
+            alert("Please enter a valid copy number.");
+            return;
+        }
 
         const bookData = {
             title,
@@ -47,20 +70,26 @@ const AddBookForm: React.FC<AddBookFormProps> = ({ onBookCreated }) => {
             category,
             language,
             condition,
-            available,
-            storageLocation,
-            publisher,
-            publicationYear,
-            copyNumber
+            // available is not sent, defaults to True on backend
+            storage_location: storageLocation || null, // Send null if empty
+            publisher: publisher || null, // Send null if empty
+            publication_year: year, // Send parsed number or null
+            copy_number: copyNum, // Send parsed number or null
+            // added_by is set automatically by the backend
+            // borrower, borrow_date, due_date are not relevant for creation
         };
 
         try {
-            const response = await fetch('/api/create_book/', {
+            // <<< CHANGE: Update API endpoint >>>
+            const response = await fetch('/api/books/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    // <<< CHANGE: Include CSRF token >>>
+                    'X-CSRFToken': csrfToken,
                 },
                 body: JSON.stringify(bookData),
+                credentials: 'include', // Include cookies for session auth
             });
 
             if (response.ok) {
@@ -71,18 +100,31 @@ const AddBookForm: React.FC<AddBookFormProps> = ({ onBookCreated }) => {
                 setIsbn('');
                 setCategory(bookCategories[0].value);
                 setLanguage('English');
-                setCondition(bookConditions[0].value);
-                setAvailable(true);
-                setStorageLocation('Shelf A1');
+                setCondition(bookConditions[1].value);
+                setStorageLocation('');
                 setPublisher('');
                 setPublicationYear('');
-                setCopyNumber('1');
+                setCopyNumber(1);
                 if (onBookCreated) {
                     onBookCreated(); // Notify parent component about book creation
                 }
             } else {
+                // <<< CHANGE: Improved error handling >>>
+                let errorMsg = 'Error creating book';
+                try {
                 const errorData = await response.json();
-                alert(`Error creating book: ${errorData.error || 'Unknown error'}`);
+                    // Flatten potential nested errors
+                    if (typeof errorData === 'object' && errorData !== null) {
+                        errorMsg = Object.entries(errorData)
+                            .map(([key, value]) => `${key}: ${Array.isArray(value) ? value.join(', ') : value}`)
+                            .join('\n');
+                    } else if (errorData.detail) { // DRF often uses 'detail' for general errors
+                         errorMsg = errorData.detail;
+                    }
+                } catch(e) {
+                    errorMsg = `Error creating book (Status: ${response.status})`;
+                }
+                alert(errorMsg);
             }
         } catch (error) {
             console.error('Error:', error);
@@ -126,14 +168,14 @@ const AddBookForm: React.FC<AddBookFormProps> = ({ onBookCreated }) => {
             <input type="text" id="publisher" value={publisher} onChange={(e) => setPublisher(e.target.value)} />
 
             <label htmlFor="publicationYear">Publication Year:</label>
-            <input type="number" id="publicationYear" value={publicationYear} onChange={(e) => setPublicationYear(e.target.value)} />
+            {/* <<< CHANGE: Use text input for year for flexibility, parse in handler >>> */}
+            <input type="text" inputMode="numeric" pattern="[0-9]*" id="publicationYear" value={publicationYear} onChange={(e) => setPublicationYear(e.target.value)} />
 
             <label htmlFor="copyNumber">Copy Number:</label>
-            <input type="number" id="copyNumber" value={copyNumber} onChange={(e) => setCopyNumber(e.target.value)} />
+            {/* <<< CHANGE: Use text input for copy number, parse in handler >>> */}
+            <input type="text" inputMode="numeric" pattern="[0-9]*" id="copyNumber" value={copyNumber} onChange={(e) => setCopyNumber(e.target.value)} />
 
-
-            <label htmlFor="available">Available:</label>
-            <input type="checkbox" id="available" checked={available} onChange={(e) => setAvailable(e.target.checked)} />
+            {/* Removed 'Available' checkbox as it's not sent during creation */}
 
             <button type="submit">Add Book</button>
         </form>
