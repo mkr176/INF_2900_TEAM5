@@ -1,94 +1,167 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react"; // Added useCallback
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext"; // Import useAuth
 import "./AdminUserManagement.css";
+
+// Define interfaces based on backend serializers
+interface UserProfile {
+  user_id: number;
+  username: string;
+  type: string; // 'AD', 'US', 'LB'
+  age: number | null;
+  avatar: string | null;
+  get_type_display: string;
+}
 
 interface User {
   id: number;
-  name: string;
+  username: string;
   email: string;
-  avatar: string;
-  type: string; // AD, LB, US
+  first_name: string;
+  last_name: string;
+  profile: UserProfile | null; // Profile can be null
+  date_joined: string;
+  is_staff: boolean;
 }
+
 
 const AdminUserManagement: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
-  const [currentUser, setCurrentUser] = useState<{ username: string; type: string } | null>(null);
+  // Get user info and CSRF token function from AuthContext
+  const { currentUser, userType, getCSRFToken } = useAuth();
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  const getCookie = (name: string) => {
-    const match = document.cookie.match(new RegExp("(^| )" + name + "=([^;]+)"));
-    return match ? match[2] : null;
-  };
+  // Check authorization on component mount and when userType changes
+  useEffect(() => {
+    if (!currentUser) {
+      // If currentUser is null (still loading or not logged in), wait or redirect
+      // Add a small delay or check loading state if needed
+      const timer = setTimeout(() => {
+        if (!currentUser) { // Check again
+             alert("Please log in to access this page.");
+             navigate("/login");
+        }
+      }, 500); // Adjust delay if needed
+      return () => clearTimeout(timer);
+    } else if (userType !== "AD" && userType !== "LB") {
+      alert("Access denied: Only admins or librarians can manage users.");
+      navigate("/principal"); // Redirect to a safe page
+    } else {
+      // User is authorized, proceed to fetch users
+      fetchUsers();
+    }
+    // Depend on currentUser and userType
+  }, [currentUser, userType, navigate]); // Removed fetchUsers from here
 
-  const fetchCurrentUser = async () => {
-    const res = await fetch("/api/current_user/");
-    if (res.ok) {
-      const data = await res.json();
-      setCurrentUser(data);
-      if (data.type !== "AD" && data.type !== "LB") {
-        alert("Access denied: Only admins or librarians can manage users.");
-        navigate("/");
+  // Function to fetch users (now called from useEffect after auth check)
+  const fetchUsers = useCallback(async () => { // Wrap in useCallback
+    setLoading(true);
+    try {
+      // Use the correct endpoint from urls.py
+      const res = await fetch("/api/users/"); // GET request is default
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
       }
-    } else {
-      alert("You are not logged in.");
-      navigate("/login");
+      const data: User[] = await res.json();
+
+      // Filter based on current user type (Admins see all, Librarians see non-Admins)
+      // Backend UserListView doesn't filter, so we do it here.
+      if (userType === "LB") {
+        // Librarians can only see regular users ('US') and other librarians ('LB')?
+        // Or just 'US'? Let's assume they can see 'US' and 'LB' but not 'AD'.
+        setUsers(data.filter((user: User) => user.profile?.type !== "AD"));
+      } else {
+        // Admins see all users returned by the API
+        setUsers(data);
+      }
+    } catch (error) {
+      console.error("Failed to fetch users:", error);
+      alert("Failed to load users. Please try again later.");
+      setUsers([]); // Clear users on error
+    } finally {
+      setLoading(false);
     }
-  };
-
-  const fetchUsers = async () => {
-    const res = await fetch("/api/users/");
-    const data = await res.json();
-
-    // Filter based on current user type
-    if (currentUser?.type === "LB") {
-      // Librarians can only see regular users
-      setUsers(data.filter((user: User) => user.type === "US"));
-    } else {
-      // Admins can see all users
-      setUsers(data);
-    }
-
-    setLoading(false);
-  };
+    // Depend on userType for filtering logic
+  }, [userType]); // Add userType dependency
 
   const handleDelete = async (userId: number) => {
-    const confirmDelete = window.confirm("Are you sure you want to delete this user?");
+    // Prevent users from deleting themselves (optional, but good practice)
+    if (currentUser && userId === currentUser.id) {
+        alert("You cannot delete your own account from this panel.");
+        return;
+    }
+
+    const userToDelete = users.find(user => user.id === userId);
+    if (!userToDelete) return;
+
+    // Confirmation dialog
+    const confirmDelete = window.confirm(
+      `Are you sure you want to delete the user "${userToDelete.username}"? This action cannot be undone.`
+    );
     if (!confirmDelete) return;
 
-    const res = await fetch(`/api/user/${userId}/delete/`, {
+    // Get CSRF token using the context function
+    const csrfToken = await getCSRFToken();
+    if (!csrfToken) {
+      alert("Error: Could not verify security token. Please refresh and try again.");
+      return;
+    }
 
-      method: "DELETE",
-      headers: {
-        "X-CSRFToken": getCookie("csrftoken") || "",
-      },
-    });
+    try {
+      // Use the correct endpoint and method from urls.py
+      const res = await fetch(`/api/users/${userId}/`, {
+        method: "DELETE",
+        headers: {
+          "X-CSRFToken": csrfToken, // Use the token from context
+        },
+        credentials: "include", // Include cookies if needed by session auth
+      });
 
-    if (res.ok) {
-      setUsers((prevUsers) => prevUsers.filter((user) => user.id !== userId));
-    } else {
-      const err = await res.json();
-      alert("Failed to delete user: " + err.error);
+      if (res.ok) {
+        // Successfully deleted on backend, remove from frontend state
+        setUsers((prevUsers) => prevUsers.filter((user) => user.id !== userId));
+        alert(`User "${userToDelete.username}" deleted successfully.`);
+      } else {
+        // Handle specific errors from backend if possible
+        let errorMsg = `Failed to delete user "${userToDelete.username}".`;
+        try {
+          const err = await res.json();
+          // Use DRF's 'detail' field or flatten errors
+          if (err.detail) {
+              errorMsg += ` Error: ${err.detail}`;
+          } else if (typeof err === 'object') {
+               errorMsg += ` Errors: ${JSON.stringify(err)}`;
+          }
+        } catch (e) {
+          // Ignore if response is not JSON
+          errorMsg += ` Status: ${res.status}`;
+        }
+        alert(errorMsg);
+      }
+    } catch (error) {
+      console.error("Error deleting user:", error);
+      alert(`An error occurred while deleting user "${userToDelete.username}".`);
     }
   };
 
-  useEffect(() => {
-    const init = async () => {
-      await fetchCurrentUser();  // Wait to know user type
-    };
-    init();
-  }, []);
-
-  useEffect(() => {
-    if (currentUser) fetchUsers();
-  }, [currentUser]);
+  // Removed useEffect(() => { if (currentUser) fetchUsers(); }, [currentUser]);
+  // fetchUsers is now called within the authorization useEffect
 
   if (loading) return <p>Loading users...</p>;
+
+  // Ensure currentUser is available before rendering the main content
+  if (!currentUser || (userType !== "AD" && userType !== "LB")) {
+      // This should ideally not be reached due to the useEffect checks, but acts as a fallback
+      return <p>Access Denied or User Not Loaded.</p>;
+  }
+
 
   return (
     <div className="admin-user-container">
       <h1 className="admin-user-title">
-        {currentUser?.type === "AD" ? "Admin User Management" : "Librarian User Management"}
+        {/* Title based on the actual userType from context */}
+        {userType === "AD" ? "Admin User Management" : "Librarian User Management"}
       </h1>
       {users.length === 0 ? (
         <p>No users found.</p>
@@ -98,27 +171,40 @@ const AdminUserManagement: React.FC = () => {
             <div key={user.id} className="user-card">
               <div className="user-info">
               <img
-                src={`/static/images/avatars/${user.avatar?.trim() ? user.avatar : "default.svg"}`}
-                alt="avatar"
+                // Use profile.avatar, provide default if profile or avatar is null/undefined
+                src={`/static/images/${user.profile?.avatar || "avatars/default.svg"}`}
+                alt={`${user.username}'s avatar`}
                 className="user-avatar"
                 />
 
                 <div className="user-details">
-                  <p className="name">{user.name}</p>
+                  {/* Display username, first/last name */}
+                  <p className="name">{user.username} ({user.first_name} {user.last_name})</p>
                   <p className="email">{user.email}</p>
-                  <p className="role">Role: {user.type}</p>
+                  {/* Display user role from profile.get_type_display */}
+                  <p className="role">Role: {user.profile?.get_type_display || 'N/A'}</p>
                 </div>
               </div>
-              <button onClick={() => handleDelete(user.id)} className="delete-btn">
-                Delete
-              </button>
+              {/* Prevent deleting own user or users with higher/equal privilege for librarians */}
+              {currentUser.id !== user.id && (userType === 'AD' || (userType === 'LB' && user.profile?.type === 'US')) && (
+                 <button onClick={() => handleDelete(user.id)} className="delete-btn">
+                    Delete
+                 </button>
+              )}
+              {/* Optionally show a disabled button or nothing */}
+              {currentUser.id === user.id && (
+                 <button className="delete-btn" disabled style={{backgroundColor: 'grey', cursor: 'not-allowed'}}>Self</button>
+              )}
+              {userType === 'LB' && user.profile?.type !== 'US' && currentUser.id !== user.id && (
+                 <button className="delete-btn" disabled style={{backgroundColor: 'grey', cursor: 'not-allowed'}}>No Access</button>
+              )}
             </div>
           ))}
         </div>
       )}
     </div>
   );
-  
+
 };
 
 export default AdminUserManagement;
