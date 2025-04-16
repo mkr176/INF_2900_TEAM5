@@ -94,8 +94,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setIsLoggedIn(true);
                 // Update derived state
                 setUsername(userData.username);
-                setUserType(userData.profile?.type || "US"); // Default to 'US' if profile or type is missing
-                // Use the avatar path from profile, default if missing
+                // Safely access profile type, default to 'US' if profile or type is missing/null
+                setUserType(userData.profile?.type ?? "US");
+                // Use the avatar path from profile, default if missing/null
+                // Ensure a default path like 'avatars/default.svg' is used if profile.avatar is null/empty
                 setAvatar(userData.profile?.avatar || "avatars/default.svg");
       } else {
                 console.log("AuthContext: No user session found or error:", response.status);
@@ -122,6 +124,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (!csrfToken) {
             console.error("Logout failed: Could not get CSRF token.");
             // Optionally inform the user
+            alert("Logout failed: Could not verify security token. Please refresh and try again.");
             return;
         }
 
@@ -138,25 +141,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       if (response.ok) {
                 console.log("AuthContext: Logout successful.");
-                setCurrentUser(null);
-        setIsLoggedIn(false);
-        setUsername("Not logged in");
-                setAvatar("avatars/default.svg");
-                setUserType("");
-                // Optionally clear other sensitive state/storage
+                // Clear state regardless of server response status for robustness
       } else {
                 console.error("AuthContext: Logout failed on server:", response.status, await response.text());
-                // Handle potential errors, maybe the session was already invalid
-                // Still clear local state as a safety measure
-                setCurrentUser(null);
-                setIsLoggedIn(false);
-                setUsername("Not logged in");
-                setAvatar("avatars/default.svg");
-                setUserType("");
+                // Still clear local state as a safety measure even if server fails
       }
     } catch (error) {
             console.error("AuthContext: Error during logout:", error);
              // Still clear local state as a safety measure
+        } finally {
+            // <<< CHANGE: Ensure state is cleared in finally block >>>
              setCurrentUser(null);
              setIsLoggedIn(false);
              setUsername("Not logged in");
