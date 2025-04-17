@@ -66,13 +66,19 @@ const Navbar: React.FC = () => {
         {isLoggedIn ? (
           <>
             <img
-              // <<< POTENTIAL IMPROVEMENT: Construct full URL if needed, but relative path might work with static file serving >>>
-              // Assuming '/static/' prefix is handled correctly by Django/webserver
-              src={`/static/images/${avatar}`} // Use avatar path from context
+              // <<< CHANGE: Remove hardcoded prefix >>>
+              // src={`/static/images/${avatar}`} // Old line
+              src={avatar} // Use avatar path from context directly
               alt="User Avatar"
               className="nav-avatar"
               onClick={() => navigate("/profile")}  
               style={{ cursor: "pointer" }}  
+              // Add error handling for image loading
+              onError={(e) => {
+                console.warn(`Failed to load avatar: ${avatar}. Using default.`);
+                // Optionally set to a known default static image path if needed
+                (e.target as HTMLImageElement).src = '/static/images/avatars/default.svg'; // Fallback to a known static default
+              }}
             />
             <span
               className="nav-username"

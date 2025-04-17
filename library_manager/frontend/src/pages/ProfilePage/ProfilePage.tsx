@@ -196,10 +196,19 @@ const ProfilePage: React.FC = () => {
 
       <div className="profile-card">
         <img
-          // Construct full URL if needed, otherwise relative path
-          src={`/static/images/${selectedAvatar}`} // Use state variable for avatar
+          // <<< CHANGE: Remove hardcoded prefix >>>
+          // src={`/static/images/${selectedAvatar}`} // Old line
+          src={selectedAvatar} // Use state variable directly
           alt="User Avatar"
           className="profile-avatar"
+          // Add error handling for image loading
+          onError={(e) => {
+            console.warn(`Failed to load avatar: ${selectedAvatar}. Using default.`);
+            // Optionally set to a known default static image path if needed
+            (e.target as HTMLImageElement).src = '/static/images/avatars/default.svg'; // Fallback to a known static default
+            // Also update state if the current selection failed, to prevent trying to save the bad URL
+            setSelectedAvatar('/static/images/avatars/default.svg');
+          }}
         />
         {/* Display username from context */}
         <h2 className="profile-username">{currentUser.username}</h2>

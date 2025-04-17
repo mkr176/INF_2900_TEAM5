@@ -171,10 +171,17 @@ const AdminUserManagement: React.FC = () => {
             <div key={user.id} className="user-card">
               <div className="user-info">
               <img
-                // Use profile.avatar, provide default if profile or avatar is null/undefined
-                src={`/static/images/${user.profile?.avatar || "avatars/default.svg"}`}
+                // <<< CHANGE: Remove hardcoded prefix and handle potential null >>>
+                // src={`/static/images/${user.profile?.avatar || "avatars/default.svg"}`} // Old line
+                src={user.profile?.avatar || '/static/images/avatars/default.svg'} // Use avatar directly, provide default if null/undefined
                 alt={`${user.username}'s avatar`}
                 className="user-avatar"
+                // Add error handling for image loading
+                onError={(e) => {
+                  console.warn(`Failed to load avatar for user ${user.username}: ${user.profile?.avatar}. Using default.`);
+                  // Fallback to a known static default
+                  (e.target as HTMLImageElement).src = '/static/images/avatars/default.svg';
+                }}
                 />
 
                 <div className="user-details">
