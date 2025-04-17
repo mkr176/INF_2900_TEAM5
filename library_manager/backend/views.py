@@ -192,20 +192,38 @@ class CurrentUserUpdateView(generics.RetrieveUpdateAPIView):
         # Handle profile updates (if UserSerializer is enhanced to accept profile data)
         profile_data = self.request.data.get('profile', {})
         if profile_data and hasattr(user, 'profile'):
-            # <<< PROPOSED FIX: Prevent users from changing their own type >>>
-            profile_data.pop('type', None) # Remove 'type' if present in the request data
+            # <<< FIX: Handle avatar update separately >>>
+            avatar_path_str = profile_data.pop('avatar', None) # Get avatar path string if sent
 
-            profile_serializer = UserProfileSerializer(
-                user.profile,
-                data=profile_data,
-                partial=True, # Allow partial updates
-                context={'request': self.request}
-            )
-            # Validate and save the profile, raising errors if invalid
-            if profile_serializer.is_valid(raise_exception=True):
-                 profile_serializer.save()
-            # No need for else block, raise_exception=True handles it
+            # Prevent users from changing their own type via this endpoint
+            profile_data.pop('type', None)
 
+            # Update other profile fields using the serializer if there's remaining data
+            if profile_data:
+                profile_serializer = UserProfileSerializer(
+                    user.profile,
+                    data=profile_data, # Use remaining data
+                    partial=True,
+                    context={'request': self.request}
+                )
+                if profile_serializer.is_valid(raise_exception=True):
+                    profile_serializer.save() # Save other profile fields
+
+            # Now, handle the avatar string path if it was provided and is valid
+            if avatar_path_str is not None:
+                # Basic validation: Ensure it looks like a path within 'avatars/'
+                # More robust validation could check if the file actually exists in staticfiles
+                # For now, we trust the frontend sends a valid relative path from the selector.
+                # Ensure it's a string before assignment.
+                if isinstance(avatar_path_str, str) and avatar_path_str.startswith('avatars/'):
+                    # Assign the string path directly to the ImageField's name attribute
+                    user.profile.avatar.name = avatar_path_str
+                    user.profile.save(update_fields=['avatar']) # Save only the avatar field
+                elif avatar_path_str == '' or avatar_path_str is None:
+                    # Handle case where user might want to reset to default (send empty string or null)
+                    # Assuming 'avatars/default.svg' is the default value in the model
+                    user.profile.avatar.name = 'avatars/default.svg'
+                    user.profile.save(update_fields=['avatar'])
 
 # ============================== #
 # 3️ BOOK MANAGEMENT API VIEWS   #
