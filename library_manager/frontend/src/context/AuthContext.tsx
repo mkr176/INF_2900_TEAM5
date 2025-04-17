@@ -40,13 +40,33 @@ const getCSRFTokenFromCookie = (): string | null => {
     return match ? match[1] : null;
 };
 
+// <<< CHANGE: Define the static prefix >>>
+const STATIC_AVATAR_PATH_PREFIX = "/static/images/";
+const DEFAULT_AVATAR_FILENAME = "avatars/default.svg";
+const DEFAULT_AVATAR_FULL_PATH = STATIC_AVATAR_PATH_PREFIX + DEFAULT_AVATAR_FILENAME;
+
+// <<< CHANGE: Helper function to construct full avatar path >>>
+const getFullAvatarPath = (relativePath: string | null | undefined): string => {
+    if (relativePath && typeof relativePath === 'string' && relativePath.trim() !== '') {
+        // Avoid double prefixes if the backend somehow sends the full path already
+        if (relativePath.startsWith(STATIC_AVATAR_PATH_PREFIX)) {
+            return relativePath;
+        }
+        // Check if it already starts with '/avatars/' or just 'avatars/'
+        const cleanRelativePath = relativePath.startsWith('/') ? relativePath.substring(1) : relativePath;
+        return STATIC_AVATAR_PATH_PREFIX + cleanRelativePath;
+    }
+    return DEFAULT_AVATAR_FULL_PATH;
+};
+
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
     // Derived state for convenience in components that haven't been updated yet
   const [username, setUsername] = useState("Not logged in");
-    const [avatar, setAvatar] = useState("avatars/default.svg"); // Default path
+    // <<< CHANGE: Initialize avatar state with the full default path >>>
+    const [avatar, setAvatar] = useState(DEFAULT_AVATAR_FULL_PATH);
   const [userType, setUserType] = useState("");
 
     const getCSRFToken = async (): Promise<string | null> => {
@@ -96,15 +116,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 setUsername(userData.username);
                 // Safely access profile type, default to 'US' if profile or type is missing/null
                 setUserType(userData.profile?.type ?? "US");
-                // Use the avatar path from profile, default if missing/null
-                // Ensure a default path like 'avatars/default.svg' is used if profile.avatar is null/empty
-                setAvatar(userData.profile?.avatar || "avatars/default.svg");
+                // <<< CHANGE: Use helper function to set the full avatar path >>>
+                setAvatar(getFullAvatarPath(userData.profile?.avatar));
       } else {
                 console.log("AuthContext: No user session found or error:", response.status);
                 setCurrentUser(null);
         setIsLoggedIn(false);
         setUsername("Not logged in");
-                setAvatar("avatars/default.svg");
+                // <<< CHANGE: Reset avatar to the full default path >>>
+                setAvatar(DEFAULT_AVATAR_FULL_PATH);
                 setUserType("");
       }
     } catch (error) {
@@ -112,7 +132,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             setCurrentUser(null);
       setIsLoggedIn(false);
             setUsername("Not logged in");
-            setAvatar("avatars/default.svg");
+            // <<< CHANGE: Reset avatar to the full default path >>>
+            setAvatar(DEFAULT_AVATAR_FULL_PATH);
             setUserType("");
     }
     }, []); // No dependencies needed if it doesn't rely on component state
@@ -154,7 +175,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
              setCurrentUser(null);
              setIsLoggedIn(false);
              setUsername("Not logged in");
-             setAvatar("avatars/default.svg");
+             // <<< CHANGE: Reset avatar to the full default path >>>
+             setAvatar(DEFAULT_AVATAR_FULL_PATH);
              setUserType("");
     }
   };

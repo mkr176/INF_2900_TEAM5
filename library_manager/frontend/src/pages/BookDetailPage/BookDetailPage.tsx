@@ -10,33 +10,59 @@ interface Book {
   title: string;
   author: string;
   isbn: string;
-  category: string;
-  category_display: string;
+  category: string; // Code e.g., 'SF'
+  category_display: string; // Display name e.g., 'Science Fiction'
   language: string;
-  condition: string;
-  condition_display: string;
+  condition: string; // Code e.g., 'GD'
+  condition_display: string; // Display name e.g., 'Good'
   available: boolean;
-  image?: string | null;
-  borrower: string | null;
+  image?: string | null; // Path relative to MEDIA_ROOT/STATIC_ROOT e.g., 'images/cover.jpg' or 'static/images/library_seal.jpg'
+  borrower: string | null; // Username
   borrower_id: number | null;
-  borrow_date: string | null;
-  due_date: string | null;
+  borrow_date: string | null; // ISO date string
+  due_date: string | null; // ISO date string
   storage_location: string | null;
   publisher: string | null;
   publication_year: number | null;
   copy_number: number | null;
   added_by: string | null;
   added_by_id: number | null;
+  // Derived fields (read-only from serializer)
   days_left?: number | null;
   overdue?: boolean;
   days_overdue?: number | null;
   due_today?: boolean;
 }
 
+// <<< ADDED: Constants/Helper for image path construction >>>
+const STATIC_PATH_PREFIX = "/static/";
+const DEFAULT_BOOK_IMAGE_PATH = "/static/images/library_seal.jpg"; // Full default path
+
+const getFullImagePath = (relativePath: string | null | undefined): string => {
+    if (relativePath && typeof relativePath === 'string' && relativePath.trim() !== '') {
+        // If it already starts with /static/ or /media/ (if using media URLs), use it directly
+        if (relativePath.startsWith('/static/') || relativePath.startsWith('/media/')) {
+            return relativePath;
+        }
+        // Otherwise, assume it's relative to static root and needs the prefix
+        // Handle cases like 'images/cover.jpg' or 'static/images/default.jpg'
+        const cleanRelativePath = relativePath.startsWith('/') ? relativePath.substring(1) : relativePath;
+        // Avoid double static prefix if default path is stored like 'static/images/...'
+        if (cleanRelativePath.startsWith('static/')) {
+             return '/' + cleanRelativePath; // Path is like /static/images/...
+        }
+        // Assume paths like 'images/cover.jpg' need the static prefix
+        return STATIC_PATH_PREFIX + cleanRelativePath; // /static/images/cover.jpg
+    }
+    return DEFAULT_BOOK_IMAGE_PATH;
+};
+
+
 const BookDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>(); // Get book ID from URL
   const navigate = useNavigate(); // Hook for navigation
-  const { getCSRFToken, userType } = useAuth(); // Get CSRF token function and user type
+  // <<< CHANGE: Get userType and currentUser from useAuth >>>
+  const { getCSRFToken, userType, currentUser } = useAuth(); // Get CSRF token function and user type/info
   const [book, setBook] = useState<Book | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -45,14 +71,21 @@ const BookDetailPage: React.FC = () => {
   const fetchBookDetails = useCallback(async () => { // Wrap in useCallback
     setLoading(true);
     setError(null);
+    if (!id) {
+        setError("Book ID is missing.");
+        setLoading(false);
+        return;
+    }
     try {
-      // Use the new API endpoint
-      const response = await fetch(`/api/books/${id}/`); // GET is default
+      // <<< CHANGE: Use the new API endpoint >>>
+      const response = await fetch(`/api/books/${id}/`, { credentials: 'include' }); // GET is default
       if (!response.ok) {
         if (response.status === 404) {
           throw new Error("Book not found.");
         }
-        throw new Error(`HTTP error! status: ${response.status}`);
+        // <<< CHANGE: Include status in error message >>>
+        const errorText = await response.text();
+        throw new Error(`HTTP error! Status: ${response.status}, Message: ${errorText}`);
       }
       const data: Book = await response.json();
       setBook(data);
@@ -65,13 +98,8 @@ const BookDetailPage: React.FC = () => {
   }, [id]); // Depend on id
 
   useEffect(() => {
-    if (id) {
       fetchBookDetails();
-    } else {
-      setError("Book ID is missing.");
-      setLoading(false);
-    }
-  }, [id, fetchBookDetails]); // Include fetchBookDetails in dependency array
+  }, [fetchBookDetails]); // Include fetchBookDetails in dependency array
 
   const handleBookUpdated = (updatedBook: Book) => {
     setBook(updatedBook); // Update local state with the updated book data
@@ -81,6 +109,12 @@ const BookDetailPage: React.FC = () => {
 
   const handleRemoveBook = async () => {
     if (!book) return;
+
+    // <<< ADDED: Check permissions before allowing delete action >>>
+    if (!(userType === 'AD' || userType === 'LB')) {
+        alert("You do not have permission to remove books.");
+        return;
+    }
 
     if (window.confirm(`Are you sure you want to remove "${book.title}"? This action cannot be undone.`)) {
       const csrfToken = await getCSRFToken();
@@ -100,7 +134,7 @@ const BookDetailPage: React.FC = () => {
           credentials: "include", // Include cookies if needed
         });
 
-        if (response.ok) { // Status 204 No Content is OK
+        if (response.ok || response.status === 204) { // Status 204 No Content is OK for DELETE
           alert(`Book "${book.title}" removed successfully.`);
           navigate("/principal"); // Navigate back to the main list page
         } else {
@@ -121,8 +155,8 @@ const BookDetailPage: React.FC = () => {
     }
   };
 
-  // Construct image path using /static/ prefix
-  const imagePath = book?.image ? `${book.image}` : '/static/images/library_seal.jpg';
+  // <<< CHANGE: Use helper function for image path >>>
+  const imagePath = getFullImagePath(book?.image);
 
   if (loading) {
     return <div className="book-detail-container"><p>Loading book details...</p></div>;
@@ -133,8 +167,8 @@ const BookDetailPage: React.FC = () => {
   }
 
   if (!book) {
-    // This case should be handled by the 404 check in fetchBookDetails
-    return <div className="book-detail-container"><p>Book not found.</p></div>;
+    // This case should be handled by the 404 check in fetchBookDetails or initial id check
+    return <div className="book-detail-container"><p>Book not found or ID missing.</p></div>;
   }
 
   // Check if the current user is an Admin or Librarian
@@ -143,12 +177,23 @@ const BookDetailPage: React.FC = () => {
   return (
     <div className="book-detail-container">
       <h1>{book.title}</h1>
-      <img src={imagePath} alt={book.title} className="book-detail-image" />
+      {/* <<< CHANGE: Use constructed imagePath >>> */}
+      <img
+        src={imagePath}
+        alt={book.title}
+        className="book-detail-image"
+        onError={(e) => {
+            console.warn(`Failed to load book image: ${imagePath}. Using default.`);
+            (e.target as HTMLImageElement).src = DEFAULT_BOOK_IMAGE_PATH;
+        }}
+       />
       <div className="book-detail-info">
         <p><strong>Author:</strong> {book.author}</p>
-        <p><strong>Category:</strong> {book.category_display}</p>
+        {/* <<< CHANGE: Use category_display >>> */}
+        <p><strong>Category:</strong> {book.category_display || book.category}</p>
         <p><strong>Language:</strong> {book.language}</p>
-        <p><strong>Condition:</strong> {book.condition_display}</p>
+        {/* <<< CHANGE: Use condition_display >>> */}
+        <p><strong>Condition:</strong> {book.condition_display || book.condition}</p>
         <p><strong>ISBN:</strong> {book.isbn}</p>
         <p><strong>Publisher:</strong> {book.publisher || 'N/A'}</p>
         <p><strong>Year:</strong> {book.publication_year || 'N/A'}</p>
@@ -163,6 +208,14 @@ const BookDetailPage: React.FC = () => {
           </span>
         </p>
         {book.added_by && <p><strong>Added By:</strong> {book.added_by}</p>}
+        {/* <<< ADDED: Display derived due date info if available >>> */}
+        {!book.available && book.due_date && (
+            <p><strong>Status:</strong>
+                {book.overdue && <span className="overdue"> Overdue by {book.days_overdue ?? '?'} days</span>}
+                {book.due_today && <span className="due-today"> Due Today</span>}
+                {!book.overdue && !book.due_today && book.days_left !== null && <span> Due in {book.days_left} days</span>}
+            </p>
+        )}
       </div>
 
       {/* Edit and Delete Buttons (Admin/Librarian only) */}

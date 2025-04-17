@@ -8,10 +8,28 @@ import "./ProfilePage.css";
 const MIN_PASSWORD_LENGTH = 8; // Match backend validator if possible
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+// <<< ADDED: Constants for avatar path handling (should match AuthContext/AvatarSelector) >>>
+const STATIC_AVATAR_PATH_PREFIX = "/static/images/";
+const DEFAULT_AVATAR_FILENAME = "avatars/default.svg";
+const DEFAULT_AVATAR_FULL_PATH = STATIC_AVATAR_PATH_PREFIX + DEFAULT_AVATAR_FILENAME;
+
+// <<< ADDED: Helper function to get relative path from full path >>>
+const getRelativeAvatarPath = (fullPath: string | null | undefined): string | null => {
+    if (!fullPath || typeof fullPath !== 'string' || !fullPath.startsWith(STATIC_AVATAR_PATH_PREFIX)) {
+        // If it's not a valid full path, maybe return the default relative path or null
+        // Assuming backend expects 'avatars/default.svg' format
+        return DEFAULT_AVATAR_FILENAME; // Or return null if backend handles default
+    }
+    // Remove the prefix to get the relative path (e.g., "avatars/default.svg")
+    return fullPath.substring(STATIC_AVATAR_PATH_PREFIX.length);
+};
+
+
 const ProfilePage: React.FC = () => {
   const navigate = useNavigate();
   // Get user data, logout, fetchUser, and CSRF token function from context
-  const { currentUser, logout, fetchUser, getCSRFToken } = useAuth();
+  // <<< CHANGE: Get the full avatar path from context >>>
+  const { currentUser, logout, fetchUser, getCSRFToken, avatar: contextAvatar } = useAuth();
 
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(!currentUser); // Start loading if currentUser isn't available yet
@@ -22,13 +40,15 @@ const ProfilePage: React.FC = () => {
   const [lastName, setLastName] = useState("");
   const [newPassword, setNewPassword] = useState(""); // For entering a new password
   // Removed currentPassword state - not sending it based on backend view logic
-  const [selectedAvatar, setSelectedAvatar] = useState("avatars/default.svg"); // Default
+  // <<< CHANGE: Initialize selectedAvatar with the full path from context >>>
+  const [selectedAvatar, setSelectedAvatar] = useState(contextAvatar || DEFAULT_AVATAR_FULL_PATH);
 
   // Store original values to compare for changes
   const [originalEmail, setOriginalEmail] = useState("");
   const [originalFirstName, setOriginalFirstName] = useState("");
   const [originalLastName, setOriginalLastName] = useState("");
-  const [originalAvatar, setOriginalAvatar] = useState("avatars/default.svg");
+  // <<< CHANGE: Initialize originalAvatar with the full path from context >>>
+  const [originalAvatar, setOriginalAvatar] = useState(contextAvatar || DEFAULT_AVATAR_FULL_PATH);
 
   useEffect(() => {
     setIsLoading(!currentUser); // Update loading state based on currentUser availability
@@ -37,8 +57,8 @@ const ProfilePage: React.FC = () => {
       const userEmail = currentUser.email || "";
       const userFirstName = currentUser.first_name || "";
       const userLastName = currentUser.last_name || "";
-      // Ensure avatar path is relative to the expected static/media root
-      const userAvatar = currentUser.profile?.avatar || "avatars/default.svg";
+      // <<< CHANGE: Use the full avatar path directly from context >>>
+      const userAvatarFullPath = contextAvatar || DEFAULT_AVATAR_FULL_PATH;
 
       setEmail(userEmail);
       setOriginalEmail(userEmail);
@@ -46,8 +66,9 @@ const ProfilePage: React.FC = () => {
       setOriginalFirstName(userFirstName);
       setLastName(userLastName);
       setOriginalLastName(userLastName);
-      setSelectedAvatar(userAvatar);
-      setOriginalAvatar(userAvatar);
+      // <<< CHANGE: Set state with the full path >>>
+      setSelectedAvatar(userAvatarFullPath);
+      setOriginalAvatar(userAvatarFullPath);
       setIsLoading(false); // Stop loading once data is set
     } else {
       // If no currentUser after initial load, maybe redirect
@@ -60,8 +81,8 @@ const ProfilePage: React.FC = () => {
       }, 500); // Adjust delay as needed
       return () => clearTimeout(timer);
     }
-    // Depend on currentUser object changes
-  }, [currentUser, isLoading, navigate]); // Added isLoading and navigate
+    // <<< CHANGE: Depend on contextAvatar as well >>>
+  }, [currentUser, isLoading, navigate, contextAvatar]); // Added isLoading, navigate, contextAvatar
 
   const handleCancel = () => {
     setIsEditing(false);
@@ -74,11 +95,13 @@ const ProfilePage: React.FC = () => {
   };
 
   const saveProfile = async () => {
+    // <<< CHANGE: Compare full avatar paths >>>
+    const isAvatarChanged = selectedAvatar !== originalAvatar;
     const isEmailChanged = email !== originalEmail;
     const isFirstNameChanged = firstName !== originalFirstName;
     const isLastNameChanged = lastName !== originalLastName;
     const isPasswordChanged = newPassword !== "";
-    const isAvatarChanged = selectedAvatar !== originalAvatar;
+
 
     // --- Validation ---
     if (isEmailChanged && !EMAIL_REGEX.test(email)) {
@@ -115,7 +138,10 @@ const ProfilePage: React.FC = () => {
     if (isPasswordChanged) payload.password = newPassword; // Send new password as 'password'
 
     // Avatar is part of the profile
-    if (isAvatarChanged) profilePayload.avatar = selectedAvatar;
+    if (isAvatarChanged) {
+        // <<< CHANGE: Convert full path back to relative path for backend >>>
+        profilePayload.avatar = getRelativeAvatarPath(selectedAvatar);
+    }
     // Add other profile fields here if they become editable (e.g., age)
     // if (isAgeChanged) profilePayload.age = age;
 
@@ -158,7 +184,7 @@ const ProfilePage: React.FC = () => {
 
         setNewPassword(""); // Clear password field on success
         setIsEditing(false);
-        await fetchUser(); // Refresh auth context to get the very latest data
+        await fetchUser(); // Refresh auth context to get the very latest data (including potentially updated avatar path from backend)
       } else {
         // Display specific error from backend if available
         let errorMsg = "Error updating profile.";
@@ -204,10 +230,10 @@ const ProfilePage: React.FC = () => {
           // Add error handling for image loading
           onError={(e) => {
             console.warn(`Failed to load avatar: ${selectedAvatar}. Using default.`);
-            // Optionally set to a known default static image path if needed
-            (e.target as HTMLImageElement).src = '/static/images/avatars/default.svg'; // Fallback to a known static default
+            // <<< CHANGE: Fallback to the full default path >>>
+            (e.target as HTMLImageElement).src = DEFAULT_AVATAR_FULL_PATH;
             // Also update state if the current selection failed, to prevent trying to save the bad URL
-            setSelectedAvatar('/static/images/avatars/default.svg');
+            setSelectedAvatar(DEFAULT_AVATAR_FULL_PATH);
           }}
         />
         {/* Display username from context */}
