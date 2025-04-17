@@ -1,11 +1,14 @@
 import React from "react";
 import "./AvatarSelector.css";
 
-// <<< CHANGE: Define the static prefix and default filename here too, or import from a shared config/context >>>
-const STATIC_AVATAR_PATH_PREFIX = "/static/images/avatars/";
+// <<< CHANGE: Define the BASE URL for static avatars >>>
+// This should match how Django serves these files via STATIC_URL/MEDIA_URL
+// Adjust if your setup is different (e.g., using MEDIA_URL)
+const AVATAR_BASE_URL = "/static/images/avatars/"; // Assuming avatars are under static/images/avatars/
+
 const DEFAULT_AVATAR_FILENAME = "default.svg";
 
-// Array of avatar filenames
+// Array of avatar filenames (relative to AVATAR_BASE_URL)
 const avatarFilenames = [
   "account-avatar-profile-user-2-svgrepo-com.svg",
   "account-avatar-profile-user-3-svgrepo-com.svg",
@@ -26,10 +29,10 @@ const avatarFilenames = [
 ];
 
 interface AvatarSelectorProps {
-  // <<< CHANGE: selectedAvatar expects the full path now >>>
-  selectedAvatar: string; // e.g., /static/images/avatars/default.svg
-  // <<< CHANGE: onSelectAvatar expects the full path now >>>
-  onSelectAvatar: (fullPath: string) => void; // e.g., /static/images/avatars/default.svg
+  // selectedAvatar expects the full URL now
+  selectedAvatar: string; // e.g., /static/images/avatars/default.svg or http://localhost:8000/static/...
+  // onSelectAvatar expects the full URL now
+  onSelectAvatar: (fullUrl: string) => void; // e.g., /static/images/avatars/user-2.svg
 }
 
 const AvatarSelector: React.FC<AvatarSelectorProps> = ({ selectedAvatar, onSelectAvatar }) => {
@@ -37,23 +40,21 @@ const AvatarSelector: React.FC<AvatarSelectorProps> = ({ selectedAvatar, onSelec
     // <<< CHANGE: Use avatar-grid class from the CSS provided >>>
     <div className="avatar-grid">
       {avatarFilenames.map((filename, index) => {
-        // <<< CHANGE: Construct the full path for comparison and selection >>>
-        const fullPath = STATIC_AVATAR_PATH_PREFIX + filename;
+        // Construct the full URL for this option
+        const fullUrl = AVATAR_BASE_URL + filename;
         return (
         <img
           key={index}
-            // <<< CHANGE: Use the constructed full path for src >>>
-            src={fullPath}
+            // Use the constructed full URL for src
+            src={fullUrl}
             alt={`Avatar Option ${index + 1}`}
-            // <<< CHANGE: Compare full paths for selection state >>>
-            // <<< CHANGE: Use avatar-option and selected classes from CSS >>>
-            className={`avatar-option ${selectedAvatar === fullPath ? "selected" : ""}`}
-            // <<< CHANGE: Pass the full path to the handler >>>
-            onClick={() => onSelectAvatar(fullPath)}
-            // Add error handling for individual avatar options if needed
+            // Compare full URLs for selection state
+            className={`avatar-option ${selectedAvatar === fullUrl ? "selected" : ""}`}
+            // Pass the full URL to the handler
+            onClick={() => onSelectAvatar(fullUrl)}
             onError={(e) => {
-              console.warn(`Failed to load avatar option: ${fullPath}. Hiding.`);
-              (e.target as HTMLImageElement).style.display = 'none'; // Hide broken image
+              console.warn(`Failed to load avatar option: ${fullUrl}. Hiding.`);
+              (e.target as HTMLImageElement).style.display = 'none';
             }}
         />
         );

@@ -1,32 +1,38 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../../context/AuthContext";  // ✅ Import AuthContext
+import { useAuth } from "../../context/AuthContext";
 import "./NavBar.css";
 
+// <<< ADD: Define the default avatar URL (must match AuthContext) >>>
+const DEFAULT_AVATAR_URL = "/static/images/avatars/default.svg";
+
 const Navbar: React.FC = () => {
-  const { isLoggedIn, username, avatar, userType, logout, fetchUser } = useAuth(); // Correctly using context
+  // <<< CHANGE: Get avatarUrl from context >>>
+  const { isLoggedIn, username, avatarUrl, userType, logout, fetchUser } = useAuth();
   const navigate = useNavigate();
 
-  
+
   React.useEffect(() => {
-    fetchUser();
-  }, [fetchUser]);
- 
+    // Fetch user initially if not already fetched by context provider
+    // This might be redundant if AuthProvider already fetches on load
+    if (!isLoggedIn) {
+        fetchUser();
+    }
+  }, [fetchUser, isLoggedIn]); // Depend on fetchUser and isLoggedIn
+
   React.useEffect(() => {
     const handlePopState = () => {
-      // Re-check login status on popstate, as context might have updated
       if (!isLoggedIn) {
-        navigate("/");
+        // navigate("/"); // This might be too aggressive, consider just re-fetching user
+        fetchUser();
       }
     };
-
     window.addEventListener("popstate", handlePopState);
-
     return () => {
       window.removeEventListener("popstate", handlePopState);
     };
-    // Re-run if isLoggedIn changes
-  }, [isLoggedIn, navigate]);
+  }, [isLoggedIn, navigate, fetchUser]); // Added fetchUser dependency
+
   const handleHomepageClick = () => {
     if (isLoggedIn) {
       navigate("/principal");
@@ -35,11 +41,9 @@ const Navbar: React.FC = () => {
     }
   };
 
-  // Updated logout handler
-  const handleLogout = async () => { // Make async to await logout if needed
-    await logout(); // Call context logout function
-    navigate("/"); // Navigate to home page after logout completes
-    // Removed window.history.pushState - let context and navigation handle state
+  const handleLogout = async () => {
+    await logout();
+    navigate("/");
   };
 
   return (
@@ -50,50 +54,40 @@ const Navbar: React.FC = () => {
       <ul className="nav-links">
         <li><Link to="/contact">Contact</Link></li>
         <li><Link to="/about">About</Link></li>
-        
-
-         {/* ✅ Add User Management button for Admins and Librarians */}
          {isLoggedIn && (userType === "AD" || userType === "LB") && (
           <li>
             <Link to="/admin/users">Manage Users</Link>
           </li>
         )}
-      
       </ul>
 
-      {/* Right-aligned profile info */}
       <div className="nav-profile">
         {isLoggedIn ? (
           <>
             <img
-              // <<< CHANGE: Remove hardcoded prefix >>>
-              // src={`/static/images/${avatar}`} // Old line
-              src={avatar} // Use avatar path from context directly
+              // <<< CHANGE: Use avatarUrl directly >>>
+              src={avatarUrl}
               alt="User Avatar"
               className="nav-avatar"
-              onClick={() => navigate("/profile")}  
-              style={{ cursor: "pointer" }}  
-              // Add error handling for image loading
+              onClick={() => navigate("/profile")}
+              style={{ cursor: "pointer" }}
               onError={(e) => {
-                console.warn(`Failed to load avatar: ${avatar}. Using default.`);
-                // Optionally set to a known default static image path if needed
-                (e.target as HTMLImageElement).src = '/static/images/avatars/default.svg'; // Fallback to a known static default
+                console.warn(`Failed to load avatar: ${avatarUrl}. Using default.`);
+                // <<< CHANGE: Fallback to the default URL >>>
+                (e.target as HTMLImageElement).src = DEFAULT_AVATAR_URL;
               }}
             />
             <span
               className="nav-username"
-              onClick={() => navigate("/profile")} 
-              style={{ cursor: "pointer" }} 
+              onClick={() => navigate("/profile")}
+              style={{ cursor: "pointer" }}
             >
-              {username} {/* Use username from context */}
+              {username}
             </span>
-            {/* Use updated handleLogout */}
             <button onClick={handleLogout} className="nav-logout">Logout</button>
           </>
         ) : (
-          // <<< SUGGESTION: Add a Login link/button here for better UX >>>
-          // Example: <Link to="/login" className="nav-login">Login</Link>
-          <span className="nav-username">Not logged in</span>
+           <Link to="/login" className="nav-login">Login</Link>
         )}
       </div>
     </nav>

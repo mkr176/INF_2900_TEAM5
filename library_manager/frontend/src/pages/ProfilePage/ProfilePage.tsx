@@ -1,64 +1,74 @@
 import React, { useState, useEffect } from "react";
-import { useAuth } from "../../context/AuthContext"; // ✅ Use AuthContext
+import { useAuth } from "../../context/AuthContext";
 import AvatarSelector from "../../components/AvatarSelector/AvatarSelector";
 import { useNavigate } from "react-router-dom";
 import "./ProfilePage.css";
 
-// Constants (can be moved to a config file)
-const MIN_PASSWORD_LENGTH = 8; // Match backend validator if possible
+// Constants
+const MIN_PASSWORD_LENGTH = 8;
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-// <<< ADDED: Constants for avatar path handling (should match AuthContext/AvatarSelector) >>>
-const STATIC_AVATAR_PATH_PREFIX = "/static/images/";
-const DEFAULT_AVATAR_FILENAME = "avatars/default.svg";
-const DEFAULT_AVATAR_FULL_PATH = STATIC_AVATAR_PATH_PREFIX + DEFAULT_AVATAR_FILENAME;
+// <<< CHANGE: Use the default URL from AuthContext or define consistently >>>
+const DEFAULT_AVATAR_URL = "/static/images/avatars/default.svg"; // Must match AuthContext
 
-// <<< ADDED: Helper function to get relative path from full path >>>
-const getRelativeAvatarPath = (fullPath: string | null | undefined): string | null => {
-    if (!fullPath || typeof fullPath !== 'string' || !fullPath.startsWith(STATIC_AVATAR_PATH_PREFIX)) {
-        // If it's not a valid full path, maybe return the default relative path or null
-        // Assuming backend expects 'avatars/default.svg' format
-        return DEFAULT_AVATAR_FILENAME; // Or return null if backend handles default
+// <<< ADDED: Helper function to get relative path from full URL for sending to backend >>>
+// This needs to know the base URL part to remove.
+const getRelativeAvatarPathFromUrl = (fullUrl: string | null | undefined): string | null => {
+    if (!fullUrl || typeof fullUrl !== 'string') {
+        return null; // Or return default relative path 'avatars/default.svg' if needed
     }
-    // Remove the prefix to get the relative path (e.g., "avatars/default.svg")
-    return fullPath.substring(STATIC_AVATAR_PATH_PREFIX.length);
+    // Find the part of the URL that corresponds to the relative path
+    // This assumes the URL structure is like '.../static/images/avatars/filename.svg'
+    // or '.../media/avatars/filename.svg'
+    const avatarMarker = "/avatars/";
+    const markerIndex = fullUrl.lastIndexOf(avatarMarker);
+
+    if (markerIndex !== -1) {
+        // Extract the part starting from 'avatars/'
+        return fullUrl.substring(markerIndex + 1); // e.g., "avatars/default.svg"
+    }
+
+    // Fallback or error handling if the structure is unexpected
+    console.warn("Could not determine relative path from avatar URL:", fullUrl);
+    // Return the default relative path as a safe fallback if the current URL is the default one
+    if (fullUrl.endsWith(DEFAULT_AVATAR_FILENAME)) {
+        return `avatars/${DEFAULT_AVATAR_FILENAME}`;
+    }
+    return null; // Or handle error appropriately
 };
 
 
 const ProfilePage: React.FC = () => {
   const navigate = useNavigate();
-  // Get user data, logout, fetchUser, and CSRF token function from context
-  // <<< CHANGE: Get the full avatar path from context >>>
-  const { currentUser, logout, fetchUser, getCSRFToken, avatar: contextAvatar } = useAuth();
+  // <<< CHANGE: Get avatarUrl from context >>>
+  const { currentUser, logout, fetchUser, getCSRFToken, avatarUrl: contextAvatarUrl } = useAuth();
 
   const [isEditing, setIsEditing] = useState(false);
-  const [isLoading, setIsLoading] = useState(!currentUser); // Start loading if currentUser isn't available yet
+  const [isLoading, setIsLoading] = useState(!currentUser);
 
-  // State for editable fields, initialized from context
+  // State for editable fields
   const [email, setEmail] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-  const [newPassword, setNewPassword] = useState(""); // For entering a new password
-  // Removed currentPassword state - not sending it based on backend view logic
-  // <<< CHANGE: Initialize selectedAvatar with the full path from context >>>
-  const [selectedAvatar, setSelectedAvatar] = useState(contextAvatar || DEFAULT_AVATAR_FULL_PATH);
+  const [newPassword, setNewPassword] = useState("");
+  // <<< CHANGE: Store the full avatar URL in state >>>
+  const [selectedAvatarUrl, setSelectedAvatarUrl] = useState(contextAvatarUrl || DEFAULT_AVATAR_URL);
 
-  // Store original values to compare for changes
+  // Store original values
   const [originalEmail, setOriginalEmail] = useState("");
   const [originalFirstName, setOriginalFirstName] = useState("");
   const [originalLastName, setOriginalLastName] = useState("");
-  // <<< CHANGE: Initialize originalAvatar with the full path from context >>>
-  const [originalAvatar, setOriginalAvatar] = useState(contextAvatar || DEFAULT_AVATAR_FULL_PATH);
+  // <<< CHANGE: Store the original full avatar URL >>>
+  const [originalAvatarUrl, setOriginalAvatarUrl] = useState(contextAvatarUrl || DEFAULT_AVATAR_URL);
 
   useEffect(() => {
-    setIsLoading(!currentUser); // Update loading state based on currentUser availability
+    setIsLoading(!currentUser);
     if (currentUser) {
-      // Initialize state from currentUser when it becomes available or changes
       const userEmail = currentUser.email || "";
       const userFirstName = currentUser.first_name || "";
       const userLastName = currentUser.last_name || "";
-      // <<< CHANGE: Use the full avatar path directly from context >>>
-      const userAvatarFullPath = contextAvatar || DEFAULT_AVATAR_FULL_PATH;
+      // <<< CHANGE: Use avatar_url from context >>>
+      const userAvatarUrl = contextAvatarUrl || DEFAULT_AVATAR_URL;
 
       setEmail(userEmail);
       setOriginalEmail(userEmail);
@@ -66,62 +76,55 @@ const ProfilePage: React.FC = () => {
       setOriginalFirstName(userFirstName);
       setLastName(userLastName);
       setOriginalLastName(userLastName);
-      // <<< CHANGE: Set state with the full path >>>
-      setSelectedAvatar(userAvatarFullPath);
-      setOriginalAvatar(userAvatarFullPath);
-      setIsLoading(false); // Stop loading once data is set
+      // <<< CHANGE: Set state with the full URL >>>
+      setSelectedAvatarUrl(userAvatarUrl);
+      setOriginalAvatarUrl(userAvatarUrl);
+      setIsLoading(false);
     } else {
-      // If no currentUser after initial load, maybe redirect
-      // Add a small delay or check loading state to prevent premature redirect
       const timer = setTimeout(() => {
-        if (!currentUser && !isLoading) { // Check again after a brief moment
+        if (!currentUser && !isLoading) {
              console.log("No current user found, redirecting to login.");
-             // navigate("/login"); // Consider redirecting if user data isn't loaded
+             // navigate("/login");
         }
-      }, 500); // Adjust delay as needed
+      }, 500);
       return () => clearTimeout(timer);
     }
-    // <<< CHANGE: Depend on contextAvatar as well >>>
-  }, [currentUser, isLoading, navigate, contextAvatar]); // Added isLoading, navigate, contextAvatar
+    // <<< CHANGE: Depend on contextAvatarUrl >>>
+  }, [currentUser, isLoading, navigate, contextAvatarUrl]);
 
   const handleCancel = () => {
     setIsEditing(false);
-    // Reset fields to their original values from context/state
     setEmail(originalEmail);
     setFirstName(originalFirstName);
     setLastName(originalLastName);
-    setSelectedAvatar(originalAvatar);
-    setNewPassword(""); // Clear password field
+    // <<< CHANGE: Reset selected URL to original URL >>>
+    setSelectedAvatarUrl(originalAvatarUrl);
+    setNewPassword("");
   };
 
   const saveProfile = async () => {
-    // <<< CHANGE: Compare full avatar paths >>>
-    const isAvatarChanged = selectedAvatar !== originalAvatar;
+    // <<< CHANGE: Compare full avatar URLs >>>
+    const isAvatarChanged = selectedAvatarUrl !== originalAvatarUrl;
     const isEmailChanged = email !== originalEmail;
     const isFirstNameChanged = firstName !== originalFirstName;
     const isLastNameChanged = lastName !== originalLastName;
     const isPasswordChanged = newPassword !== "";
-
 
     // --- Validation ---
     if (isEmailChanged && !EMAIL_REGEX.test(email)) {
       alert("Please enter a valid email address.");
       return;
     }
-
     if (isPasswordChanged && newPassword.length < MIN_PASSWORD_LENGTH) {
       alert(`New password must be at least ${MIN_PASSWORD_LENGTH} characters long.`);
       return;
     }
-
-    // Check if any actual changes were made
     if (!isEmailChanged && !isFirstNameChanged && !isLastNameChanged && !isPasswordChanged && !isAvatarChanged) {
       alert("No changes detected.");
-      setIsEditing(false); // Exit edit mode
+      setIsEditing(false);
       return;
     }
 
-    // --- Get CSRF Token ---
     const csrfToken = await getCSRFToken();
     if (!csrfToken) {
       alert("Error: Could not verify security token. Please refresh and try again.");
@@ -129,64 +132,64 @@ const ProfilePage: React.FC = () => {
     }
 
     // --- Payload Construction ---
-    const payload: { [key: string]: any } = {}; // Use 'any' or a specific interface
+    const payload: { [key: string]: any } = {};
     const profilePayload: { [key: string]: any } = {};
 
     if (isEmailChanged) payload.email = email;
     if (isFirstNameChanged) payload.first_name = firstName;
     if (isLastNameChanged) payload.last_name = lastName;
-    if (isPasswordChanged) payload.password = newPassword; // Send new password as 'password'
+    if (isPasswordChanged) payload.password = newPassword;
 
-    // Avatar is part of the profile
+    // <<< CHANGE: Convert selected full URL back to relative path for backend >>>
     if (isAvatarChanged) {
-        // <<< CHANGE: Convert full path back to relative path for backend >>>
-        profilePayload.avatar = getRelativeAvatarPath(selectedAvatar);
+        const relativePath = getRelativeAvatarPathFromUrl(selectedAvatarUrl);
+        if (relativePath !== null) {
+            profilePayload.avatar = relativePath; // Send relative path string
+        } else {
+            // Handle error: couldn't extract relative path. Maybe skip avatar update?
+            console.error("Could not determine relative path for avatar update. Skipping avatar change.");
+            // Optionally alert the user
+            // alert("There was an issue selecting the avatar. Please try again.");
+            // return; // Or just skip sending the avatar field
+        }
     }
-    // Add other profile fields here if they become editable (e.g., age)
-    // if (isAgeChanged) profilePayload.age = age;
 
-    // Only include the 'profile' key if there are profile changes
     if (Object.keys(profilePayload).length > 0) {
       payload.profile = profilePayload;
     }
 
     // --- API Call ---
-    setIsLoading(true); // Indicate loading state
+    setIsLoading(true);
     try {
-      // <<< CHANGE: Use PATCH and the correct endpoint >>>
       const response = await fetch("/api/users/me/update/", {
-        method: "PATCH", // Use PATCH for partial updates
+        method: "PATCH",
         headers: {
           "Content-Type": "application/json",
-          // <<< CHANGE: Include CSRF token >>>
           "X-CSRFToken": csrfToken,
         },
         body: JSON.stringify(payload),
-        credentials: "include", // Send cookies
+        credentials: "include",
       });
 
-      // Try to parse JSON regardless of status code for error details
       let responseData;
       try {
           responseData = await response.json();
       } catch (e) {
-          responseData = { detail: `Update failed with status: ${response.status}` }; // Default error if JSON parsing fails
+          responseData = { detail: `Update failed with status: ${response.status}` };
       }
-
 
       if (response.ok) {
         alert("Profile updated successfully!");
-        // Update original values *after* successful save
         if (isEmailChanged) setOriginalEmail(email);
         if (isFirstNameChanged) setOriginalFirstName(firstName);
         if (isLastNameChanged) setOriginalLastName(lastName);
-        if (isAvatarChanged) setOriginalAvatar(selectedAvatar);
+        // <<< CHANGE: Update original URL >>>
+        if (isAvatarChanged) setOriginalAvatarUrl(selectedAvatarUrl);
 
-        setNewPassword(""); // Clear password field on success
+        setNewPassword("");
         setIsEditing(false);
-        await fetchUser(); // Refresh auth context to get the very latest data (including potentially updated avatar path from backend)
+        await fetchUser(); // Refresh auth context
       } else {
-        // Display specific error from backend if available
         let errorMsg = "Error updating profile.";
         if (responseData && typeof responseData === 'object') {
              errorMsg = Object.entries(responseData)
@@ -199,88 +202,49 @@ const ProfilePage: React.FC = () => {
       console.error("Error updating profile:", error);
       alert("An network error occurred while updating the profile.");
     } finally {
-      setIsLoading(false); // Stop loading indicator
+      setIsLoading(false);
     }
   };
 
-  // Render loading state
-  if (isLoading && !currentUser) { // Show loading only if currentUser isn't available yet
+  if (isLoading && !currentUser) {
      return <div className="profile-container"><p className="loading-text">Loading Profile...</p></div>;
   }
-
-  // Handle case where user data couldn't be loaded (e.g., not logged in)
   if (!currentUser) {
-     // This part might be reached briefly before redirect or if context fails
      return <div className="profile-container"><p>Could not load user profile. Please <button onClick={() => navigate('/login')}>log in</button>.</p></div>;
   }
 
-
   return (
     <div className="profile-container">
-      {/* Use username from context */}
       <h1 className="profile-title">{currentUser.username}'s Profile</h1>
 
       <div className="profile-card">
         <img
-          // <<< CHANGE: Remove hardcoded prefix >>>
-          // src={`/static/images/${selectedAvatar}`} // Old line
-          src={selectedAvatar} // Use state variable directly
+          // <<< CHANGE: Use selectedAvatarUrl directly >>>
+          src={selectedAvatarUrl}
           alt="User Avatar"
           className="profile-avatar"
-          // Add error handling for image loading
           onError={(e) => {
-            console.warn(`Failed to load avatar: ${selectedAvatar}. Using default.`);
-            // <<< CHANGE: Fallback to the full default path >>>
-            (e.target as HTMLImageElement).src = DEFAULT_AVATAR_FULL_PATH;
-            // Also update state if the current selection failed, to prevent trying to save the bad URL
-            setSelectedAvatar(DEFAULT_AVATAR_FULL_PATH);
+            console.warn(`Failed to load avatar: ${selectedAvatarUrl}. Using default.`);
+            // <<< CHANGE: Fallback to the default URL >>>
+            (e.target as HTMLImageElement).src = DEFAULT_AVATAR_URL;
+            // Update state if the current selection failed
+            setSelectedAvatarUrl(DEFAULT_AVATAR_URL);
           }}
         />
-        {/* Display username from context */}
         <h2 className="profile-username">{currentUser.username}</h2>
 
         {isEditing ? (
           <>
-            {/* First Name Input */}
-            <input
-              type="text"
-              className="profile-input"
-              value={firstName}
-              onChange={(e) => setFirstName(e.target.value)}
-              placeholder="First Name"
-            />
-            {/* Last Name Input */}
-            <input
-              type="text"
-              className="profile-input"
-              value={lastName}
-              onChange={(e) => setLastName(e.target.value)}
-              placeholder="Last Name"
-            />
-            {/* Email Input */}
-            <input
-              type="email"
-              className="profile-input"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Email"
-            />
-            {/* New Password Input */}
-            <input
-              type="password"
-              className="profile-input"
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-              placeholder="New Password (leave blank to keep)"
-            />
-            {/* Removed Current Password input */}
+            <input type="text" className="profile-input" value={firstName} onChange={(e) => setFirstName(e.target.value)} placeholder="First Name" />
+            <input type="text" className="profile-input" value={lastName} onChange={(e) => setLastName(e.target.value)} placeholder="Last Name" />
+            <input type="email" className="profile-input" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" />
+            <input type="password" className="profile-input" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} placeholder="New Password (leave blank to keep)" />
           </>
         ) : (
           <>
-            {/* Display current info when not editing */}
+            {/* <<< CHANGE: Display original values >>> */}
             <p className="profile-info">{originalFirstName} {originalLastName}</p>
             <p className="profile-info">{originalEmail}</p>
-            {/* Display user type */}
             <p className="profile-info">Role: {currentUser.profile?.get_type_display || 'User'}</p>
           </>
         )}
@@ -289,7 +253,8 @@ const ProfilePage: React.FC = () => {
       {isEditing && (
         <>
           <h3 className="avatar-selection-title">Choose Your Avatar</h3>
-          <AvatarSelector selectedAvatar={selectedAvatar} onSelectAvatar={setSelectedAvatar} />
+          {/* <<< CHANGE: Pass selectedAvatarUrl and expect full URL back >>> */}
+          <AvatarSelector selectedAvatar={selectedAvatarUrl} onSelectAvatar={setSelectedAvatarUrl} />
         </>
       )}
 
@@ -308,7 +273,6 @@ const ProfilePage: React.FC = () => {
             Edit Profile
           </button>
         )}
-        {/* Logout button uses logout from AuthContext */}
         <button className="logout-button" onClick={() => { logout(); navigate('/'); }} disabled={isLoading}>
           Logout
         </button>

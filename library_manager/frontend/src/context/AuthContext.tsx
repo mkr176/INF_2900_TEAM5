@@ -6,7 +6,8 @@ interface UserProfile {
     username: string;
     type: string; // 'AD', 'US', 'LB'
     age: number | null;
-    avatar: string | null; // Path relative to MEDIA_ROOT/STATIC_ROOT e.g., 'avatars/default.svg'
+    // avatar: string | null; // Keep original field if needed, but URL is primary for display
+    avatar_url: string | null; // Expect the full URL from backend
     get_type_display: string;
 }
 
@@ -25,7 +26,7 @@ interface AuthContextType {
   isLoggedIn: boolean;
     currentUser: User | null; // Store the full user object
     username: string; // Keep for convenience? Or derive from currentUser
-    avatar: string; // Keep for convenience? Or derive from currentUser
+    avatarUrl: string; // <<< CHANGE: Store the full URL >>>
     userType: string; // Keep for convenience? Or derive from currentUser
     fetchUser: () => Promise<void>; // Make async
     logout: () => Promise<void>; // Make async
@@ -40,33 +41,25 @@ const getCSRFTokenFromCookie = (): string | null => {
     return match ? match[1] : null;
 };
 
-// <<< CHANGE: Define the static prefix >>>
-const STATIC_AVATAR_PATH_PREFIX = "/static/images/";
-const DEFAULT_AVATAR_FILENAME = "avatars/default.svg";
-const DEFAULT_AVATAR_FULL_PATH = STATIC_AVATAR_PATH_PREFIX + DEFAULT_AVATAR_FILENAME;
+// <<< REMOVE: Static path prefix and helper function are no longer needed >>>
+// const STATIC_AVATAR_PATH_PREFIX = "/static/images/";
+// const DEFAULT_AVATAR_FILENAME = "avatars/default.svg";
+// const DEFAULT_AVATAR_FULL_PATH = STATIC_AVATAR_PATH_PREFIX + DEFAULT_AVATAR_FILENAME;
+// const getFullAvatarPath = (...) => { ... };
 
-// <<< CHANGE: Helper function to construct full avatar path >>>
-const getFullAvatarPath = (relativePath: string | null | undefined): string => {
-    if (relativePath && typeof relativePath === 'string' && relativePath.trim() !== '') {
-        // Avoid double prefixes if the backend somehow sends the full path already
-        if (relativePath.startsWith(STATIC_AVATAR_PATH_PREFIX)) {
-            return relativePath;
-        }
-        // Check if it already starts with '/avatars/' or just 'avatars/'
-        const cleanRelativePath = relativePath.startsWith('/') ? relativePath.substring(1) : relativePath;
-        return STATIC_AVATAR_PATH_PREFIX + cleanRelativePath;
-    }
-    return DEFAULT_AVATAR_FULL_PATH;
-};
+// <<< ADD: Define the default avatar URL (should match the one provided by backend serializer) >>>
+// This needs to be the actual URL where the default image is served.
+// Adjust if your static files setup is different.
+const DEFAULT_AVATAR_URL = "/static/images/avatars/default.svg";
 
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-    // Derived state for convenience in components that haven't been updated yet
+    // Derived state for convenience
   const [username, setUsername] = useState("Not logged in");
-    // <<< CHANGE: Initialize avatar state with the full default path >>>
-    const [avatar, setAvatar] = useState(DEFAULT_AVATAR_FULL_PATH);
+    // <<< CHANGE: Initialize avatar state with the default URL >>>
+    const [avatarUrl, setAvatarUrl] = useState(DEFAULT_AVATAR_URL);
   const [userType, setUserType] = useState("");
 
     const getCSRFToken = async (): Promise<string | null> => {
@@ -99,7 +92,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const fetchUser = useCallback(async () => {
         console.log("AuthContext: Fetching user data...");
         try {
-            // Use the new endpoint GET /api/users/me/
+            // Use the endpoint GET /api/users/me/
             const response = await fetch("/api/users/me/", {
                 credentials: "include", // Send cookies
                 headers: {
@@ -116,15 +109,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 setUsername(userData.username);
                 // Safely access profile type, default to 'US' if profile or type is missing/null
                 setUserType(userData.profile?.type ?? "US");
-                // <<< CHANGE: Use helper function to set the full avatar path >>>
-                setAvatar(getFullAvatarPath(userData.profile?.avatar));
+                // <<< CHANGE: Use avatar_url from backend, fallback to default URL >>>
+                setAvatarUrl(userData.profile?.avatar_url || DEFAULT_AVATAR_URL);
       } else {
                 console.log("AuthContext: No user session found or error:", response.status);
                 setCurrentUser(null);
         setIsLoggedIn(false);
         setUsername("Not logged in");
-                // <<< CHANGE: Reset avatar to the full default path >>>
-                setAvatar(DEFAULT_AVATAR_FULL_PATH);
+                // <<< CHANGE: Reset avatar to the default URL >>>
+                setAvatarUrl(DEFAULT_AVATAR_URL);
                 setUserType("");
       }
     } catch (error) {
@@ -132,8 +125,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             setCurrentUser(null);
       setIsLoggedIn(false);
             setUsername("Not logged in");
-            // <<< CHANGE: Reset avatar to the full default path >>>
-            setAvatar(DEFAULT_AVATAR_FULL_PATH);
+            // <<< CHANGE: Reset avatar to the default URL >>>
+            setAvatarUrl(DEFAULT_AVATAR_URL);
             setUserType("");
     }
     }, []); // No dependencies needed if it doesn't rely on component state
@@ -175,8 +168,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
              setCurrentUser(null);
              setIsLoggedIn(false);
              setUsername("Not logged in");
-             // <<< CHANGE: Reset avatar to the full default path >>>
-             setAvatar(DEFAULT_AVATAR_FULL_PATH);
+             // <<< CHANGE: Reset avatar to the default URL >>>
+             setAvatarUrl(DEFAULT_AVATAR_URL);
              setUserType("");
     }
   };
@@ -187,7 +180,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }, [fetchUser]); // Depend on fetchUser useCallback
 
   return (
-        <AuthContext.Provider value={{ isLoggedIn, currentUser, username, avatar, userType, fetchUser, logout, getCSRFToken }}>
+        // <<< CHANGE: Provide avatarUrl instead of avatar >>>
+        <AuthContext.Provider value={{ isLoggedIn, currentUser, username, avatarUrl, userType, fetchUser, logout, getCSRFToken }}>
       {children}
     </AuthContext.Provider>
   );
