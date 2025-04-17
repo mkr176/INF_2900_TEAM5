@@ -1,37 +1,102 @@
-.book-card {
-    width: 250px;
-    height: 350px;
-    perspective: 1000px;
-  }
-  
-  .book-card-inner {
-    width: 100%;
-    height: 100%;
-    position: relative;
-    transform-style: preserve-3d;
-  }
-  
-  .book-card:hover .book-card-inner {
-    transform: rotateY(180deg);
-  }
-  
-  .book-card-front,
-  .book-card-back {
-    width: 100%;
-    height: 100%;
-    position: absolute;
-    backface-visibility: hidden;
+/* Basic styling for BookDetailPage */
+.book-detail-container {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    text-align: center; /* Center align title and image */
+}
+
+.book-detail-container h1 {
+    margin-bottom: 1.5rem;
+    color: #333;
+}
+
+.book-detail-image {
+    max-width: 300px; /* Limit image width */
+    height: auto;
+    border-radius: 4px;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.book-detail-info {
+    text-align: left; /* Align details to the left */
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+    color: #555;
+}
+
+.book-detail-info p {
+    margin-bottom: 0.5rem;
+}
+
+.book-detail-info strong {
+    color: #333;
+    margin-right: 0.5em;
+}
+
+.available-text {
+    color: green;
+    font-weight: bold;
+}
+
+.unavailable-text {
+    color: #cc4444;
+    font-weight: bold;
+}
+
+.admin-actions-detail {
+    margin-top: 1.5rem;
     display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    border-radius: 10px;
-    padding: 10px;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-  }
-  
-  .book-card-back {
-    transform: rotateY(180deg);
-    background-color: #f3f3f3;
-  }
-  
+    justify-content: center; /* Center buttons */
+    gap: 1rem;
+}
+
+/* Reusing button styles from PrincipalPage.css or define new ones */
+.admin-actions-detail .button {
+    padding: 0.6rem 1.2rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.2s ease;
+}
+
+.admin-actions-detail .edit-button {
+    background-color: #3498db; /* Blue */
+    color: white;
+}
+.admin-actions-detail .edit-button:hover {
+    background-color: #2980b9;
+}
+
+.admin-actions-detail .remove-button {
+    background-color: #e74c3c; /* Red */
+    color: white;
+}
+.admin-actions-detail .remove-button:hover {
+    background-color: #c0392b;
+}
+
+.admin-actions-detail .button:disabled {
+    background-color: #bdc3c7; /* Grey */
+    cursor: not-allowed;
+}
+
+
+.edit-form-modal {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+}
+
+.error-message {
+    color: #e74c3c; /* Red */
+    font-weight: bold;
+    margin-top: 1rem;
+}

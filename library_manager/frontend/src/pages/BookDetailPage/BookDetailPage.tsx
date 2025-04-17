@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom"; // Import useNavigate
 import EditBookForm from "../../components/EditBookForm/EditBookForm";
-import { useAuth } from "../../context/AuthContext"; // Import useAuth for CSRF token
+import { useAuth } from "../../context/AuthContext"; // Import useAuth for CSRF token and user type
 import "./BookDetailPage.css"; // Assuming you have styles
 
 // Updated Book interface based on BookSerializer
@@ -42,13 +42,16 @@ const BookDetailPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [showEditForm, setShowEditForm] = useState(false);
 
-  const fetchBookDetails = async () => {
+  const fetchBookDetails = useCallback(async () => { // Wrap in useCallback
     setLoading(true);
     setError(null);
     try {
       // Use the new API endpoint
       const response = await fetch(`/api/books/${id}/`); // GET is default
       if (!response.ok) {
+        if (response.status === 404) {
+          throw new Error("Book not found.");
+        }
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data: Book = await response.json();
@@ -59,7 +62,7 @@ const BookDetailPage: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [id]); // Depend on id
 
   useEffect(() => {
     if (id) {
@@ -68,12 +71,12 @@ const BookDetailPage: React.FC = () => {
       setError("Book ID is missing.");
       setLoading(false);
     }
-    // Re-fetch when id changes (though unlikely in a detail page)
-  }, [id]);
+  }, [id, fetchBookDetails]); // Include fetchBookDetails in dependency array
 
-  const handleBookUpdated = () => {
+  const handleBookUpdated = (updatedBook: Book) => {
+    setBook(updatedBook); // Update local state with the updated book data
     setShowEditForm(false); // Close edit form
-    fetchBookDetails(); // Re-fetch book details to show updated info
+    // Optionally re-fetch if you want to be absolutely sure: fetchBookDetails();
   };
 
   const handleRemoveBook = async () => {
@@ -97,17 +100,17 @@ const BookDetailPage: React.FC = () => {
           credentials: "include", // Include cookies if needed
         });
 
-        if (response.ok) {
+        if (response.ok) { // Status 204 No Content is OK
           alert(`Book "${book.title}" removed successfully.`);
           navigate("/principal"); // Navigate back to the main list page
         } else {
-           // Try to get error message from response
-           let errorMsg = `Failed to remove book. Status: ${response.status}`;
-           try {
-               const errData = await response.json();
-               errorMsg = errData.detail || JSON.stringify(errData) || errorMsg;
-           } catch (e) { /* Ignore if response not JSON */ }
-           throw new Error(errorMsg);
+          // Try to get error message from response
+          let errorMsg = `Failed to remove book. Status: ${response.status}`;
+          try {
+            const errData = await response.json();
+            errorMsg = errData.detail || JSON.stringify(errData) || errorMsg;
+          } catch (e) { /* Ignore if response not JSON */ }
+          throw new Error(errorMsg);
         }
       } catch (err: any) {
         console.error("Error removing book:", err);
@@ -118,19 +121,20 @@ const BookDetailPage: React.FC = () => {
     }
   };
 
-  // Construct image path
-  const imagePath = book?.image ? `/static/${book.image}` : '/static/images/library_seal.jpg';
+  // Construct image path using /static/ prefix
+  const imagePath = book?.image ? `${book.image}` : '/static/images/library_seal.jpg';
 
   if (loading) {
-    return <p>Loading book details...</p>;
+    return <div className="book-detail-container"><p>Loading book details...</p></div>;
   }
 
   if (error) {
-    return <p className="error-message">{error}</p>; // Style error message appropriately
+    return <div className="book-detail-container"><p className="error-message">{error}</p></div>;
   }
 
   if (!book) {
-    return <p>Book not found.</p>;
+    // This case should be handled by the 404 check in fetchBookDetails
+    return <div className="book-detail-container"><p>Book not found.</p></div>;
   }
 
   // Check if the current user is an Admin or Librarian
@@ -140,33 +144,35 @@ const BookDetailPage: React.FC = () => {
     <div className="book-detail-container">
       <h1>{book.title}</h1>
       <img src={imagePath} alt={book.title} className="book-detail-image" />
-      <p><strong>Author:</strong> {book.author}</p>
-      <p><strong>Category:</strong> {book.category_display}</p>
-      <p><strong>Language:</strong> {book.language}</p>
-      <p><strong>Condition:</strong> {book.condition_display}</p>
-      <p><strong>ISBN:</strong> {book.isbn}</p>
-      <p><strong>Publisher:</strong> {book.publisher || 'N/A'}</p>
-      <p><strong>Year:</strong> {book.publication_year || 'N/A'}</p>
-      <p><strong>Storage Location:</strong> {book.storage_location || 'N/A'}</p>
-      <p>
-        <strong>Availability:</strong>{" "}
-        <span className={book.available ? "available-text" : "unavailable-text"}>
-          {book.available
-            ? "Available"
-            : `Checked out by ${book.borrower || 'N/A'}${book.due_date ? ` until ${new Date(book.due_date).toLocaleDateString()}` : ''}`
-          }
-        </span>
-      </p>
-      {book.added_by && <p><strong>Added By:</strong> {book.added_by}</p>}
+      <div className="book-detail-info">
+        <p><strong>Author:</strong> {book.author}</p>
+        <p><strong>Category:</strong> {book.category_display}</p>
+        <p><strong>Language:</strong> {book.language}</p>
+        <p><strong>Condition:</strong> {book.condition_display}</p>
+        <p><strong>ISBN:</strong> {book.isbn}</p>
+        <p><strong>Publisher:</strong> {book.publisher || 'N/A'}</p>
+        <p><strong>Year:</strong> {book.publication_year || 'N/A'}</p>
+        <p><strong>Storage Location:</strong> {book.storage_location || 'N/A'}</p>
+        <p>
+          <strong>Availability:</strong>{" "}
+          <span className={book.available ? "available-text" : "unavailable-text"}>
+            {book.available
+              ? "Available"
+              : `Checked out by ${book.borrower || 'N/A'}${book.due_date ? ` until ${new Date(book.due_date).toLocaleDateString()}` : ''}`
+            }
+          </span>
+        </p>
+        {book.added_by && <p><strong>Added By:</strong> {book.added_by}</p>}
+      </div>
 
       {/* Edit and Delete Buttons (Admin/Librarian only) */}
       {canEditOrDelete && (
-          <div className="admin-actions-detail">
-              <button onClick={() => setShowEditForm(true)} disabled={showEditForm || loading}>Edit Book</button>
-              <button onClick={handleRemoveBook} disabled={loading} className="delete-button">
-                  {loading ? 'Removing...' : 'Remove Book'}
-              </button>
-          </div>
+        <div className="admin-actions-detail">
+          <button onClick={() => setShowEditForm(true)} disabled={showEditForm || loading} className="button edit-button">Edit Book</button>
+          <button onClick={handleRemoveBook} disabled={loading} className="button remove-button">
+            {loading ? 'Removing...' : 'Remove Book'}
+          </button>
+        </div>
       )}
 
 

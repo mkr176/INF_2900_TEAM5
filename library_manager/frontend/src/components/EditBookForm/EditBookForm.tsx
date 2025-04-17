@@ -3,29 +3,29 @@ import { useAuth } from '../../context/AuthContext'; // Import useAuth for CSRF 
 import "../AddBookForm/AddBookForm.css"; // Reuse AddBookForm styles
 
 // Updated Book interface based on BookSerializer (include relevant fields)
-// REMOVED user_id and adjusted nullable types
 interface Book {
     id: number;
     title: string;
     author: string;
     isbn: string;
     category: string; // Code (e.g., 'CK')
+    category_display?: string; // Display name (optional here)
     language: string;
     condition: string; // Code (e.g., 'GD')
+    condition_display?: string; // Display name (optional here)
     available: boolean; // Read-only, managed by borrow/return
+    image?: string | null; // Added image field
     storage_location: string | null;
     publisher: string | null;
     publication_year: number | null;
     copy_number: number | null;
     // Read-only fields not typically edited here:
-    // category_display?: string; // Optional as it might not be passed if not needed for edit
-    // condition_display?: string; // Optional
-    // borrower?: string | null;
-    // borrower_id?: number | null;
-    // borrow_date?: string | null;
-    // due_date?: string | null; // Should be string | null if present
-    // added_by?: string | null;
-    // added_by_id?: number | null;
+    borrower?: string | null;
+    borrower_id?: number | null;
+    borrow_date?: string | null;
+    due_date?: string | null;
+    added_by?: string | null;
+    added_by_id?: number | null;
 }
 
 
@@ -39,7 +39,7 @@ interface EditBookFormProps {
 const bookCategories = [ // ✅ Reuse category and condition lists
     { value: 'CK', label: 'Cooking' },
     { value: 'CR', label: 'Crime' },
-    { value: 'MY', label: 'Mistery' },
+    { value: 'MY', label: 'Mystery' }, // Corrected spelling
     { value: 'SF', label: 'Science Fiction' },
     { value: 'FAN', label: 'Fantasy' },
     { value: 'HIS', label: 'History' },
@@ -71,6 +71,8 @@ const EditBookForm: React.FC<EditBookFormProps> = ({ book, onBookUpdated, onCanc
     const [publicationYear, setPublicationYear] = useState<string>(book.publication_year?.toString() || '');
     const [copyNumber, setCopyNumber] = useState<string>(book.copy_number?.toString() || '');
     // 'available' is read-only and not included in the form state
+    // <<< ADDED: State for image path (optional update) >>>
+    const [imagePath, setImagePath] = useState<string>(book.image || ''); // Store the relative path
 
     // Update state if the book prop changes (e.g., user selects a different book to edit)
     useEffect(() => {
@@ -84,6 +86,7 @@ const EditBookForm: React.FC<EditBookFormProps> = ({ book, onBookUpdated, onCanc
         setPublisher(book.publisher || '');
         setPublicationYear(book.publication_year?.toString() || '');
         setCopyNumber(book.copy_number?.toString() || '');
+        setImagePath(book.image || ''); // Update image path state
     }, [book]);
 
 
@@ -111,17 +114,20 @@ const EditBookForm: React.FC<EditBookFormProps> = ({ book, onBookUpdated, onCanc
             // Parse year and copy number, send null if invalid or empty
             publication_year: publicationYear ? parseInt(publicationYear, 10) || null : null,
             copy_number: copyNumber ? parseInt(copyNumber, 10) || null : null,
+            // <<< ADDED: Include image path if it changed >>>
+            // Only send if different from original book.image to avoid unnecessary updates
+            ...(imagePath !== book.image && { image: imagePath || null }), // Send null if cleared
             // DO NOT SEND read-only fields like 'available', 'borrower', 'borrower_id', 'added_by', etc.
         };
 
         // Basic validation for parsed numbers
         if (publicationYear && isNaN(payload.publication_year as number)) {
-             alert("Please enter a valid publication year.");
-             return;
+            alert("Please enter a valid publication year.");
+            return;
         }
-         if (copyNumber && isNaN(payload.copy_number as number)) {
-             alert("Please enter a valid copy number.");
-             return;
+        if (copyNumber && isNaN(payload.copy_number as number)) {
+            alert("Please enter a valid copy number.");
+            return;
         }
 
 
@@ -147,7 +153,7 @@ const EditBookForm: React.FC<EditBookFormProps> = ({ book, onBookUpdated, onCanc
                 // Handle validation errors or other issues
                 let errorMsg = 'Error updating book';
                 try {
-                const errorData = await response.json();
+                    const errorData = await response.json();
                     if (typeof errorData === 'object' && errorData !== null) {
                         errorMsg = Object.entries(errorData)
                             .map(([key, value]) => `${key}: ${Array.isArray(value) ? value.join(', ') : value}`)
@@ -209,13 +215,16 @@ const EditBookForm: React.FC<EditBookFormProps> = ({ book, onBookUpdated, onCanc
             <label htmlFor="edit-copyNumber">Copy Number:</label>
             <input type="text" inputMode="numeric" pattern="[0-9]*" id="edit-copyNumber" value={copyNumber} onChange={(e) => setCopyNumber(e.target.value)} />
 
+            {/* <<< ADDED: Input for image path (optional) >>> */}
+            <label htmlFor="edit-imagePath">Image Path (e.g., images/covers/new.jpg):</label>
+            <input type="text" id="edit-imagePath" value={imagePath} onChange={(e) => setImagePath(e.target.value)} placeholder="Leave blank to keep current image" />
+
+
             {/* 'Available' field is read-only and not editable here */}
-            {/* <label htmlFor="available">Available:</label> */}
-            {/* <input type="checkbox" id="available" checked={available} onChange={(e) => setAvailable(e.target.checked)} /> */}
 
             <div className="edit-form-buttons">
-            <button type="submit">Update Book</button>
-                 <button type="button" onClick={onCancel} className="cancel-button">Cancel</button>
+                <button type="submit">Update Book</button>
+                <button type="button" onClick={onCancel} className="cancel-button">Cancel</button>
             </div>
         </form>
     );

@@ -2,6 +2,7 @@ import React, { useState } from "react"; // Removed useEffect as it's not used
 import { motion } from "framer-motion";
 import "./PrincipalPage.css"; // Make sure to keep the import for CSS
 import { useAuth } from "../../context/AuthContext"; // Import useAuth to get CSRF token and user info
+import { useNavigate } from "react-router-dom"; // Import useNavigate
 
 // --- Interface Updates ---
 
@@ -37,12 +38,12 @@ interface Book {
 
 // Updated People interface based on UserSerializer (simplified for context)
 interface User {
-    id: number;
-    username: string;
-    profile: {
-        type: string; // 'AD', 'US', 'LB'
-        avatar?: string | null;
-    } | null;
+  id: number;
+  username: string;
+  profile: {
+    type: string; // 'AD', 'US', 'LB'
+    avatar?: string | null;
+  } | null;
 }
 
 
@@ -59,6 +60,7 @@ interface BookCardProps {
 const BookCard: React.FC<BookCardProps> = ({ book, onBorrowReturn, currentUser, onEditBook, onRemoveBook }) => {
   const [isFlipped, setIsFlipped] = useState(false);
   const { userType } = useAuth(); // Get userType from context for conditional rendering
+  const navigate = useNavigate(); // Hook for navigation
 
   const getBorrowButtonText = (): string => {
     if (book.available) {
@@ -92,12 +94,12 @@ const BookCard: React.FC<BookCardProps> = ({ book, onBorrowReturn, currentUser, 
 
   // Check if the borrow/return button should be disabled
   const isBorrowButtonDisabled = (): boolean => {
-      if (book.available) {
-          return false; // Can always attempt to borrow if available
-      } else {
-          // If unavailable, only enable if the current user is the borrower
-          return !(currentUser && book.borrower_id === currentUser.id);
-      }
+    if (book.available) {
+      return false; // Can always attempt to borrow if available
+    } else {
+      // If unavailable, only enable if the current user is the borrower
+      return !(currentUser && book.borrower_id === currentUser.id);
+    }
   };
 
 
@@ -110,10 +112,19 @@ const BookCard: React.FC<BookCardProps> = ({ book, onBorrowReturn, currentUser, 
     onRemoveBook(book.id);
   };
 
-  // Construct image path - assuming backend provides relative path like 'images/book.jpg'
-  // and Django serves static/media files correctly under /static/ or /media/
-  // If book.image is null or empty, use a default.
-  const imagePath = book.image ? `/static/${book.image}` : '/static/images/library_seal.jpg'; // Adjust prefix if needed
+  // Construct image path - assuming backend provides a usable path
+  // (either relative to static root like 'images/covers/book.jpg' or absolute like '/static/images/covers/book.jpg')
+  // <<< FIX: Remove the manual /static/ prefix >>>
+  const imagePath = book.image ? `${book.image}` : '/static/images/library_seal.jpg'; // Default image if book.image is null/empty
+
+  // Function to navigate to detail page
+  const handleCardClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    // Prevent navigation if clicking on buttons inside the card
+    if ((e.target as HTMLElement).closest('button')) {
+      return;
+    }
+    navigate(`/books/${book.id}`);
+  };
 
 
   return (
@@ -132,6 +143,8 @@ const BookCard: React.FC<BookCardProps> = ({ book, onBorrowReturn, currentUser, 
         className={`book-card ${isFlipped ? "flipped" : ""}`}
         onMouseEnter={() => setTimeout(() => setIsFlipped(true), 150)}
         onMouseLeave={() => setTimeout(() => setIsFlipped(false), 150)}
+        onClick={handleCardClick} // Add onClick handler here
+        style={{ cursor: 'pointer' }} // Indicate it's clickable
       >
         <div className="book-card-inner">
           {/* Front Side */}
@@ -155,10 +168,10 @@ const BookCard: React.FC<BookCardProps> = ({ book, onBorrowReturn, currentUser, 
             <p><strong>Year:</strong> {book.publication_year || 'N/A'}</p>
             <p><strong>Available:</strong> {book.available ? "Yes" : "No"}</p>
             {!book.available && book.due_date && (
-                 <p><strong>Due Date:</strong> {new Date(book.due_date).toLocaleDateString()}</p>
+              <p><strong>Due Date:</strong> {new Date(book.due_date).toLocaleDateString()}</p>
             )}
-             {!book.available && book.borrower && (
-                 <p><strong>Borrowed By:</strong> {book.borrower}</p>
+            {!book.available && book.borrower && (
+              <p><strong>Borrowed By:</strong> {book.borrower}</p>
             )}
           </div>
         </div>

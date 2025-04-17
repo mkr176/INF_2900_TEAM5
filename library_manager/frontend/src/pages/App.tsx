@@ -12,6 +12,7 @@ import ServicePage from "./TermsofServicePage/ServicePage";
 import AdminUserManagement from "./AdminUserManagement/AdminUserManagement";
 import Footer from "../components/Footer/Footer"; // Import the Footer component
 import NavBar from "../components/NavBar/NavBar";
+import BookDetailPage from "./BookDetailPage/BookDetailPage"; // <<< Import BookDetailPage
 
 
 import "./App.css";
@@ -32,6 +33,8 @@ const App = () => {
           <Route path="/terms" element={<ServicePage />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/admin/users" element={<AdminUserManagement />} />
+          {/* <<< Add route for Book Detail Page >>> */}
+          <Route path="/books/:id" element={<BookDetailPage />} />
         </Routes>
       </div>
       <Footer /> {/* Footer always at bottom */}
@@ -40,3 +43,4 @@ const App = () => {
 };
 
 export default App;
+

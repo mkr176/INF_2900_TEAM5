@@ -43,13 +43,22 @@ interface Book {
 
 // Updated People interface (User) from AuthContext
 interface User {
-    id: number;
-    username: string;
-    profile: {
-        type: string; // 'AD', 'US', 'LB'
-        avatar?: string | null;
-    } | null;
+  id: number;
+  username: string;
+  profile: {
+    type: string; // 'AD', 'US', 'LB'
+    avatar?: string | null;
+  } | null;
 }
+
+// Interface for paginated response (if backend uses it)
+interface PaginatedBookResponse {
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: Book[];
+}
+
 
 const BookDisplayPage: React.FC = () => {
   const { currentUser, userType, getCSRFToken } = useAuth(); // Use AuthContext
@@ -66,7 +75,7 @@ const BookDisplayPage: React.FC = () => {
   // Define bookCategories (same as Add/Edit forms)
   const bookCategories = [
     { value: '', label: 'All Categories' }, { value: 'CK', label: 'Cooking' },
-    { value: 'CR', label: 'Crime' }, { value: 'MY', label: 'Mystery' },
+    { value: 'CR', label: 'Crime' }, { value: 'MY', label: 'Mystery' }, // Corrected spelling
     { value: 'SF', label: 'Science Fiction' }, { value: 'FAN', label: 'Fantasy' },
     { value: 'HIS', label: 'History' }, { value: 'ROM', label: 'Romance' },
     { value: 'TXT', label: 'Textbook' },
@@ -76,19 +85,22 @@ const BookDisplayPage: React.FC = () => {
   const fetchBooks = useCallback(async () => {
     setIsLoading(true);
     setError(null);
-    // Construct fetch URL with category filter if selected
+    // Construct fetch URL with filters and search
     let fetchUrl = '/api/books/'; // Use the new endpoint
     const queryParams = new URLSearchParams();
     if (selectedCategory) {
-        queryParams.append('category', selectedCategory);
+      queryParams.append('category', selectedCategory);
     }
-    // Add other filters like search here if moving search to backend
-    // if (searchQuery) {
-    //     queryParams.append('search', searchQuery);
-    // }
+    // <<< CHANGE: Add search query parameter >>>
+    if (searchQuery) {
+      queryParams.append('search', searchQuery);
+    }
+    // Add ordering if desired, e.g., sort by title
+    queryParams.append('ordering', 'title');
+
     const queryString = queryParams.toString();
     if (queryString) {
-        fetchUrl += `?${queryString}`;
+      fetchUrl += `?${queryString}`;
     }
 
 
@@ -97,19 +109,15 @@ const BookDisplayPage: React.FC = () => {
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      const data = await response.json();
-      // The backend might return paginated results, handle that if needed
-      // Assuming for now it returns a list or an object with a 'results' key
-      const books = Array.isArray(data) ? data : data.results || [];
+      const data: PaginatedBookResponse | Book[] = await response.json(); // Expect paginated or list
+
+      // Handle both paginated and non-paginated responses
+      const books = 'results' in data ? data.results : data;
       console.log("Fetched book data:", books);
 
-      // Sorting can still be done client-side if desired, or use backend ordering (?ordering=...)
-      const sortedBooks = books.sort((a: Book, b: Book) => {
-         // Example: Sort by title after fetching
-         return a.title.localeCompare(b.title);
-      });
+      // Sorting is now handled by backend via 'ordering' query param
 
-      setBookList(sortedBooks);
+      setBookList(books);
     } catch (err: any) {
       console.error("Error fetching books:", err);
       setError(err.message || "Failed to load books.");
@@ -117,9 +125,10 @@ const BookDisplayPage: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [selectedCategory]); // Depend on category filter
+    // <<< CHANGE: Depend on searchQuery as well >>>
+  }, [selectedCategory, searchQuery]); // Depend on filters
 
-  // Fetch books on initial load and when category changes
+  // Fetch books on initial load and when filters change
   useEffect(() => {
     fetchBooks();
   }, [fetchBooks]);
@@ -148,21 +157,15 @@ const BookDisplayPage: React.FC = () => {
         credentials: "include",
       });
 
-      if (response.ok) {
-        // Check for 204 No Content or success message
-        if (response.status === 204) {
-             alert(`Book "${bookToRemove.title}" removed successfully.`);
-        } else {
-             const data = await response.json(); // Try parsing if not 204
-             alert(data.message || `Book "${bookToRemove.title}" removed successfully.`);
-        }
+      if (response.ok) { // Status 204 No Content is OK
+        alert(`Book "${bookToRemove.title}" removed successfully.`);
         // Remove from local state
         setBookList((prevBooks) => prevBooks.filter((book) => book.id !== bookId));
       } else {
         let errorMsg = `Failed to remove book. Status: ${response.status}`;
         try {
-            const errData = await response.json();
-            errorMsg = errData.detail || JSON.stringify(errData) || errorMsg;
+          const errData = await response.json();
+          errorMsg = errData.detail || JSON.stringify(errData) || errorMsg;
         } catch (e) { /* Ignore if response not JSON */ }
         throw new Error(errorMsg);
       }
@@ -190,12 +193,12 @@ const BookDisplayPage: React.FC = () => {
   };
 
   const handleBookUpdated = (updatedBook: Book) => {
-     // Option 1: Refresh the whole list
-     // fetchBooks();
-     // Option 2: Update locally (faster UI)
-     setBookList((prevBooks) =>
-       prevBooks.map((book) => (book.id === updatedBook.id ? updatedBook : book))
-     );
+    // Option 1: Refresh the whole list (simpler if sorting/filtering changes)
+    fetchBooks();
+    // Option 2: Update locally (faster UI, but might not reflect sorting/filtering changes)
+    // setBookList((prevBooks) =>
+    //   prevBooks.map((book) => (book.id === updatedBook.id ? updatedBook : book))
+    // );
     setShowEditBookForm(false);
     setEditingBook(null);
   };
@@ -250,6 +253,11 @@ const BookDisplayPage: React.FC = () => {
           b.id === book.id ? { ...b, ...data.book } : b // Use updated book data from response
         )
       );
+      // If showing borrowed list, refresh it too
+      if (showBorrowedBooks) {
+        // Need a way to trigger refresh in BorrowedBooksList, or lift its state up
+        // For now, just update the main list
+      }
 
     } catch (error: any) {
       console.error(`Error ${actionVerb}ing book:`, error);
@@ -257,11 +265,14 @@ const BookDisplayPage: React.FC = () => {
     }
   };
 
-  // Client-side search filtering (can be moved to backend later)
-  const filteredBooks = bookList.filter((book: Book) =>
-    book.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    book.author.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  // Client-side search filtering is removed as it's now handled by the backend via 'search' query param
+  // const filteredBooks = bookList.filter((book: Book) =>
+  //   book.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+  //   book.author.toLowerCase().includes(searchQuery.toLowerCase())
+  // );
+  // Use bookList directly now
+  const filteredBooks = bookList;
+
 
   // Slider settings
   const settings = {
@@ -271,9 +282,9 @@ const BookDisplayPage: React.FC = () => {
     slidesToShow: 4,
     slidesToScroll: 2,
     responsive: [
-       { breakpoint: 1200, settings: { slidesToShow: 3, infinite: filteredBooks.length > 3 } },
-       { breakpoint: 900, settings: { slidesToShow: 2, infinite: filteredBooks.length > 2 } },
-       { breakpoint: 600, settings: { slidesToShow: 1, infinite: filteredBooks.length > 1 } },
+      { breakpoint: 1200, settings: { slidesToShow: 3, slidesToScroll: 2, infinite: filteredBooks.length > 3 } },
+      { breakpoint: 900, settings: { slidesToShow: 2, slidesToScroll: 1, infinite: filteredBooks.length > 2 } },
+      { breakpoint: 600, settings: { slidesToShow: 1, slidesToScroll: 1, infinite: filteredBooks.length > 1 } },
     ],
   };
 
@@ -282,6 +293,12 @@ const BookDisplayPage: React.FC = () => {
     setSelectedCategory(event.target.value);
     // fetchBooks will be called by useEffect due to dependency change
   };
+
+  // Handler for search input change (triggers fetch via useEffect)
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(event.target.value);
+  };
+
 
   const toggleBorrowedBooksView = () => {
     setShowBorrowedBooks(!showBorrowedBooks);
@@ -300,7 +317,7 @@ const BookDisplayPage: React.FC = () => {
             type="text"
             placeholder="Search books by title or author..."
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={handleSearchChange} // Use specific handler
             className="search-bar"
           />
         </div>
@@ -322,75 +339,75 @@ const BookDisplayPage: React.FC = () => {
 
       {/* Action Buttons Container */}
       <div className="action-buttons-container">
-          {/* Create book button for Admins and Librarians */}
-          {userType && (userType === "AD" || userType === "LB") && (
-            <button onClick={handleCreateBook} className="button button-create">
-              {showAddBookForm ? "Hide Add Form" : "Add New Book"}
-            </button>
-          )}
-          {/* Borrowed Books View Button */}
-          {currentUser && ( // Show if user is logged in
-            <button onClick={toggleBorrowedBooksView} className="button button-toggle-borrowed">
-              {showBorrowedBooks ? "Show Book Catalog" : "View My Borrowed Books"}
-            </button>
-          )}
+        {/* Create book button for Admins and Librarians */}
+        {userType && (userType === "AD" || userType === "LB") && (
+          <button onClick={handleCreateBook} className="button button-create">
+            {showAddBookForm ? "Hide Add Form" : "Add New Book"}
+          </button>
+        )}
+        {/* Borrowed Books View Button */}
+        {currentUser && ( // Show if user is logged in
+          <button onClick={toggleBorrowedBooksView} className="button button-toggle-borrowed">
+            {showBorrowedBooks ? "Show Book Catalog" : "View My Borrowed Books"}
+          </button>
+        )}
       </div>
 
 
       {/* Add/Edit Forms (conditionally rendered) */}
       {showAddBookForm && userType && (userType === "AD" || userType === "LB") && (
-          <div className="form-container">
-              <AddBookForm onBookCreated={handleBookCreated} />
-          </div>
+        <div className="form-container">
+          <AddBookForm onBookCreated={handleBookCreated} />
+        </div>
       )}
       {showEditBookForm && editingBook && userType && (userType === "AD" || userType === "LB") && (
-          <div className="form-container">
-              <EditBookForm book={editingBook} onBookUpdated={handleBookUpdated} onCancel={handleEditFormCancel} />
-          </div>
+        <div className="form-container">
+          <EditBookForm book={editingBook} onBookUpdated={handleBookUpdated} onCancel={handleEditFormCancel} />
+        </div>
       )}
 
       {/* Content Area: Borrowed Books List OR Book Catalog */}
       <div className="content-area">
-          {isLoading ? (
-              <p>Loading...</p>
-          ) : error ? (
-              <p className="error-message">{error}</p>
-          ) : showBorrowedBooks ? (
-              // Borrowed Books List Component
-              currentUser && <BorrowedBooksList /> // Pass necessary props if any
-          ) : (
-              // Book Catalog Carousel/List
-              <div className="carousel-container">
-                  {filteredBooks.length > 0 ? (
-                      filteredBooks.length > 1 ? ( // Use Slider only if more than 1 book
-                          <Slider {...settings}>
-                              {filteredBooks.map((book: Book) => (
-                                  <BookCard
-                                      key={book.id}
-                                      book={book}
-                                      onBorrowReturn={handleBorrowReturn} // Pass combined handler
-                                      currentUser={currentUser}
-                                      onEditBook={handleEditBook} // Pass edit handler
-                                      onRemoveBook={handleRemoveBook} // Pass remove handler
-                                  />
-                              ))}
-                          </Slider>
-                      ) : ( // Display single book without Slider
-                          <div className="single-book-container">
-                              <BookCard
-                                  book={filteredBooks[0]}
-                                  onBorrowReturn={handleBorrowReturn}
-                                  currentUser={currentUser}
-                                  onEditBook={handleEditBook}
-                                  onRemoveBook={handleRemoveBook}
-                              />
-                          </div>
-                      )
-                  ) : (
-                      <p className="no-results">No books found matching your criteria.</p>
-                  )}
-              </div>
-          )}
+        {isLoading ? (
+          <p>Loading...</p>
+        ) : error ? (
+          <p className="error-message">{error}</p>
+        ) : showBorrowedBooks ? (
+          // Borrowed Books List Component
+          currentUser && <BorrowedBooksList /> // Pass necessary props if any
+        ) : (
+          // Book Catalog Carousel/List
+          <div className="carousel-container">
+            {filteredBooks.length > 0 ? (
+              filteredBooks.length > 1 ? ( // Use Slider only if more than 1 book
+                <Slider {...settings}>
+                  {filteredBooks.map((book: Book) => (
+                    <BookCard
+                      key={book.id}
+                      book={book}
+                      onBorrowReturn={handleBorrowReturn} // Pass combined handler
+                      currentUser={currentUser}
+                      onEditBook={handleEditBook} // Pass edit handler
+                      onRemoveBook={handleRemoveBook} // Pass remove handler
+                    />
+                  ))}
+                </Slider>
+              ) : ( // Display single book without Slider
+                <div className="single-book-container">
+                  <BookCard
+                    book={filteredBooks[0]}
+                    onBorrowReturn={handleBorrowReturn}
+                    currentUser={currentUser}
+                    onEditBook={handleEditBook}
+                    onRemoveBook={handleRemoveBook}
+                  />
+                </div>
+              )
+            ) : (
+              <p className="no-results">No books found matching your criteria.</p>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

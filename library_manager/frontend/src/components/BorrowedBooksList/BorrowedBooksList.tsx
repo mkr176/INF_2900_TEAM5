@@ -22,11 +22,18 @@ interface Book {
     borrower_id: number | null; // ID of the borrower
     borrow_date: string | null;
     due_date: string | null;
-    // Derived fields
+    // Derived fields from serializer
     days_left: number | null;
     overdue: boolean;
     days_overdue: number | null;
     due_today: boolean;
+    // Other fields if needed for display
+    storage_location?: string | null;
+    publisher?: string | null;
+    publication_year?: number | null;
+    copy_number?: number | null;
+    added_by?: string | null;
+    added_by_id?: number | null;
 }
 
 // Interface for the structure when grouped by user (Admin/Librarian view)
@@ -46,7 +53,7 @@ interface User {
 }
 
 interface BorrowedBooksListProps {
-    // currentUser prop is no longer needed, get from useAuth
+    // No props needed as context is used
 }
 
 const BorrowedBooksList: React.FC<BorrowedBooksListProps> = () => {
@@ -74,9 +81,13 @@ const BorrowedBooksList: React.FC<BorrowedBooksListProps> = () => {
 
             // Set data based on user type
             if (isPrivilegedUser) {
-                setBorrowedData(data.borrowed_books_by_user || []); // Expecting grouped data
+                // Ensure the structure matches BorrowedBooksGroup[]
+                const groupedData: BorrowedBooksGroup[] = data.borrowed_books_by_user || [];
+                setBorrowedData(groupedData);
             } else {
-                setBorrowedData(data.my_borrowed_books || []); // Expecting flat list for regular user
+                // Ensure the structure matches Book[]
+                const flatData: Book[] = data.my_borrowed_books || [];
+                setBorrowedData(flatData);
             }
         } catch (err: any) {
             console.error('Error fetching borrowed books:', err);
@@ -130,6 +141,21 @@ const BorrowedBooksList: React.FC<BorrowedBooksListProps> = () => {
         }
     };
 
+    // Helper to format due date string
+    const formatDueDate = (book: Book): string => {
+        if (book.overdue) {
+            return `Overdue by ${book.days_overdue ?? '?'} days`;
+        }
+        if (book.due_today) {
+            return 'Due Today';
+        }
+        if (book.days_left !== null) {
+            return `Due in ${book.days_left} days`;
+        }
+        return `Due: ${book.due_date ? new Date(book.due_date).toLocaleDateString() : 'N/A'}`;
+    };
+
+
     if (isLoading) {
         return <p>Loading borrowed books...</p>;
     }
@@ -152,18 +178,44 @@ const BorrowedBooksList: React.FC<BorrowedBooksListProps> = () => {
                 (borrowedData as BorrowedBooksGroup[]).map((userGroup) => (
                     <div key={userGroup.borrower_id} className="user-borrowed-books-group">
                         <h3>{userGroup.borrower_name} (ID: {userGroup.borrower_id})</h3>
+                        {userGroup.books.length > 0 ? (
+                            <ul className="borrowed-books-ul">
+                                {userGroup.books.map((book: Book) => (
+                                    <li key={book.id} className={`borrowed-book-item ${book.due_today ? 'due-today' : ''} ${book.overdue ? 'overdue' : ''}`}>
+                                        <div>
+                                            <span className="book-title">{book.title}</span> by <span className="book-author">{book.author}</span>
+                                            <span className={`book-due-status ${book.overdue ? 'book-overdue' : ''}`}> - {formatDueDate(book)}</span>
+                                            (<span className="book-due-date-explicit">Due: {book.due_date ? new Date(book.due_date).toLocaleDateString() : 'N/A'}</span>)
+                                        </div>
+                                        {/* Admin/Librarian can return any book */}
+                                        <button
+                                            className="button button-return-book"
+                                            onClick={() => handleReturnBook(book.id)}
+                                        >
+                                            Return
+                                        </button>
+                                    </li>
+                                ))}
+                            </ul>
+                        ) : (
+                            <p>No books currently borrowed by this user.</p>
+                        )}
+                    </div>
+                ))
+            ) : !isPrivilegedUser && Array.isArray(borrowedData) ? (
+                // Regular User View: Flat list
+                <div className="user-borrowed-books-group">
+                    <h3>My Borrowed Books</h3>
+                    {(borrowedData as Book[]).length > 0 ? (
                         <ul className="borrowed-books-ul">
-                            {userGroup.books.map((book: Book) => (
+                            {(borrowedData as Book[]).map((book: Book) => (
                                 <li key={book.id} className={`borrowed-book-item ${book.due_today ? 'due-today' : ''} ${book.overdue ? 'overdue' : ''}`}>
                                     <div>
                                         <span className="book-title">{book.title}</span> by <span className="book-author">{book.author}</span>
-                                        {book.overdue ?
-                                            <span className="book-overdue"> - Overdue by {book.days_overdue ?? '?'} days</span> :
-                                            <span className="book-due-date"> - {book.due_today ? 'Due Today' : `Due in ${book.days_left ?? '?'} days`}</span>
-                                        }
-                                         (<span className="book-due-date">Due: {book.due_date ? new Date(book.due_date).toLocaleDateString() : 'N/A'}</span>)
+                                        <span className={`book-due-status ${book.overdue ? 'book-overdue' : ''}`}> - {formatDueDate(book)}</span>
+                                        (<span className="book-due-date-explicit">Due: {book.due_date ? new Date(book.due_date).toLocaleDateString() : 'N/A'}</span>)
                                     </div>
-                                    {/* Admin/Librarian can return any book */}
+                                    {/* User can only return their own books */}
                                     <button
                                         className="button button-return-book"
                                         onClick={() => handleReturnBook(book.id)}
@@ -173,36 +225,12 @@ const BorrowedBooksList: React.FC<BorrowedBooksListProps> = () => {
                                 </li>
                             ))}
                         </ul>
-                    </div>
-                ))
-            ) : !isPrivilegedUser && Array.isArray(borrowedData) ? (
-                // Regular User View: Flat list
-                <div className="user-borrowed-books-group">
-                     <h3>My Borrowed Books</h3>
-                     <ul className="borrowed-books-ul">
-                        {(borrowedData as Book[]).map((book: Book) => (
-                            <li key={book.id} className={`borrowed-book-item ${book.due_today ? 'due-today' : ''} ${book.overdue ? 'overdue' : ''}`}>
-                                <div>
-                                    <span className="book-title">{book.title}</span> by <span className="book-author">{book.author}</span>
-                                    {book.overdue ?
-                                        <span className="book-overdue"> - Overdue by {book.days_overdue ?? '?'} days</span> :
-                                        <span className="book-due-date"> - {book.due_today ? 'Due Today' : `Due in ${book.days_left ?? '?'} days`}</span>
-                                    }
-                                     (<span className="book-due-date">Due: {book.due_date ? new Date(book.due_date).toLocaleDateString() : 'N/A'}</span>)
-                                </div>
-                                {/* User can only return their own books */}
-                                <button
-                                    className="button button-return-book"
-                                    onClick={() => handleReturnBook(book.id)}
-                                >
-                                    Return
-                                </button>
-                            </li>
-                        ))}
-                    </ul>
+                    ) : (
+                        <p>You have not borrowed any books.</p>
+                    )}
                 </div>
             ) : (
-                 <p>No borrowed books data available.</p> // Fallback
+                <p>No borrowed books data available.</p> // Fallback
             )}
         </div>
     );
