@@ -48,6 +48,7 @@ echo Starting Frontend in a new window...
 start cmd /k "call Windows_start_frontend.bat"
 
 REM --- Open Browser ---
+timeout /t 5 /nobreak > NUL
 echo Opening browser to http://localhost:8000...
 start http://localhost:8000/
 
