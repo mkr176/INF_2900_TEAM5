@@ -33,24 +33,52 @@
     margin-bottom: 8px;
     border-bottom: 1px dashed #eee;
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    align-items: flex-start; /* Changed from 'center' */
+    gap: 15px; /* <<< ADD: Add gap between image/info and button >>> */
 }
 
-.borrowed-book-item:last-child {
-    border-bottom: none;
+/* <<< ADD: Style for the book thumbnail image >>> */
+.borrowed-book-thumbnail {
+    width: 50px; /* Adjust width as needed */
+    height: 75px; /* Adjust height for aspect ratio */
+    object-fit: cover; /* Ensure image covers the area without distortion */
+    margin-right: 15px; /* Add space between image and text */
+    flex-shrink: 0; /* Prevent image from shrinking if container is narrow */
 }
+
+/* <<< ADD: Container for book text details >>> */
+.book-details {
+    display: flex;
+    flex-direction: column; /* Stack title/author and due date vertically */
+    flex-grow: 1; /* Allow text details to take available space */
+    /* <<< MODIFY: Set a default readable text color for the container >>> */
+    color: #333; /* Ensures plain text like "by" inherits a dark color */
+}
+
 
 .book-title {
     font-weight: bold;
-    color: #333;
-    margin-right: 10px;
+    /* <<< MODIFY: Ensure readable color >>> */
+    color: #333; /* Keep dark color */
+    margin-right: 5px; /* Adjust spacing */
 }
 
 .book-author {
     font-style: italic;
-    color: #777;
+    /* <<< MODIFY: Ensure readable color >>> */
+    color: #555; /* Slightly lighter but still dark */
+    margin-left: 0; /* Remove default margin if 'by' is added inline */
 }
+
+/* <<< ADD: Combine styles for due date info for better readability >>> */
+.book-due-status,
+.book-due-date-explicit {
+    font-size: 0.9em;
+    /* <<< MODIFY: Ensure readable color >>> */
+    color: #444; /* Dark gray for readability */
+    margin-top: 4px; /* Add some space below title/author */
+}
+
 
 .book-due-date, .book-overdue {
     font-size: 0.9em;

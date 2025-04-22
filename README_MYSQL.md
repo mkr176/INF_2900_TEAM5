@@ -88,7 +88,7 @@ Your settings.py has this configuration:
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'library',
+        'NAME': 'library_test',
         'USER': 'root',
         'PASSWORD': 'SoftwareUser',
         'HOST': 'localhost',

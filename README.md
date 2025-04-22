@@ -173,7 +173,7 @@ These are the only changes that you must do when you are installing MySQL
 
 When you start MySQL you should run and create a database called:
 
-- CREATE DATABASE library
+- CREATE DATABASE library_test
 
 Then connect to the database.
 
