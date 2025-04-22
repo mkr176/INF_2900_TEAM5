@@ -30,17 +30,22 @@ const getRelativeAvatarPathFromUrl = (fullUrl: string | null | undefined): strin
 
     // Fallback or error handling if the structure is unexpected
     console.warn("Could not determine relative path from avatar URL:", fullUrl);
-    // Return the default relative path as a safe fallback if the current URL is the default one
-    if (fullUrl.endsWith(DEFAULT_AVATAR_FILENAME)) {
-        return `avatars/${DEFAULT_AVATAR_FILENAME}`;
+
+    // <<< MODIFIED: Correctly check against DEFAULT_AVATAR_URL >>>
+    // Extract the filename part from the default URL
+    const defaultAvatarFilename = DEFAULT_AVATAR_URL.substring(DEFAULT_AVATAR_URL.lastIndexOf('/') + 1);
+    // Check if the full URL ends with the default filename
+    if (fullUrl.endsWith(defaultAvatarFilename)) {
+        // Return the known relative path for the default avatar
+        return `avatars/${defaultAvatarFilename}`; // e.g., "avatars/default.svg"
     }
-    return null; // Or handle error appropriately
+
+    return null; // Handle error appropriately if path cannot be determined
 };
 
 
 const ProfilePage: React.FC = () => {
   const navigate = useNavigate();
-  // <<< CHANGE: Get avatarUrl from context >>>
   const { currentUser, logout, fetchUser, getCSRFToken, avatarUrl: contextAvatarUrl } = useAuth();
 
   const [isEditing, setIsEditing] = useState(false);
@@ -51,14 +56,12 @@ const ProfilePage: React.FC = () => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [newPassword, setNewPassword] = useState("");
-  // <<< CHANGE: Store the full avatar URL in state >>>
   const [selectedAvatarUrl, setSelectedAvatarUrl] = useState(contextAvatarUrl || DEFAULT_AVATAR_URL);
 
   // Store original values
   const [originalEmail, setOriginalEmail] = useState("");
   const [originalFirstName, setOriginalFirstName] = useState("");
   const [originalLastName, setOriginalLastName] = useState("");
-  // <<< CHANGE: Store the original full avatar URL >>>
   const [originalAvatarUrl, setOriginalAvatarUrl] = useState(contextAvatarUrl || DEFAULT_AVATAR_URL);
 
   useEffect(() => {
@@ -101,7 +104,27 @@ const ProfilePage: React.FC = () => {
     setSelectedAvatarUrl(originalAvatarUrl);
     setNewPassword("");
   };
-
+  // const settings = {
+  //   dots: true,
+  //   infinite: true,
+  //   speed: 800,
+  //   slidesToShow: 3,
+  //   slidesToScroll: 2,
+  //   responsive: [
+  //     {
+  //       breakpoint: 1200,
+  //       settings: {
+  //         slidesToShow: 3,
+  //       },
+  //     },
+  //     {
+  //       breakpoint: 900, // For smaller screens
+  //       settings: {
+  //         slidesToShow: 2,
+  //       },
+  //     },
+  //   ],
+  // };
   const saveProfile = async () => {
     // <<< CHANGE: Compare full avatar URLs >>>
     const isAvatarChanged = selectedAvatarUrl !== originalAvatarUrl;

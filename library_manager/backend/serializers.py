@@ -4,6 +4,7 @@ from rest_framework import serializers
 from .models import Book, UserProfile
 from datetime import date  # Import date
 from django.templatetags.static import static # Import static tag function
+from django.conf import settings  # Import settings for STATIC_URL
 
 # Get the User model configured in settings (usually django.contrib.auth.models.User)
 User = get_user_model()
@@ -262,33 +263,65 @@ class BookSerializer(serializers.ModelSerializer):
 
     # <<< FIX: Add method to get book image URL >>>
     def get_image_url(self, obj):
+        """
+        Return the full URL for the book cover image.
+        Handles potential incorrect prefixes in the stored image name
+        and ensures the path is correctly resolved using the static tag.
+        """
         request = self.context.get('request')
-        image_path = None
+        image_path_resolved = None # The final path/URL
+        default_static_path = 'images/library_seal.jpg' # Default image relative to static root
 
         # Similar logic for book images if they are static assets
         if obj.image and hasattr(obj.image, 'name') and obj.image.name:
-             # Assuming image.name might be like 'covers/book1.jpg' or just 'book1.jpg'
-             # And static path is 'images/covers/book1.jpg' or 'images/book1.jpg'
-             # Adjust this logic based on how book image paths are stored/structured
-             if '/' in obj.image.name: # Basic check if it includes a directory
-                 static_file_path = f"images/{obj.image.name}"
-             else:
-                 # Assuming default location is 'images/' if no path provided
-                 static_file_path = f"images/{obj.image.name}"
-             try:
-                 image_path = static(static_file_path)
-             except ValueError: # Handle case where static file doesn't exist
-                 print(f"Warning: Static file not found for book image: {static_file_path}")
-                 image_path = None # Fallback to default
+            image_name = obj.image.name.strip() # Get the stored name and strip whitespace
+
+            # --- Clean the stored image name ---
+            # Remove potential leading prefixes that might have been saved incorrectly
+            prefixes_to_remove = ['static/images/', '/static/images/', 'images/']
+            for prefix in prefixes_to_remove:
+                if image_name.startswith(prefix):
+                    image_name = image_name[len(prefix):]
+                    break # Remove only the first matching prefix
+
+            # --- Construct the path for the static tag ---
+            # We assume all book images belong under an 'images/' directory
+            # within the static files structure.
+            # If image_name is 'covers/book.jpg', static_file_path becomes 'images/covers/book.jpg'
+            # If image_name is 'book.jpg', static_file_path becomes 'images/book.jpg'
+            static_file_path = f"images/{image_name}"
+
+            try:
+                # static() will prepend STATIC_URL ('/static/')
+                # e.g., static('images/covers/book.jpg') -> '/static/images/covers/book.jpg'
+                image_path_resolved = static(static_file_path)
+            except (ValueError, FileNotFoundError): # Handle case where static file doesn't exist
+                print(f"Warning: Static file not found for book image: '{static_file_path}' (derived from '{obj.image.name}'). Using default.")
+                image_path_resolved = None # Fallback to default
 
         # If no valid image path or static file not found, use the default
-        if not image_path:
-            # Ensure this default path is correct
-            image_path = static('images/library_seal.jpg')
+        if not image_path_resolved:
+            try:
+                image_path_resolved = static(default_static_path)
+            except (ValueError, FileNotFoundError):
+                 print(f"Warning: Default static file not found: '{default_static_path}'")
+                 # If even the default is missing, return a placeholder or None
+                 # Returning the path string directly might be better than None if build_absolute_uri fails
+                 image_path_resolved = f"{settings.STATIC_URL}{default_static_path}" # Construct manually as last resort
 
-        if request:
-            return request.build_absolute_uri(image_path)
-        return image_path
+
+        # Build the absolute URI if request context is available
+        if request and image_path_resolved:
+            try:
+                return request.build_absolute_uri(image_path_resolved)
+            except Exception as e:
+                 print(f"Error building absolute URI for '{image_path_resolved}': {e}")
+                 # Fallback if build_absolute_uri fails unexpectedly
+                 return image_path_resolved # Return the path itself (/static/...)
+        elif image_path_resolved:
+             return image_path_resolved # Return the path (/static/...) if no request
+        else:
+             return None # Should ideally not happen if default exists
 
     def get_days_left(self, obj):
         # Ensure due_date is compared with today's date
@@ -296,12 +329,14 @@ class BookSerializer(serializers.ModelSerializer):
             today = date.today()
             # Check if due_date is actually a date object
             if isinstance(obj.due_date, date):
-                return (obj.due_date - today).days
+                delta = obj.due_date - today
+                return delta.days
             else:
                 # Attempt to parse if it's a string (though it should be a date from the model)
                 try:
                     due_date_obj = date.fromisoformat(str(obj.due_date))
-                    return (due_date_obj - today).days
+                    delta = due_date_obj - today
+                    return delta.days
                 except (ValueError, TypeError):
                     return None # Cannot calculate if format is wrong
         return None

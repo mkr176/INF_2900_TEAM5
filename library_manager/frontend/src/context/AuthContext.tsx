@@ -1,26 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
+import { User, UserProfile } from '../types/models'; // Adjust path if needed
 
-// Define the structure based on UserSerializer and UserProfileSerializer
-interface UserProfile {
-    user_id: number;
-    username: string;
-    type: string; // 'AD', 'US', 'LB'
-    age: number | null;
-    // avatar: string | null; // Keep original field if needed, but URL is primary for display
-    avatar_url: string | null; // Expect the full URL from backend
-    get_type_display: string;
-}
-
-interface User {
-    id: number;
-    username: string;
-    email: string;
-    first_name: string;
-    last_name: string;
-    profile: UserProfile | null; // Profile can be null initially or if error
-    date_joined: string;
-    is_staff: boolean;
-}
 
 interface AuthContextType {
   isLoggedIn: boolean;

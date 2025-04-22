@@ -3,45 +3,9 @@ import { motion } from "framer-motion";
 import "./PrincipalPage.css";
 import { useAuth } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+// <<< ADD: Import shared types >>>
+import { Book, User } from '../../types/models'; // Adjust path if needed
 
-// --- Interface Updates ---
-interface Book {
-  id: number;
-  title: string;
-  author: string;
-  isbn: string;
-  category: string;
-  category_display: string;
-  language: string;
-  condition: string;
-  condition_display: string;
-  available: boolean;
-  // image?: string | null; // Original field
-  image_url?: string | null; // <<< ADD: Expect image URL >>>
-  borrower: string | null;
-  borrower_id: number | null;
-  borrow_date: string | null;
-  due_date: string | null;
-  storage_location: string | null;
-  publisher: string | null;
-  publication_year: number | null;
-  copy_number: number | null;
-  added_by: string | null;
-  added_by_id: number | null;
-  days_left?: number | null;
-  overdue?: boolean;
-  days_overdue?: number | null;
-  due_today?: boolean;
-}
-
-interface User {
-  id: number;
-  username: string;
-  profile: {
-    type: string;
-    avatar_url?: string | null; // <<< CHANGE: Use avatar_url >>>
-  } | null;
-}
 
 
 interface BookCardProps {

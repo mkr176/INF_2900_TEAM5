@@ -1,32 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
+// <<< ADD: Import shared types >>>
+import { Book } from '../../types/models';
 import "../AddBookForm/AddBookForm.css"; // Reuse styles
 
-// Updated Book interface
-interface Book {
-    id: number;
-    title: string;
-    author: string;
-    isbn: string;
-    category: string;
-    category_display?: string;
-    language: string;
-    condition: string;
-    condition_display?: string;
-    available: boolean;
-    // image?: string | null; // Original field (relative path)
-    image_url?: string | null; // <<< ADD: URL for display (read-only) >>>
-    storage_location: string | null;
-    publisher: string | null;
-    publication_year: number | null;
-    copy_number: number | null;
-    borrower?: string | null;
-    borrower_id?: number | null;
-    borrow_date?: string | null;
-    due_date?: string | null;
-    added_by?: string | null;
-    added_by_id?: number | null;
-}
+// <<< REMOVE: Local Book interface definition >>>
+// interface Book { ... }
 
 
 interface EditBookFormProps {

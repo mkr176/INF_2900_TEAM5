@@ -9,52 +9,9 @@ import EditBookForm from "../../components/EditBookForm/EditBookForm";
 import BookCard from "./BookCard";
 import BorrowedBooksList from "../../components/BorrowedBooksList/BorrowedBooksList";
 import { useAuth } from "../../context/AuthContext";
+// <<< ADD: Import shared types >>>
+import { Book, User, PaginatedResponse } from '../../types/models'; // Adjust path if needed
 
-// --- Interface Updates ---
-interface Book {
-  id: number;
-  title: string;
-  author: string;
-  isbn: string;
-  category: string;
-  category_display: string;
-  language: string;
-  condition: string;
-  condition_display: string;
-  available: boolean;
-  // image?: string | null; // Original field
-  image_url?: string | null; // <<< ADD: Expect image URL >>>
-  borrower: string | null;
-  borrower_id: number | null;
-  borrow_date: string | null;
-  due_date: string | null;
-  storage_location: string | null;
-  publisher: string | null;
-  publication_year: number | null;
-  copy_number: number | null;
-  added_by: string | null;
-  added_by_id: number | null;
-  days_left?: number | null;
-  overdue?: boolean;
-  days_overdue?: number | null;
-  due_today?: boolean;
-}
-
-interface User {
-  id: number;
-  username: string;
-  profile: {
-    type: string;
-    avatar_url?: string | null; // <<< CHANGE: Use avatar_url >>>
-  } | null;
-}
-
-interface PaginatedBookResponse {
-  count: number;
-  next: string | null;
-  previous: string | null;
-  results: Book[];
-}
 
 
 const BookDisplayPage: React.FC = () => {
@@ -92,8 +49,8 @@ const BookDisplayPage: React.FC = () => {
     try {
       const response = await fetch(fetchUrl, { credentials: 'include' });
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-      const data: PaginatedBookResponse | Book[] = await response.json();
-      const books = 'results' in data ? data.results : data;
+      const data: PaginatedResponse<Book> | Book[] = await response.json();
+      const books: Book[] = 'results' in data ? data.results : data;
       console.log("Fetched book data:", books); // Check if image_url is present
       setBookList(books);
     } catch (err: any) {
@@ -109,7 +66,7 @@ const BookDisplayPage: React.FC = () => {
     fetchBooks();
   }, [fetchBooks]);
 
-  // --- Action Handlers --- (handleRemoveBook, handleCreateBook, etc. remain the same)
+  // --- Action Handlers ---
   const handleRemoveBook = async (bookId: number) => {
     const bookToRemove = bookList.find(b => b.id === bookId);
     if (!bookToRemove) return;
