@@ -3,6 +3,7 @@ from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
 from .models import Book, UserProfile
 from datetime import date  # Import date
+from django.templatetags.static import static # Import static tag function
 
 # Get the User model configured in settings (usually django.contrib.auth.models.User)
 User = get_user_model()
@@ -46,24 +47,43 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
     def get_avatar_url(self, obj):
         """
-        Return the full URL for the avatar.
-        Handles cases where avatar might be None or have no file.
+        Return the full URL for the avatar, ensuring it points to the static path.
+        Handles cases where avatar might be None or have no file/name.
         """
         request = self.context.get('request')
-        if obj.avatar and hasattr(obj.avatar, 'url'):
-            # Use request to build absolute URI if available
-            if request:
-                return request.build_absolute_uri(obj.avatar.url)
-            # Fallback to just the URL path if no request context
-            return obj.avatar.url
-        # Provide a default URL if no avatar is set or file is missing
-        # This should ideally point to your actual default static file URL
-        # Assuming default is 'avatars/default.svg' and served under STATIC_URL
-        from django.templatetags.static import static
-        default_url = static('images/avatars/default.svg') # Adjust path if needed
+        avatar_path = None
+
+        # Check if obj.avatar has a meaningful value (name attribute)
+        # This handles both ImageField/FileField and potentially CharField if used
+        if obj.avatar and hasattr(obj.avatar, 'name') and obj.avatar.name:
+            # Assume obj.avatar.name stores the path relative to MEDIA_ROOT or
+            # just the filename if it's a static choice.
+            # We need to construct the path relative to the STATIC_URL base.
+            # Example: If avatar.name is 'avatars/user-1.svg', we want
+            # '/static/images/avatars/user-1.svg'
+            # If avatar.name is just 'user-1.svg', we need to prepend 'images/avatars/'
+            # Let's assume the name includes the 'avatars/' prefix as saved by the view.
+            # If not, adjust the path construction here.
+            if 'avatars/' in obj.avatar.name:
+                 # Construct the path expected by the static tag function
+                 # e.g., 'images/avatars/user-1.svg'
+                 static_file_path = f"images/{obj.avatar.name}"
+                 avatar_path = static(static_file_path)
+            else:
+                 # Fallback or alternative logic if 'avatars/' prefix is missing
+                 # Maybe the name is just the filename?
+                 static_file_path = f"images/avatars/{obj.avatar.name}"
+                 avatar_path = static(static_file_path)
+
+        # If no valid avatar path was derived, use the default
+        if not avatar_path:
+            avatar_path = static('images/avatars/default.svg') # Default path
+
+        # Build the absolute URI if request context is available
         if request:
-            return request.build_absolute_uri(default_url)
-        return default_url
+            return request.build_absolute_uri(avatar_path)
+        # Otherwise, return the path (e.g., /static/images/avatars/...)
+        return avatar_path
 
 
 # Serializer for the standard User model, including nested profile data
@@ -243,17 +263,32 @@ class BookSerializer(serializers.ModelSerializer):
     # <<< FIX: Add method to get book image URL >>>
     def get_image_url(self, obj):
         request = self.context.get('request')
-        if obj.image and hasattr(obj.image, 'url'):
-            if request:
-                return request.build_absolute_uri(obj.image.url)
-            return obj.image.url
-        # Provide default book image URL
-        from django.templatetags.static import static
-        # Ensure this path matches your actual default image location within static files
-        default_url = static('images/library_seal.jpg')
+        image_path = None
+
+        # Similar logic for book images if they are static assets
+        if obj.image and hasattr(obj.image, 'name') and obj.image.name:
+             # Assuming image.name might be like 'covers/book1.jpg' or just 'book1.jpg'
+             # And static path is 'images/covers/book1.jpg' or 'images/book1.jpg'
+             # Adjust this logic based on how book image paths are stored/structured
+             if '/' in obj.image.name: # Basic check if it includes a directory
+                 static_file_path = f"images/{obj.image.name}"
+             else:
+                 # Assuming default location is 'images/' if no path provided
+                 static_file_path = f"images/{obj.image.name}"
+             try:
+                 image_path = static(static_file_path)
+             except ValueError: # Handle case where static file doesn't exist
+                 print(f"Warning: Static file not found for book image: {static_file_path}")
+                 image_path = None # Fallback to default
+
+        # If no valid image path or static file not found, use the default
+        if not image_path:
+            # Ensure this default path is correct
+            image_path = static('images/library_seal.jpg')
+
         if request:
-            return request.build_absolute_uri(default_url)
-        return default_url
+            return request.build_absolute_uri(image_path)
+        return image_path
 
     def get_days_left(self, obj):
         # Ensure due_date is compared with today's date
