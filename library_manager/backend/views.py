@@ -119,7 +119,8 @@ class LoginView(drf_views.APIView):
         if not username or not password:
             return Response({'error': 'Username and password are required'}, status=status.HTTP_400_BAD_REQUEST)
 
-        user = authenticate(request, username=username, password=password)
+        # <<< FIX: Pass the underlying HttpRequest (request._request) to authenticate >>>
+        user = authenticate(request._request, username=username, password=password)
         if user:
             # <<< FIX: Pass the underlying HttpRequest to login >>>
             login(request._request, user) # Use request._request here
@@ -133,7 +134,8 @@ class LogoutView(drf_views.APIView):
     permission_classes = [permissions.IsAuthenticated] # Must be logged in to log out
 
     def post(self, request, *args, **kwargs):
-        logout(request)
+        # <<< FIX: Pass the underlying HttpRequest (request._request) to logout >>>
+        logout(request._request)
         return Response({"message": "Logged out successfully"}, status=status.HTTP_200_OK)
 
 # ============================== #
