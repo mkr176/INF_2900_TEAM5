@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { motion } from "framer-motion";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
@@ -10,7 +9,7 @@ import BookCard from "./BookCard";
 import BorrowedBooksList from "../../components/BorrowedBooksList/BorrowedBooksList";
 import { useAuth } from "../../context/AuthContext";
 // <<< ADD: Import shared types >>>
-import { Book, User, PaginatedResponse } from '../../types/models'; // Adjust path if needed
+import { Book, PaginatedResponse } from '../../types/models'; // Adjust path if needed
 
 
 
@@ -154,12 +153,12 @@ const BookDisplayPage: React.FC = () => {
 
       <div className="action-buttons-container">
         {userType && (userType === "AD" || userType === "LB") && (
-          <button onClick={handleCreateBook} className="button button-create">
+          <button onClick={handleCreateBook} className="button-principal">
             {showAddBookForm ? "Hide Add Form" : "Add New Book"}
           </button>
         )}
         {currentUser && (
-          <button onClick={toggleBorrowedBooksView} className="button button-toggle-borrowed">
+          <button onClick={toggleBorrowedBooksView} className="button-principal">
             {showBorrowedBooks ? "Show Book Catalog" : "View My Borrowed Books"}
           </button>
         )}

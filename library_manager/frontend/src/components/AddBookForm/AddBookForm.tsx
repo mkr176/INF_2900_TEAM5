@@ -133,8 +133,9 @@ const AddBookForm: React.FC<AddBookFormProps> = ({ onBookCreated }) => {
     };
 
     return (
-        <form onSubmit={handleSubmit} className="add-book-form">
-            <h2>Add New Book</h2>
+        
+        <form onSubmit={handleSubmit} className='form-container'>
+            <div className='add-book-form'>
             <label htmlFor="title">Title:</label>
             <input type="text" id="title" value={title} onChange={(e) => setTitle(e.target.value)} required />
 
@@ -176,8 +177,8 @@ const AddBookForm: React.FC<AddBookFormProps> = ({ onBookCreated }) => {
             <input type="text" inputMode="numeric" pattern="[0-9]*" id="copyNumber" value={copyNumber} onChange={(e) => setCopyNumber(e.target.value)} />
 
             {/* Removed 'Available' checkbox as it's not sent during creation */}
-
-            <button type="submit">Add Book</button>
+            </div>
+            <button type="submit" className='add-book-button'> ✔ </button>
         </form>
     );
 };

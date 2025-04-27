@@ -110,8 +110,8 @@
 }
 
 .button-outline {
-  border: 2px solid #2563eb;
-  color: #2563eb;
+  border: 2px solid #588bbe;
+  color: #588bbe;
   background: transparent;
 }
 
@@ -152,7 +152,17 @@
   padding: 10px;
   font-size: 0.9rem;
 }
-
+/* principal buttons */
+.button-principal {
+  background-color: black;
+  color: white;
+  border: none;
+  padding: 12px;
+  font-size: 16px;
+  border-radius: 8px;
+  width: 30%;
+  cursor: pointer;
+}
 /* Borrow Button */
 .borrow-button {
   width: 100%;
@@ -171,7 +181,7 @@
 }
 
 .borrow-button:hover {
-  background-color: #1e40af;
+  background-color: #588bbe;
 }
 
 /* Recommended Badge Styling */
@@ -203,8 +213,13 @@
   z-index: 10;
   /* Ensure it's above the card */
 }
-
-
+.action-buttons-container {
+  display: flex;
+  justify-content: center; /* Centra horizontalmente */
+}
+.category-container {
+  margin-left: 5rem; /* Ajusta el valor según el espacio que desees */
+}
 .book-card-container {
   display: flex;
   flex-direction: column;
@@ -220,7 +235,7 @@
 .slick-next {
   width: 50px;
   height: 50px;
-  background-color: rgba(37, 99, 235, 0.8);
+  background-color: #588bbe;
   border-radius: 50%;
   display: flex !important;
   align-items: center;

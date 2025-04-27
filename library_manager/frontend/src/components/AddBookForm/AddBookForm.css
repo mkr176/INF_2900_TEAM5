@@ -1,19 +1,29 @@
-.add-book-form {
+.form-container {
     display: flex;
-    flex-direction: column;
-    width: 300px; /* Adjust as needed */
+    justify-content: center; 
+    align-items: center; 
+}
+
+.add-book-form {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* Ajusta el ancho mínimo y máximo de las columnas */
+    gap: 5px; /* Espaciado entre los elementos */
+    width: 100%; /* Ocupa todo el ancho disponible */
+    max-width: 800px; /* Ancho máximo del formulario */
+    max-height: 400px; /* Altura máxima del formulario */
     padding: 20px;
     border: 1px solid #ccc;
     border-radius: 5px;
-    gap: 10px;
     background-color: white;
     color: black;
+    box-sizing: border-box;
 }
 
 .add-book-form label {
-    text-align: left;
-    margin-bottom: 5px;
+    text-align: center;
     display: block; /* Ensure labels take full width and are above inputs */
+    margin-top: 15px;
+    
 }
 
 .add-book-form input[type="text"],
@@ -22,20 +32,30 @@
     padding: 8px;
     border: 1px solid #ddd;
     border-radius: 4px;
-    margin-bottom: 10px;
     width: 100%; /* Make inputs and selects take full width */
     box-sizing: border-box; /* Include padding and border in element's total width */
 }
 
-.add-book-form button[type="submit"] {
-    padding: 10px 15px;
+.add-book-button[type="submit"] {
+    padding: 10px;
     border: none;
-    border-radius: 4px;
-    background-color: #007bff; /* Example button color */
+    border-radius: 50%; /* Hace el botón circular */
+    background-color: #28a745; /* Color verde */
     color: white;
     cursor: pointer;
+    font-size: 20px; /* Tamaño del ícono */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 50px; /* Ancho del botón */
+    height: 50px; /* Altura del botón */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra para un efecto más atractivo */
 }
 
-.add-book-form button[type="submit"]:hover {
-    background-color: #0056b3;
+.add-book-button[type="submit"]:hover {
+    background-color: #218838; /* Verde más oscuro al pasar el mouse */
+}
+
+.add-book-button[type="submit"]:active {
+    background-color: #1e7e34; /* Verde más oscuro al hacer clic */
 }
