@@ -70,7 +70,7 @@ const BorrowedBooksList: React.FC<BorrowedBooksListProps> = () => {
         } finally {
             setIsLoading(false);
         }
-    }, [currentUser, isPrivilegedUser]); // Depend on currentUser and derived isPrivilegedUser
+    }, [isPrivilegedUser]); // Depend on currentUser and derived isPrivilegedUser
 
     useEffect(() => {
         // Fetch only if a user is logged in, otherwise, show appropriate message

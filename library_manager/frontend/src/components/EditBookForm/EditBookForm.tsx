@@ -28,22 +28,7 @@ const bookConditions = [
 ];
 
 // <<< ADD: Helper to extract relative path from URL (similar to ProfilePage) >>>
-const getRelativeImagePathFromUrl = (fullUrl: string | null | undefined): string | null => {
-    if (!fullUrl || typeof fullUrl !== 'string') {
-        return null;
-    }
-    // Find the part of the URL that corresponds to the relative path
-    // Assumes structure like '.../static/images/filename.jpg' or '.../media/images/filename.jpg'
-    const imageMarker = "/images/"; // Adjust if your structure is different (e.g., /covers/)
-    const markerIndex = fullUrl.lastIndexOf(imageMarker);
 
-    if (markerIndex !== -1) {
-        // Extract the part starting from 'images/'
-        return fullUrl.substring(markerIndex + 1); // e.g., "images/library_seal.jpg"
-    }
-    console.warn("Could not determine relative path from image URL:", fullUrl);
-    return null;
-};
 
 
 const EditBookForm: React.FC<EditBookFormProps> = ({ book, onBookUpdated, onCancel }) => {
@@ -62,7 +47,7 @@ const EditBookForm: React.FC<EditBookFormProps> = ({ book, onBookUpdated, onCanc
     const [copyNumber, setCopyNumber] = useState<string>(book.copy_number?.toString() || '');
     // <<< CHANGE: State for image path (string to be sent to backend) >>>
     // Initialize with the relative path extracted from the book's image_url
-    const [imagePath, setImagePath] = useState<string>(getRelativeImagePathFromUrl(book.image_url) || '');
+    const [imageFile, setImageFile] = useState<File | null>(null); // State for the image file
 
     // Update state if the book prop changes
     useEffect(() => {
@@ -77,7 +62,6 @@ const EditBookForm: React.FC<EditBookFormProps> = ({ book, onBookUpdated, onCanc
         setPublicationYear(book.publication_year?.toString() || '');
         setCopyNumber(book.copy_number?.toString() || '');
         // <<< CHANGE: Update imagePath state based on book.image_url >>>
-        setImagePath(getRelativeImagePathFromUrl(book.image_url) || '');
     }, [book]);
 
 
@@ -90,40 +74,31 @@ const EditBookForm: React.FC<EditBookFormProps> = ({ book, onBookUpdated, onCanc
             return;
         }
 
-        // --- Prepare Payload ---
-        // Use Partial<Book> or a more specific type for the payload
-        const payload: { [key: string]: any } = {
-            title,
-            author,
-            isbn,
-            category,
-            language,
-            condition,
-            storage_location: storageLocation || null,
-            publisher: publisher || null,
-            publication_year: publicationYear ? parseInt(publicationYear, 10) || null : null,
-            copy_number: copyNumber ? parseInt(copyNumber, 10) || null : null,
-            // <<< CHANGE: Send the imagePath string >>>
-            // Send the current value of imagePath state. Backend expects relative path.
-            image: imagePath || null, // Send null if empty string
-        };
+        // Create FormData to send data as multipart/form-data
+        const formData = new FormData();
+        formData.append("title", title);
+        formData.append("author", author);
+        formData.append("isbn", isbn);
+        formData.append("category", category);
+        formData.append("language", language);
+        formData.append("condition", condition);
+        formData.append("storage_location", storageLocation || '');
+        formData.append("publisher", publisher || '');
+        formData.append("publication_year", publicationYear || '');
+        formData.append("copy_number", copyNumber || '');
 
-        // Basic validation
-        if (publicationYear && isNaN(payload.publication_year as number)) {
-            alert("Please enter a valid publication year."); return;
-        }
-        if (copyNumber && isNaN(payload.copy_number as number)) {
-            alert("Please enter a valid copy number."); return;
+        // Add the image file if it exists
+        if (imageFile) {
+            formData.append("image", imageFile);
         }
 
         try {
             const response = await fetch(`/api/books/${book.id}/`, {
                 method: 'PATCH',
                 headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': csrfToken,
+                    'X-CSRFToken': csrfToken, // CSRF token for security
                 },
-                body: JSON.stringify(payload),
+                body: formData, // Send FormData as the request body
                 credentials: 'include',
             });
 
@@ -139,8 +114,12 @@ const EditBookForm: React.FC<EditBookFormProps> = ({ book, onBookUpdated, onCanc
                         errorMsg = Object.entries(errorData)
                             .map(([key, value]) => `${key}: ${Array.isArray(value) ? value.join(', ') : value}`)
                             .join('\n');
-                    } else if (errorData.detail) { errorMsg = errorData.detail; }
-                } catch (e) { errorMsg = `Error updating book (Status: ${response.status})`; }
+                    } else if (errorData.detail) {
+                        errorMsg = errorData.detail;
+                    }
+                } catch (e) {
+                    errorMsg = `Error updating book (Status: ${response.status})`;
+                }
                 alert(errorMsg);
             }
         } catch (error) {
@@ -150,7 +129,7 @@ const EditBookForm: React.FC<EditBookFormProps> = ({ book, onBookUpdated, onCanc
     };
 
     return (
-        <form onSubmit={handleSubmit} className="add-book-form edit-book-form">
+        <form onSubmit={handleSubmit} className="add-book-form edit-book-form" encType="multipart/form-data">
             <h2>Edit Book: {book.title}</h2>
 
             <label htmlFor="edit-title">Title:</label>
@@ -164,7 +143,11 @@ const EditBookForm: React.FC<EditBookFormProps> = ({ book, onBookUpdated, onCanc
 
             <label htmlFor="edit-category">Category:</label>
             <select id="edit-category" value={category} onChange={(e) => setCategory(e.target.value)} required>
-                {bookCategories.map((cat) => ( <option key={cat.value} value={cat.value}>{cat.label}</option> ))}
+                {bookCategories.map((cat) => (
+                    <option key={cat.value} value={cat.value}>
+                        {cat.label}
+                    </option>
+                ))}
             </select>
 
             <label htmlFor="edit-language">Language:</label>
@@ -172,7 +155,11 @@ const EditBookForm: React.FC<EditBookFormProps> = ({ book, onBookUpdated, onCanc
 
             <label htmlFor="edit-condition">Condition:</label>
             <select id="edit-condition" value={condition} onChange={(e) => setCondition(e.target.value)} required>
-                {bookConditions.map((cond) => ( <option key={cond.value} value={cond.value}>{cond.label}</option> ))}
+                {bookConditions.map((cond) => (
+                    <option key={cond.value} value={cond.value}>
+                        {cond.label}
+                    </option>
+                ))}
             </select>
 
             <label htmlFor="edit-storageLocation">Storage Location:</label>
@@ -182,27 +169,41 @@ const EditBookForm: React.FC<EditBookFormProps> = ({ book, onBookUpdated, onCanc
             <input type="text" id="edit-publisher" value={publisher} onChange={(e) => setPublisher(e.target.value)} />
 
             <label htmlFor="edit-publicationYear">Publication Year:</label>
-            <input type="text" inputMode="numeric" pattern="[0-9]*" id="edit-publicationYear" value={publicationYear} onChange={(e) => setPublicationYear(e.target.value)} />
-
-            <label htmlFor="edit-copyNumber">Copy Number:</label>
-            <input type="text" inputMode="numeric" pattern="[0-9]*" id="edit-copyNumber" value={copyNumber} onChange={(e) => setCopyNumber(e.target.value)} />
-
-            {/* <<< CHANGE: Input for image path (relative path expected by backend) >>> */}
-            <label htmlFor="edit-imagePath">Image Path (e.g., images/covers/new.jpg):</label>
             <input
                 type="text"
-                id="edit-imagePath"
-                value={imagePath}
-                onChange={(e) => setImagePath(e.target.value)}
-                placeholder="Relative path from static/media root"
+                inputMode="numeric"
+                pattern="[0-9]*"
+                id="edit-publicationYear"
+                value={publicationYear}
+                onChange={(e) => setPublicationYear(e.target.value)}
+            />
+
+            <label htmlFor="edit-copyNumber">Copy Number:</label>
+            <input
+                type="text"
+                inputMode="numeric"
+                pattern="[0-9]*"
+                id="edit-copyNumber"
+                value={copyNumber}
+                onChange={(e) => setCopyNumber(e.target.value)}
+            />
+
+            {/* Input for image file */}
+            <label htmlFor="edit-imageFile">Image File:</label>
+            <input
+                type="file"
+                id="edit-imageFile"
+                accept="image/*"
+                onChange={(e) => setImageFile(e.target.files ? e.target.files[0] : null)}
             />
             {/* Display current image for reference */}
-            {book.image_url && <img src={book.image_url} alt="Current cover" style={{maxWidth: '100px', marginTop: '5px'}}/>}
-
+            {book.image_url && <img src={book.image_url} alt="Current cover" style={{ maxWidth: '100px', marginTop: '5px' }} />}
 
             <div className="edit-form-buttons">
                 <button type="submit">Update Book</button>
-                <button type="button" onClick={onCancel} className="cancel-button">Cancel</button>
+                <button type="button" onClick={onCancel} className="cancel-button">
+                    Cancel
+                </button>
             </div>
         </form>
     );

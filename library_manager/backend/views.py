@@ -146,7 +146,7 @@ class UserListView(generics.ListAPIView):
     """Lists all users (Admin only)."""
     queryset = User.objects.select_related('profile').all() # Optimize query
     serializer_class = UserSerializer
-    permission_classes = [IsAdminUser] # Only Admins can list all users
+    permission_classes = [IsAdminOrLibrarian] # Only Admins can list all users
 
 class CurrentUserView(generics.RetrieveAPIView):
     """Gets the profile of the currently authenticated user."""
@@ -383,6 +383,30 @@ def csrf_token_view(request):
     # request here is DRF Request, get_token needs HttpRequest
     return Response({"csrfToken": get_token(request._request)}) # This was already correct
 
+@api_view(['POST'])
+def promote_user_to_librarian(request, user_id):
+    try:
+        if not request.user.is_authenticated:
+            return Response({'error': 'Authentication required.'}, status=status.HTTP_401_UNAUTHORIZED)
+
+        if not hasattr(request.user, 'profile') or request.user.profile.type != 'AD':
+            return Response({'error': 'Only administrators can promote users.'}, status=status.HTTP_403_FORBIDDEN)
+
+        user = User.objects.get(id=user_id)
+
+        if user.profile.type == 'LB':
+            return Response({'error': 'User is already a Librarian.'}, status=status.HTTP_400_BAD_REQUEST)
+        if user.profile.type == 'AD':
+            return Response({'error': 'Cannot promote an Admin.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        user.profile.type = 'LB'
+        user.profile.save()
+
+        return Response({'message': f'User {user.username} promoted to Librarian successfully.'}, status=status.HTTP_200_OK)
+    except User.DoesNotExist:
+        return Response({'error': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 # Note: The old `validations.py` functions are generally superseded by serializer validation.
 # If specific complex validations were needed outside a serializer context, they could remain,
 # but standard field validation belongs in serializers.

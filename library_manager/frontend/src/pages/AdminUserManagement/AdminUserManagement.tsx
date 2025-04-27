@@ -47,7 +47,7 @@ const AdminUserManagement: React.FC = () => {
       const data: User[] = await res.json();
 
       // Filter based on current user type (Admins see all, Librarians see non-Admins)
-      if (userType === "LB") {
+      if (userType == "LB") {
         setUsers(data.filter((user: User) => user.profile?.type !== "AD"));
       } else {
         setUsers(data);
@@ -81,7 +81,34 @@ const AdminUserManagement: React.FC = () => {
     }
   }, [currentUser, userType, navigate, fetchUsers]); // Added fetchUsers dependency
 
+  const handlePromote = async (userId: number) => {
+    const csrfToken = await getCSRFToken();
+    if (!csrfToken) {
+      alert("Error: Could not verify security token. Please refresh and try again.");
+      return;
+    }
 
+    try {
+      const res = await fetch(`/api/users/${userId}/promote/`, {
+        method: "POST",
+        headers: {
+          "X-CSRFToken": csrfToken,
+        },
+        credentials: "include",
+      });
+
+      if (res.ok) {
+        alert("User promoted to Librarian successfully!");
+        fetchUsers(); // Refresh the user list
+      } else {
+        const errorData = await res.json();
+        alert(errorData.error || "Failed to promote user.");
+      }
+    } catch (error) {
+      console.error("Error promoting user:", error);
+      alert("An error occurred while promoting the user.");
+    }
+  };    
   const handleDelete = async (userId: number) => {
     if (currentUser && userId === currentUser.id) {
         alert("You cannot delete your own account from this panel.");
@@ -154,35 +181,36 @@ const AdminUserManagement: React.FC = () => {
           {users.map((user) => (
             <div key={user.id} className="user-card">
               <div className="user-info">
-              <img
-                // <<< CHANGE: Use avatar_url, fallback to default URL >>>
-                src={user.profile?.avatar_url || DEFAULT_AVATAR_URL}
-                alt={`${user.username}'s avatar`}
-                className="user-avatar"
-                onError={(e) => {
-                  console.warn(`Failed to load avatar for user ${user.username}: ${user.profile?.avatar_url}. Using default.`);
-                  // <<< CHANGE: Fallback to the default URL >>>
-                  (e.target as HTMLImageElement).src = DEFAULT_AVATAR_URL;
-                }}
+                <img
+                  src={user.profile?.avatar_url || DEFAULT_AVATAR_URL}
+                  alt={`${user.username}'s avatar`}
+                  className="user-avatar"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = DEFAULT_AVATAR_URL;
+                  }}
                 />
-
                 <div className="user-details">
-                  <p className="name">{user.username} ({user.first_name} {user.last_name})</p>
+                  <p className="name">
+                    {user.username} ({user.first_name} {user.last_name})
+                  </p>
                   <p className="email">{user.email}</p>
-                  <p className="role">Role: {user.profile?.get_type_display || 'N/A'}</p>
+                  <p className="role">Role: {user.profile?.get_type_display || "N/A"}</p>
                 </div>
               </div>
-              {/* Prevent deleting own user or users with higher/equal privilege for librarians */}
-              {currentUser.id !== user.id && (userType === 'AD' || (userType === 'LB' && user.profile?.type === 'US')) && (
-                 <button onClick={() => handleDelete(user.id)} className="delete-btn">
-                    Delete
-                 </button>
+              {currentUser.id !== user.id && userType === "AD" && user.profile?.type === "US" && (
+                <button onClick={() => handlePromote(user.id)} className="promote-btn">
+                  Promote to Librarian
+                </button>
+              )}
+              {currentUser.id !== user.id && (userType === "AD" || (userType === "LB" && user.profile?.type === "US")) && (
+                <button onClick={() => handleDelete(user.id)} className="delete-btn">
+                  Delete
+                </button>
               )}
               {currentUser.id === user.id && (
-                 <button className="delete-btn" disabled style={{backgroundColor: 'grey', cursor: 'not-allowed'}}>Self</button>
-              )}
-              {userType === 'LB' && user.profile?.type !== 'US' && currentUser.id !== user.id && (
-                 <button className="delete-btn" disabled style={{backgroundColor: 'grey', cursor: 'not-allowed'}}>No Access</button>
+                <button className="delete-btn" disabled style={{ backgroundColor: "grey", cursor: "not-allowed" }}>
+                  Self
+                </button>
               )}
             </div>
           ))}
@@ -190,7 +218,6 @@ const AdminUserManagement: React.FC = () => {
       )}
     </div>
   );
-
 };
 
 export default AdminUserManagement;

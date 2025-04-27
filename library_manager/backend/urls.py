@@ -13,7 +13,7 @@ from .views import (
     # Auth
     RegisterView, LoginView, LogoutView,
     # User Management
-    UserListView, CurrentUserView, UserDetailView, CurrentUserUpdateView,
+    UserListView, CurrentUserView, UserDetailView, CurrentUserUpdateView, promote_user_to_librarian,
     # Book Management
     BookListCreateView, BookDetailView, BorrowBookView, ReturnBookView, BorrowedBooksListView,
     # Security & CSRF
@@ -43,7 +43,8 @@ urlpatterns = [
     path("api/users/me/update/", CurrentUserUpdateView.as_view(), name="current-user-update"), # Changed from update-profile
     # Retrieve, Update, Delete a specific user by ID (Admin only)
     path("api/users/<int:id>/", UserDetailView.as_view(), name="user-detail"), # Use 'id' consistent with view lookup_field
-
+    #promote the user to librarian (Admin only)
+    path("api/users/<int:user_id>/promote/", promote_user_to_librarian, name="user-promote"), # Use 'id' consistent with view lookup_field
     # --- Removed old/redundant user routes ---
     # path("api/user/", get_user_info), # Replaced by current-user
     # path("api/user/<int:user_id>/", UserProfileView.as_view(), name="user-profile"), # Replaced by user-detail or current-user

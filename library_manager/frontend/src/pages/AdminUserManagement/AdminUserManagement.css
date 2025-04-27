@@ -69,7 +69,19 @@
     font-size: 0.75rem;
     color: #000000;
   }
-  
+  .promote-btn {
+    background-color: #4caf50; 
+    color: white;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.2s ease;
+  }
+  .promote-btn:hover {
+    background-color: #45a049; 
+}
   .delete-btn {
     background-color: #e53e3e;
     color: white;
