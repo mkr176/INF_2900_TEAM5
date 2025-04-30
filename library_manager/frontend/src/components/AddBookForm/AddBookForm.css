@@ -6,56 +6,132 @@
 
 .add-book-form {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* Ajusta el ancho mínimo y máximo de las columnas */
-    gap: 5px; /* Espaciado entre los elementos */
-    width: 100%; /* Ocupa todo el ancho disponible */
-    max-width: 800px; /* Ancho máximo del formulario */
-    max-height: 400px; /* Altura máxima del formulario */
+    /* Predictable 2-column layout */
+    grid-template-columns: auto 1fr; /* Label column auto-size, Input column takes rest */
+    /* Increase gap for better visual separation, primarily column gap */
+    column-gap: 15px;
+    row-gap: 10px; /* Smaller gap between rows */
+    /* Vertically align items (label and input) in each row */
+    align-items: center;
+    width: 100%;
+    max-width: 800px;
+    /* Remove fixed max-height to allow content to fit */
+    /* max-height: 400px; */
     padding: 20px;
     border: 1px solid #ccc;
     border-radius: 5px;
     background-color: white;
     color: black;
     box-sizing: border-box;
+    overflow-y: auto; /* Allows scrolling if content overflows vertically */
 }
+
+.add-book-form h2 {
+    /* Make the heading span both columns */
+    grid-column: 1 / -1;
+    text-align: center;
+    margin-bottom: 20px; /* Add space below heading */
+    color: #333; /* Optional: darker color for heading */
+}
+
 
 .add-book-form label {
-    text-align: center;
-    display: block; /* Ensure labels take full width and are above inputs */
-    margin-top: 15px;
-    
+    /* Align labels left */
+    text-align: left;
+    display: block;
+    /* Space below label, above input */
+    margin-bottom: 5px;
+    /* margin-top: 15px; */ /* Remove top margin, use grid gap */
+    font-weight: bold; /* Make labels clearer */
 }
 
+/* Ensure inputs/selects/file inputs fill their grid cell width */
 .add-book-form input[type="text"],
 .add-book-form input[type="number"],
-.add-book-form select { /* Apply styles to select elements as well */
+.add-book-form input[type="file"], /* Target file input */
+.add-book-form select {
     padding: 8px;
     border: 1px solid #ddd;
     border-radius: 4px;
-    width: 100%; /* Make inputs and selects take full width */
-    box-sizing: border-box; /* Include padding and border in element's total width */
+    width: 100%;
+    box-sizing: border-box;
 }
 
+/* Style the image preview in the form */
+.add-book-form img {
+    max-width: 100px; /* Limit preview size */
+    margin-top: 5px;
+    grid-column: span 1; /* Ensure it stays within one cell if needed */
+}
+
+
+/* --- Container for EditForm buttons --- */
+/* Target the specific div used in EditBookForm */
+.edit-form-buttons {
+    /* Span across both grid columns */
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: flex-end; /* Align buttons right */
+    gap: 10px; /* Space between buttons */
+    margin-top: 15px; /* Space above buttons */
+}
+
+/* Common styles for buttons within .edit-form-buttons */
+.edit-form-buttons button {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+/* Specific style for the submit button in EditForm */
+.edit-form-buttons button[type="submit"] {
+    background-color: #28a745; /* Green */
+    color: white;
+}
+.edit-form-buttons button[type="submit"]:hover {
+    background-color: #218838;
+}
+
+/* Specific style for the cancel button in EditForm */
+.edit-form-buttons .cancel-button {
+    background-color: #6c757d; /* Grey */
+    color: white;
+}
+.edit-form-buttons .cancel-button:hover {
+    background-color: #5a6268;
+}
+
+
+/* --- Style the single AddBookForm button --- */
 .add-book-button[type="submit"] {
+    /* Span across both grid columns */
+    grid-column: 1 / -1;
+    /* Center the button horizontally within the full width */
+    justify-self: center;
+
+    /* Original styles */
     padding: 10px;
     border: none;
-    border-radius: 50%; /* Hace el botón circular */
-    background-color: #28a745; /* Color verde */
+    border-radius: 50%;
+    background-color: #28a745;
     color: white;
     cursor: pointer;
-    font-size: 20px; /* Tamaño del ícono */
+    font-size: 20px;
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 50px; /* Ancho del botón */
-    height: 50px; /* Altura del botón */
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra para un efecto más atractivo */
+    width: 50px;
+    height: 50px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-top: 15px; /* Space above button */
 }
 
 .add-book-button[type="submit"]:hover {
-    background-color: #218838; /* Verde más oscuro al pasar el mouse */
+    background-color: #218838;
 }
 
 .add-book-button[type="submit"]:active {
-    background-color: #1e7e34; /* Verde más oscuro al hacer clic */
+    background-color: #1e7e34;
 }
