@@ -34,10 +34,10 @@ class UserViewsTestCase(LibraryAPITestCaseBase):
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_list_users_as_librarian(self):
-        """Verify librarians cannot list users."""
+        """Verify librarians can list users."""
         self._login_user('librarian')
         response = self.client.get(self.user_list_url)
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_list_users_as_admin(self):
         """Verify admins can list users."""

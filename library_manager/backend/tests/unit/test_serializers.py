@@ -321,6 +321,9 @@ class BookSerializerTests(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.adder = UserFactory(username="bookadder")
+        # Ensure cls.adder (who acts as request.user) is a Librarian
+        # This allows viewing borrower details as per BookSerializer.get_borrower logic
+        UserProfileFactory(user=cls.adder, type='LB') 
         cls.borrower = UserFactory(username="bookborrower")
         cls.book_available = BookFactory(
             title="Available Book", isbn="9781111111111", category="SF", condition="GD",
