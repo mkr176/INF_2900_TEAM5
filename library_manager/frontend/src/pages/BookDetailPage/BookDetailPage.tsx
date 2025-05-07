@@ -23,9 +23,9 @@ const BookDetailPage: React.FC = () => {
     setLoading(true);
     setError(null);
     if (!id) {
-        setError("Book ID is missing.");
-        setLoading(false);
-        return;
+      setError("Book ID is missing.");
+      setLoading(false);
+      return;
     }
     try {
       const response = await fetch(`/api/books/${id}/`, { credentials: 'include' });
@@ -47,7 +47,7 @@ const BookDetailPage: React.FC = () => {
   }, [id]);
 
   useEffect(() => {
-      fetchBookDetails();
+    fetchBookDetails();
   }, [fetchBookDetails]);
 
   const handleBookUpdated = (updatedBook: Book) => {
@@ -58,8 +58,8 @@ const BookDetailPage: React.FC = () => {
   const handleRemoveBook = async () => {
     if (!book) return;
     if (!(userType === 'AD' || userType === 'LB')) {
-        alert("You do not have permission to remove books.");
-        return;
+      alert("You do not have permission to remove books.");
+      return;
     }
 
     if (window.confirm(`Are you sure you want to remove "${book.title}"? This action cannot be undone.`)) {
@@ -115,6 +115,16 @@ const BookDetailPage: React.FC = () => {
 
   return (
     <div className="book-detail-container">
+      {/* Back to Library button */}
+      <div className="navigation-actions-detail">
+        <button
+          onClick={() => navigate("/principal")}
+          className="button back-to-library-button"
+        >
+          ← Back to Library View
+        </button>
+      </div>
+
       <h1>{book.title}</h1>
       {/* <<< CHANGE: Use imagePath (full URL) >>> */}
       <img
@@ -122,11 +132,11 @@ const BookDetailPage: React.FC = () => {
         alt={book.title}
         className="book-detail-image"
         onError={(e) => {
-            console.warn(`Failed to load book image: ${imagePath}. Using default.`);
-            // <<< CHANGE: Fallback to default URL >>>
-            (e.target as HTMLImageElement).src = DEFAULT_BOOK_IMAGE_URL;
+          console.warn(`Failed to load book image: ${imagePath}. Using default.`);
+          // <<< CHANGE: Fallback to default URL >>>
+          (e.target as HTMLImageElement).src = DEFAULT_BOOK_IMAGE_URL;
         }}
-       />
+      />
       <div className="book-detail-info">
         <p><strong>Author:</strong> {book.author}</p>
         <p><strong>Category:</strong> {book.category_display || book.category}</p>
@@ -149,14 +159,15 @@ const BookDetailPage: React.FC = () => {
         </p>
         {book.added_by && <p><strong>Added By:</strong> {book.added_by}</p>}
         {!book.available && book.due_date && (
-            <p><strong>Status:</strong>
-                {book.overdue && <span className="overdue"> Overdue by {book.days_overdue ?? '?'} days</span>}
-                {book.due_today && <span className="due-today"> Due Today</span>}
-                {/* Ensure days_left is displayed only if not overdue/due today and days_left is non-null non-negative */}
-                {!book.overdue && !book.due_today && book.days_left !== null && book.days_left >= 0 && <span> Due in {book.days_left} days</span>}
-            </p>
+          <p><strong>Status:</strong>
+            {book.overdue && <span className="overdue"> Overdue by {book.days_overdue ?? '?'} days</span>}
+            {book.due_today && <span className="due-today"> Due Today</span>}
+            {/* Ensure days_left is displayed only if not overdue/due today and days_left is non-null non-negative */}
+            {!book.overdue && !book.due_today && book.days_left !== null && book.days_left >= 0 && <span> Due in {book.days_left} days</span>}
+          </p>
         )}
       </div>
+
 
       {canEditOrDelete && (
         <div className="admin-actions-detail">

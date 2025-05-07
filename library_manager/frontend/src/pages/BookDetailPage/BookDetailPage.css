@@ -48,6 +48,14 @@
     font-weight: bold;
 }
 
+/* Container for navigation buttons like "Back to Library" */
+.navigation-actions-detail {
+    margin-top: 1.5rem;
+    margin-bottom: 1rem; /* Add some space before admin actions or bottom */
+    display: flex;
+    justify-content: center; /* Center the button */
+}
+
 .admin-actions-detail {
     margin-top: 1.5rem;
     display: flex;
@@ -56,7 +64,8 @@
 }
 
 /* Reusing button styles from PrincipalPage.css or define new ones */
-.admin-actions-detail .button {
+.admin-actions-detail .button,
+.navigation-actions-detail .button { /* Apply common button styles */
     padding: 0.6rem 1.2rem;
     border: none;
     border-radius: 4px;
@@ -81,6 +90,16 @@
     background-color: #c0392b;
 }
 
+.navigation-actions-detail .back-to-library-button {
+    background-color: #6c757d; /* Neutral gray */
+    color: white;
+}
+
+.navigation-actions-detail .back-to-library-button:hover {
+    background-color: #5a6268;
+}
+
+
 .admin-actions-detail .button:disabled {
     background-color: #bdc3c7; /* Grey */
     cursor: not-allowed;
@@ -99,4 +118,15 @@
     color: #e74c3c; /* Red */
     font-weight: bold;
     margin-top: 1rem;
+}
+
+/* Styles for overdue and due-today (if not globally defined) */
+.overdue {
+    color: #e74c3c; /* Red */
+    font-weight: bold;
+}
+
+.due-today {
+    color: #f39c12; /* Orange */
+    font-weight: bold;
 }
