@@ -2,41 +2,9 @@ import React, { useEffect, useState, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import EditBookForm from "../../components/EditBookForm/EditBookForm";
 import { useAuth } from "../../context/AuthContext";
+import { Book } from "../../types/models"; // Ensure this path is correct
+
 import "./BookDetailPage.css";
-
-// Updated Book interface
-interface Book {
-  id: number;
-  title: string;
-  author: string;
-  isbn: string;
-  category: string;
-  category_display: string;
-  language: string;
-  condition: string;
-  condition_display: string;
-  available: boolean;
-  // image?: string | null; // Original field
-  image_url?: string | null; // <<< ADD: Expect image URL >>>
-  borrower: string | null;
-  borrower_id: number | null;
-  borrow_date: string | null;
-  due_date: string | null;
-  storage_location: string | null;
-  publisher: string | null;
-  publication_year: number | null;
-  copy_number: number | null;
-  added_by: string | null;
-  added_by_id: number | null;
-  days_left?: number | null;
-  overdue?: boolean;
-  days_overdue?: number | null;
-  due_today?: boolean;
-}
-
-// <<< REMOVE: Static path prefix and helper function >>>
-// const STATIC_PATH_PREFIX = "/static/";
-// const getFullImagePath = (...) => { ... };
 
 // <<< ADD: Default book image URL (must match backend/serializer) >>>
 const DEFAULT_BOOK_IMAGE_URL = "/static/images/library_seal.jpg";
@@ -173,7 +141,9 @@ const BookDetailPage: React.FC = () => {
           <span className={book.available ? "available-text" : "unavailable-text"}>
             {book.available
               ? "Available"
-              : `Checked out by ${book.borrower || 'N/A'}${book.due_date ? ` until ${new Date(book.due_date).toLocaleDateString()}` : ''}`
+              // <<< CHANGE: Conditionally display borrower name >>>
+              // If not available, check if borrower string is provided and is not "Checked Out"
+              : `Checked out${book.borrower && book.borrower !== "Checked Out" ? ` by ${book.borrower}` : ''}${book.due_date ? ` until ${new Date(book.due_date).toLocaleDateString()}` : ''}`
             }
           </span>
         </p>
@@ -182,7 +152,8 @@ const BookDetailPage: React.FC = () => {
             <p><strong>Status:</strong>
                 {book.overdue && <span className="overdue"> Overdue by {book.days_overdue ?? '?'} days</span>}
                 {book.due_today && <span className="due-today"> Due Today</span>}
-                {!book.overdue && !book.due_today && book.days_left !== null && <span> Due in {book.days_left} days</span>}
+                {/* Ensure days_left is displayed only if not overdue/due today and days_left is non-null non-negative */}
+                {!book.overdue && !book.due_today && book.days_left !== null && book.days_left >= 0 && <span> Due in {book.days_left} days</span>}
             </p>
         )}
       </div>

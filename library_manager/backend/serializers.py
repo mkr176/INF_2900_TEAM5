@@ -198,7 +198,8 @@ class BookSerializer(serializers.ModelSerializer):
     # read_only=True because these fields are typically set by the view logic (e.g., current user)
     # or determined by borrowing actions, not directly submitted in book creation/update data.
     added_by = serializers.StringRelatedField(read_only=True)
-    borrower = serializers.StringRelatedField(read_only=True)
+    # borrower = serializers.StringRelatedField(read_only=True) # Old field
+    borrower = serializers.SerializerMethodField() # New: Use a method field
 
     # Add read-only fields for convenience in API responses
     borrower_id = serializers.PrimaryKeyRelatedField(source="borrower", read_only=True)
@@ -251,7 +252,8 @@ class BookSerializer(serializers.ModelSerializer):
             "due_today",
         ]
         read_only_fields = [
-            "borrower", "borrower_id", "borrow_date", "due_date",
+            # "borrower", # Removed: SerializerMethodField is read-only by default
+            "borrower_id", "borrow_date", "due_date",
             "added_by", "added_by_id", "category_display", "condition_display",
             "available", "days_left", "overdue", "days_overdue", "due_today",
             "image_url", # URL is read-only
@@ -260,8 +262,34 @@ class BookSerializer(serializers.ModelSerializer):
         # extra_kwargs = {
         #     'image': {'write_only': True}
         # }
+    def get_borrower(self, obj: Book) -> str | None:
+        """
+        Determines what to display for the 'borrower' field based on the
+        requesting user's role and whether they are the borrower.
+        """
+        request = self.context.get('request')
+        
+        # If the book is not borrowed, borrower is None
+        if not obj.borrower:
+            return None
 
-    # <<< FIX: Add method to get book image URL >>>
+        # If there's a request and an authenticated user
+        if request and request.user and request.user.is_authenticated:
+            # Case 1: The current user is the borrower
+            if request.user == obj.borrower:
+                return obj.borrower.username
+            
+            # Case 2: The current user is an Admin or Librarian
+            # (and not the borrower, due to previous check)
+            user_profile = getattr(request.user, 'profile', None)
+            if user_profile and user_profile.type in ['AD', 'LB']:
+                return obj.borrower.username
+        
+        # Case 3: For regular users viewing a book borrowed by someone else,
+        # or for unauthenticated users (if a view ever allows it for borrowed books).
+        return "Checked Out" # Generic placeholder for privacy
+
+
     def get_image_url(self, obj):
         """
         Return the full URL for the book cover image.

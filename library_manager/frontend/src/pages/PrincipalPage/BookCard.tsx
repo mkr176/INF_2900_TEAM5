@@ -28,13 +28,22 @@ const BookCard: React.FC<BookCardProps> = ({ book, onBorrowReturn, currentUser, 
     if (book.available) {
       return "Borrow Book";
     } else {
+      // User is the borrower
       if (currentUser && book.borrower_id === currentUser.id) {
         const dueDateStr = book.due_date ? new Date(book.due_date).toLocaleDateString() : "N/A";
+        // `book.borrower` will be the username here due to serializer logic for the owner
         return `Return Book (Due: ${dueDateStr})`;
       } else {
+        // Book is borrowed by someone else
         const dueDateStr = book.due_date ? new Date(book.due_date).toLocaleDateString() : "N/A";
-        const borrowerName = book.borrower || "another user";
-        return `Unavailable (Borrowed by ${borrowerName}, Due: ${dueDateStr})`;
+        // `book.borrower` will be username for Admin/Librarian, or "Checked Out" for regular user
+        if (book.borrower === "Checked Out") {
+           return `Unavailable (Checked Out, Due: ${dueDateStr})`;
+        } else if (book.borrower) { // It's a username (for Admin/Librarian viewing others' checkouts)
+           return `Unavailable (Borrowed by ${book.borrower}, Due: ${dueDateStr})`;
+        } else { // Fallback, though !book.available implies a borrower or "Checked Out"
+           return `Unavailable (Due: ${dueDateStr})`;
+        }
       }
     }
   };
@@ -70,7 +79,13 @@ const BookCard: React.FC<BookCardProps> = ({ book, onBorrowReturn, currentUser, 
   const imagePath = book.image_url || DEFAULT_BOOK_IMAGE_URL;
 
   const handleCardClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    // Prevent navigation if a button inside the card was clicked
     if ((e.target as HTMLElement).closest('button')) {
+      return;
+    }
+    // Prevent navigation if the click is on an interactive element on the back of the card (if any were added)
+    // For now, let's assume only buttons are interactive. If other elements are added, extend this check.
+    if ((e.target as HTMLElement).closest('.book-card-back button')) { // Example if back had buttons
       return;
     }
     navigate(`/books/${book.id}`);
@@ -125,6 +140,12 @@ const BookCard: React.FC<BookCardProps> = ({ book, onBorrowReturn, currentUser, 
             {!book.available && book.due_date && (
               <p><strong>Due Date:</strong> {new Date(book.due_date).toLocaleDateString()}</p>
             )}
+            {/* 
+              Display borrower information on the back of the card.
+              - If current user is Admin/Librarian, or if the current user is the borrower, show username.
+              - If regular user views a book borrowed by someone else, `book.borrower` will be "Checked Out".
+              - If book is available, `book.borrower` from serializer should be null.
+            */}
             {!book.available && book.borrower && (
               <p><strong>Borrowed By:</strong> {book.borrower}</p>
             )}
