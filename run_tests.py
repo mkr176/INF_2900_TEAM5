@@ -78,7 +78,7 @@ def main():
     }
 
     # Run all tests
-    print("Starting all tests...\n")
+    # print("Starting all tests...\n")
 
     # Backend tests
     results['backend'] = run_django_backend_tests(project_root)
