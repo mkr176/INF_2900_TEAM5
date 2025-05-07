@@ -55,8 +55,16 @@ start http://localhost:8000/
 echo Running Tests in this window...
 @REM echo Navigating to root directory for tests...
 cd %~dp0
-cd library_manager
-python manage.py test
+@REM set PYTHONPATH=%VIRTUAL_ENV%\Lib\site-packages;%PYTHONPATH%
+@REM echo Setting PYTHONPATH to include venv's site-packages...
+@REM echo.
+@REM cd %~dp0
+
+@REM echo Starting all tests...
+@REM %VIRTUAL_ENV%\Scripts\python run_tests.py  REM Execute run_tests.py from library_manager directory
+
+@REM cd library_manager
+@REM python manage.py test
 
 @REM python run_tests.py
 call Windows_run_tests.bat
