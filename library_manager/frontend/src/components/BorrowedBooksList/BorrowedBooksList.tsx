@@ -162,11 +162,11 @@ const BorrowedBooksList: React.FC<BorrowedBooksListProps> = () => {
                         <div className="borrowed-books-grid">
                             {userGroup.books.map((book: Book) => (
                                 <BookCard
-                                    key={book.id}
-                                    book={book}
-                                    onBorrowReturn={handleReturnBook}
-                                    currentUser={currentUser}
-                                />
+                                key={book.id}
+                                book={book}
+                                onBorrowReturn={() => handleReturnBook(book.id)} // Extrae el ID del libro
+                                currentUser={currentUser}
+                              />
                             ))}
                         </div>
                     </div>
@@ -175,11 +175,11 @@ const BorrowedBooksList: React.FC<BorrowedBooksListProps> = () => {
                 <div className="borrowed-books-grid">
                     {(borrowedData as Book[]).map((book: Book) => (
                         <BookCard
-                            key={book.id}
-                            book={book}
-                            onBorrowReturn={handleReturnBook}
-                            currentUser={currentUser}
-                        />
+                        key={book.id}
+                        book={book}
+                        onBorrowReturn={() => handleReturnBook(book.id)} // Extrae el ID del libro
+                        currentUser={currentUser}
+                      />
                     ))}
                 </div>
             )}
