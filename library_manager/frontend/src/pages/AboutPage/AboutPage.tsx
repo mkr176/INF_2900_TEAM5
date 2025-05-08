@@ -10,7 +10,7 @@ const About: React.FC = () => {
       <div className="about-content">
         <h2>Who We Are</h2>
         <p>
-          Our team consists of Alvario, Carlos, Julius & Matt, Computer Science students who is passionate about software development and teamwork.
+          Our team consists of Alvaro, Carlos, Julius & Matt, Computer Science students who is passionate about software development and teamwork.
          
         </p>
 
