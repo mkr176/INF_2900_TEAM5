@@ -6,7 +6,7 @@ import { useAuth } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 // <<< ADD: Import shared types >>>
 import { Book, User } from '../../types/models'; // Adjust path if needed
-
+import "./BookCard.css"; // Adjust path if needed
 
 
 interface BookCardProps {
@@ -49,15 +49,7 @@ const BookCard: React.FC<BookCardProps> = ({ book, onBorrowReturn, currentUser, 
     }
   };
 
-  const getBorrowButtonClassName = (): string => {
-    if (!book.available && currentUser && book.borrower_id === currentUser.id) {
-      return "button return-button";
-    } else if (book.available) {
-      return "button borrow-button available";
-    } else {
-      return "button borrow-button unavailable";
-    }
-  };
+
 
   const isBorrowButtonDisabled = (): boolean => {
     if (book.available) {
@@ -69,11 +61,11 @@ const BookCard: React.FC<BookCardProps> = ({ book, onBorrowReturn, currentUser, 
 
 
   const handleEditClick = () => {
-    onEditBook(book);
+    if (onEditBook) onEditBook(book);
   };
 
   const handleRemoveClick = () => {
-    onRemoveBook(book.id);
+    if (onRemoveBook) onRemoveBook(book.id);
   };
 
   // <<< CHANGE: Use image_url from book data, fallback to default >>>
@@ -156,24 +148,35 @@ const BookCard: React.FC<BookCardProps> = ({ book, onBorrowReturn, currentUser, 
 
       {/* Book Actions */}
       <div className="book-actions">
-        <button
-          onClick={() => onBorrowReturn(book)}
-          className={getBorrowButtonClassName()}
-          disabled={isBorrowButtonDisabled()}
-        >
-          {getBorrowButtonText()}
+            <button
+        onClick={() => onBorrowReturn(book)}
+        className={`button ${
+          book.available
+            ? "borrow-button"
+            : currentUser && book.borrower_id === currentUser.id
+            ? "return-button"
+            : "unavailable-button"
+        } ${!onEditBook && !onRemoveBook ? "full-width" : ""}`}
+        disabled={isBorrowButtonDisabled()}
+      >
+        {getBorrowButtonText()}
+      </button>
+      
+  {userType && (userType === "AD" || userType === "LB") && (
+    <div className="admin-actions">
+      {onEditBook && (
+        <button onClick={handleEditClick} className="button-edit-book">
+          Edit
         </button>
-        {userType && (userType === "AD" || userType === "LB") && (
-          <div className="admin-actions">
-            <button
-              className="button edit-button" onClick={handleEditClick}>Edit
-            </button>
-            <button
-              className="button remove-button" onClick={handleRemoveClick}>Remove
-            </button>
-          </div>
-        )}
-      </div>
+      )}
+      {onRemoveBook && (
+        <button onClick={handleRemoveClick} className="button-remove-book">
+          Remove
+        </button>
+      )}
+    </div>
+  )}
+</div> 
     </motion.div>
   );
 };

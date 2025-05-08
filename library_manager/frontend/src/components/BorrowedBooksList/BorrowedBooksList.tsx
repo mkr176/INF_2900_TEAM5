@@ -4,7 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 // <<< ADD: Import shared types >>>
 import { Book } from '../../types/models';
 import "./BorrowedBooksList.css";
-
+import BookCard from '../BookCard/BookCard';
 // --- Interface Updates ---
 // <<< REMOVE: Local Book interface definition >>>
 // interface Book { ... }
@@ -154,83 +154,37 @@ const BorrowedBooksList: React.FC<BorrowedBooksListProps> = () => {
     return (
         <div className="borrowed-books-list-container">
             <h2>{isPrivilegedUser ? "All Borrowed Books" : "My Borrowed Books"}</h2>
-
-            {/* Privileged User View (Admin/Librarian) */}
-            {isPrivilegedUser && Array.isArray(borrowedData) && (borrowedData as BorrowedBooksGroup[]).map((userGroup) => (
-                <div key={userGroup.borrower_id} className="user-borrowed-books-group">
-                    <h3>Borrowed by: {userGroup.borrower_name} (ID: {userGroup.borrower_id})</h3>
-                    {userGroup.books.length > 0 ? (
-                        <ul className="borrowed-books-ul">
+    
+            {isPrivilegedUser && Array.isArray(borrowedData) ? (
+                (borrowedData as BorrowedBooksGroup[]).map((userGroup) => (
+                    <div key={userGroup.borrower_id} className="user-borrowed-books-group">
+                        <h3>Borrowed by: {userGroup.borrower_name} (ID: {userGroup.borrower_id})</h3>
+                        <div className="borrowed-books-grid">
                             {userGroup.books.map((book: Book) => (
-                                <li
+                                <BookCard
                                     key={book.id}
-                                    className={`borrowed-book-item ${book.due_today ? 'due-today' : ''} ${book.overdue ? 'overdue' : ''}`}
-                                >
-                                    <div className="book-info">
-                                        <img
-                                            src={book.image_url || DEFAULT_BOOK_IMAGE_URL}
-                                            alt={book.title}
-                                            className="borrowed-book-thumbnail"
-                                            onError={(e) => { (e.target as HTMLImageElement).src = DEFAULT_BOOK_IMAGE_URL; }}
-                                        />
-                                        <div>
-                                            <span className="book-title">{book.title}</span> by <span className="book-author">{book.author}</span>
-                                            <br />
-                                            <span className={`book-due-status ${book.overdue ? 'book-overdue' : ''}`}>{formatDueDate(book)}</span>
-                                            <span className="book-due-date-explicit"> (Due Date: {book.due_date ? new Date(book.due_date).toLocaleDateString() : 'N/A'})</span>
-                                        </div>
-                                    </div>
-                                    {/* Return Button - Corrected onClick */}
-                                    <button
-                                        className="button button-return-book"
-                                        onClick={() => handleReturnBook(book.id)} // Only pass book.id
-                                    >
-                                        Mark as Returned
-                                    </button>
-                                    {/* Removed condition dropdown */}
-                                </li>
+                                    book={book}
+                                    onBorrowReturn={handleReturnBook}
+                                    currentUser={currentUser}
+                                />
                             ))}
-                        </ul>
-                    ) : (
-                        <p>This user has no borrowed books.</p>
-                    )}
-                </div>
-            ))}
-
-            {/* Regular User View */}
-            {!isPrivilegedUser && Array.isArray(borrowedData) && (
-                <div className="user-borrowed-books-group">
-                    {/* No need for h3 if title "My Borrowed Books" is already there */}
-                    {(borrowedData as Book[]).length > 0 ? (
-                        <ul className="borrowed-books-ul">
-                            {(borrowedData as Book[]).map((book: Book) => (
-                                <li key={book.id} className={`borrowed-book-item ${book.due_today ? 'due-today' : ''} ${book.overdue ? 'overdue' : ''}`}>
-                                    <div className="book-info">
-                                         <img
-                                            src={book.image_url || DEFAULT_BOOK_IMAGE_URL}
-                                            alt={book.title}
-                                            className="borrowed-book-thumbnail"
-                                            onError={(e) => { (e.target as HTMLImageElement).src = DEFAULT_BOOK_IMAGE_URL; }}
-                                        />
-                                        <div>
-                                            <span className="book-title">{book.title}</span> by <span className="book-author">{book.author}</span>
-                                            <br />
-                                            <span className={`book-due-status ${book.overdue ? 'book-overdue' : ''}`}>{formatDueDate(book)}</span>
-                                            <span className="book-due-date-explicit"> (Due Date: {book.due_date ? new Date(book.due_date).toLocaleDateString() : 'N/A'})</span>
-                                        </div>
-                                    </div>
-                                    {/* Return Button */}
-                                    <button className="button button-return-book" onClick={() => handleReturnBook(book.id)}>Return</button>
-                                </li>
-                            ))}
-                        </ul>
-                    ) : (
-                        <p>You have not borrowed any books.</p> // Should be caught earlier, but safe fallback
-                    )}
+                        </div>
+                    </div>
+                ))
+            ) : (
+                <div className="borrowed-books-grid">
+                    {(borrowedData as Book[]).map((book: Book) => (
+                        <BookCard
+                            key={book.id}
+                            book={book}
+                            onBorrowReturn={handleReturnBook}
+                            currentUser={currentUser}
+                        />
+                    ))}
                 </div>
             )}
         </div>
     );
-};
+    };
 
 export default BorrowedBooksList;

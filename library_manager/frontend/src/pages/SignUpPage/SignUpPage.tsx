@@ -216,20 +216,16 @@ const SignUpPage = () => {
                     min="1" // Optional: HTML5 validation for positive number
                     className="w-full p-3 mb-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 transition-all" // Example Tailwind classes
                 />
-
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
+      <div className="button-container">
+        <button
           onClick={handleSignUp}
-                    className="w-full bg-teal-700 text-white py-3 rounded-lg font-semibold hover:bg-teal-800 transition-all" // Example Tailwind classes
+                    className="button-signup"
         >
           Sign Up
-        </motion.button>
-
+        </button>
                  {/* Link to Login Page */}
-                 <div className="login-link mt-4"> {/* Added margin-top */}
-                    <p className="text-sm text-gray-600">Already have an account?</p> {/* Example Tailwind classes */}
-                    <button onClick={() => navigate("/login")} className="text-teal-600 hover:text-teal-800 font-semibold text-sm"> {/* Example Tailwind classes */}
+                    <p>Already have an account?</p> {/* Example Tailwind classes */}
+                    <button onClick={() => navigate("/login")} className="button-login"> 
                         Log In
                     </button>
                 </div>

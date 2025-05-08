@@ -5,9 +5,9 @@ import "./ContactPage.css";
 const ContactPage = () => {
   const teamMembers = [
     {
-      name: "Alvario",
+      name: "Alvaro",
       role: "Software Engineer",
-      email: "alvario@uit.no",
+      email: "alvaro@uit.no",
       phone: "+47 123 45 671",
     },
     
@@ -35,10 +35,7 @@ const ContactPage = () => {
   return (
     <div className="contact-container">
       <h1 className="contact-title">Meet the Team</h1>
-      <p className="contact-subtitle">
-        Get to know the developers behind LibManager.
-      </p>
-
+    
       <div className="contact-grid">
         {teamMembers.map((member, index) => (
           <div key={index} className="contact-card">

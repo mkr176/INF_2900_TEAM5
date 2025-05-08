@@ -3,7 +3,7 @@
     max-width: 800px;
     margin: 2rem auto;
     padding: 2rem;
-    background-color: #fff;
+    background: linear-gradient(135deg, #94abc2, #588bbe);
     border-radius: 8px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     text-align: center; /* Center align title and image */
@@ -75,19 +75,19 @@
 }
 
 .admin-actions-detail .edit-button {
-    background-color: #3498db; /* Blue */
+    background-color: #007bff; /* Blue */
     color: white;
 }
 .admin-actions-detail .edit-button:hover {
-    background-color: #2980b9;
+    background-color: #0056b3;
 }
 
 .admin-actions-detail .remove-button {
-    background-color: #e74c3c; /* Red */
+    background-color: #dc3545; /* Red */
     color: white;
 }
 .admin-actions-detail .remove-button:hover {
-    background-color: #c0392b;
+    background-color: #c82333;
 }
 
 .navigation-actions-detail .back-to-library-button {

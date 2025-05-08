@@ -140,15 +140,16 @@ const BookDisplayPage: React.FC = () => {
   return (
     <div className="principal-page-container">
       <div className="search-filter-container">
-        <div className="search-container">
-          <input type="text" placeholder="Search books by title or author..." value={searchQuery} onChange={handleSearchChange} className="search-bar" />
-        </div>
+
         <div className="category-container">
           <label htmlFor="category-select">Filter by Category:</label>
           <select id="category-select" value={selectedCategory} onChange={handleCategoryChange} className="category-select">
             {bookCategories.map((cat) => ( <option key={cat.value} value={cat.value}>{cat.label}</option> ))}
           </select>
         </div>
+        <div className="search-container">
+          <input type="text" placeholder="Search books by title or author..." value={searchQuery} onChange={handleSearchChange} className="search-bar" />
+        </div>  
       </div>
 
       <div className="action-buttons-container">
@@ -159,7 +160,7 @@ const BookDisplayPage: React.FC = () => {
         )}
         {currentUser && (
           <button onClick={toggleBorrowedBooksView} className="button-principal">
-            {showBorrowedBooks ? "Show Book Catalog" : "View My Borrowed Books"}
+            {showBorrowedBooks ? "Show Book Catalog" : "View Borrowed Books"}
           </button>
         )}
       </div>

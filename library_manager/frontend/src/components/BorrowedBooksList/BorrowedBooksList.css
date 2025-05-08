@@ -11,14 +11,33 @@
 
 .user-borrowed-books-group {
     margin-bottom: 30px;
-    border: 1px solid #ddd;
+    border: 1px transparent;
     padding: 15px;
     border-radius: 8px;
-    background-color: #f9f9f9;
+    background-color: transparent;
+}
+
+.borrowed-books-grid {
+    display: flex; /* Cambia de grid a flex para organizar en fila */
+    flex-wrap: wrap; /* Permite que los libros se ajusten a la siguiente fila si no caben */
+    gap: 20px; /* Espaciado entre los libros */
+    padding: 10px;
+}
+
+.borrowed-book-item {
+    display: flex;
+    flex-direction: column; /* Mantiene el contenido del libro en vertical */
+    align-items: center;
+    width: 200px; /* Ancho fijo para cada libro */
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 10px;
+    background-color: white;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .user-borrowed-books-group h3 {
-    color: #555;
+    color: #000000;
     margin-top: 0;
     margin-bottom: 15px;
 }
@@ -61,12 +80,12 @@
     /* <<< MODIFY: Ensure readable color >>> */
     color: #333; /* Keep dark color */
     margin-right: 5px; /* Adjust spacing */
-}
+}               
 
 .book-author {
     font-style: italic;
     /* <<< MODIFY: Ensure readable color >>> */
-    color: #555; /* Slightly lighter but still dark */
+    color: #1f1e1e; /* Slightly lighter but still dark */
     margin-left: 0; /* Remove default margin if 'by' is added inline */
 }
 

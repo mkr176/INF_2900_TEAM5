@@ -97,14 +97,12 @@ const LoginPage = () => {
               className="login-input"
               whileFocus={{ scale: 1.05 }}
             />
-            <motion.button
+            <button
               onClick={handleLogin}
               className="login-button"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
             >
               Login
-            </motion.button>
+            </button>
                     {/* Link to Sign Up Page */}
                     <div className="signup-link"> {/* Assuming signup-link is defined */}
                         <p>Don't have an account?</p>
