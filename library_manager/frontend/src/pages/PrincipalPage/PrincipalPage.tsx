@@ -5,7 +5,7 @@ import "slick-carousel/slick/slick-theme.css";
 import "./PrincipalPage.css";
 import AddBookForm from "../../components/AddBookForm/AddBookForm";
 import EditBookForm from "../../components/EditBookForm/EditBookForm";
-import BookCard from "./BookCard";
+import BookCard from "../../components/BookCard/BookCard";
 import BorrowedBooksList from "../../components/BorrowedBooksList/BorrowedBooksList";
 import { useAuth } from "../../context/AuthContext";
 // <<< ADD: Import shared types >>>
