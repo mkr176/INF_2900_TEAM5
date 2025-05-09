@@ -128,7 +128,7 @@ def main():
     # Run all tests
     # print("Starting all tests...\n") # Original line, can be kept if desired
 
-    # results['backend'] = run_django_backend_tests(project_root)
+    results['backend'] = run_django_backend_tests(project_root)
 
     # Frontend tests
     if frontend_dir.exists():
