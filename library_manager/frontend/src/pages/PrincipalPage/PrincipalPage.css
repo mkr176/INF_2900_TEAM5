@@ -16,32 +16,33 @@
   display: flex;
   justify-content: center;
 }
+
 /* Navigation Buttons */
 .slick-prev,
 .slick-next {
-  width: 50px; 
-  height: 50px; 
-  border-radius: 50%; 
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000; 
+  z-index: 1000;
 }
 
 .slick-prev:before,
 .slick-next:before {
-  font-size: 40px; 
+  font-size: 40px;
   font-weight: bold;
-  color: white; 
-  opacity: 1; 
+  color: white;
+  opacity: 1;
 }
 
 .slick-prev {
-  left: -60px; 
+  left: -60px;
 }
 
 .slick-next {
-  right: -60px; 
+  right: -60px;
 }
 
 .book-card {
@@ -150,14 +151,16 @@
   background-color: #d32f2f;
   color: white;
 }
+
 button:disabled {
-  background-color: #6c757d; 
-  cursor: not-allowed; 
+  background-color: #6c757d;
+  cursor: not-allowed;
 }
 
 button:disabled:hover {
-  background-color: #6c757d; 
+  background-color: #6c757d;
 }
+
 .borrow-button.unavailable:hover {
   background-color: #b71c1c;
 }
@@ -176,6 +179,7 @@ button:disabled:hover {
   padding: 10px;
   font-size: 0.9rem;
 }
+
 /* principal buttons */
 .button-principal {
   background-color: black;
@@ -187,6 +191,7 @@ button:disabled:hover {
   width: 30%;
   cursor: pointer;
 }
+
 /* Borrow Button */
 .borrow-button {
   width: 100%;
@@ -237,44 +242,68 @@ button:disabled:hover {
   z-index: 10;
   /* Ensure it's above the card */
 }
+
 .action-buttons-container {
   display: flex;
-  justify-content: center; 
-  gap :20px;
-  margin-bottom: 20px;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  /* Ensure text color is inherited or set for labels if needed */
+  color: #333;
+  /* Example: a readable dark color for labels if they are also affected */
 }
 
 .category-container {
-  margin-left: 5rem; 
+  margin-left: 5rem;
 }
+
 .category-select {
   padding: 8px;
   font-size: 14px;
   border-radius: 20px;
-  border-color: none;
+  /* border-color: none; /* This was invalid CSS */
+  border: 1px solid #555;
+  /* Corrected: Provide a subtle border or use 'border: none;' */
   outline: none;
   background-color: black;
+  /* Background of the select box itself */
+  color: white;
+  /* Text color for the selected item display and the dropdown arrow */
   transition: box-shadow 0.3s ease-in-out;
 }
 
 .category-select:focus {
-  box-shadow: 0 0 8px rgba(0, 0, 0, 0.2); /* Efecto de enfoque */
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
+  /* Efecto de enfoque */
 }
+
+/* Added styles for option elements */
+.category-select option {
+  background-color: white;
+  /* Background for individual options when dropdown is open */
+  color: black;
+  /* Text color for individual options */
+  padding: 5px 8px;
+  /* Optional: add some padding to options for better spacing */
+}
+
+
 .book-card-container {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  position: relative; /* Needed for absolute positioning of the badge */
+  position: relative;
+  /* Needed for absolute positioning of the badge */
 
 }
 
 /* Search Bar */
 .search-filter-container {
-  display: flex; 
-  justify-content: center; 
-  align-items: center; 
-  gap: 20px; 
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
 }
 
 .search-container {
