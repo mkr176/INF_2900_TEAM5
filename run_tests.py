@@ -14,24 +14,79 @@ def strip_ansi_codes(text):
     return ansi_escape.sub('', text)
 
 def run_django_backend_tests(project_root):
-    """Run Django backend tests"""
-    print("\n=== Running Django Backend Tests ===")
+    """Run Django backend tests with coverage"""
+    print("\n=== Running Django Backend Tests with Coverage ===")
     try:
-        # Run all tests within the backend.tests package
-        print("\nRunning all backend tests...")
+        # Clean up previous coverage data
+        coverage_file = project_root / '.coverage'
+        if coverage_file.exists():
+            os.remove(coverage_file)
+        
+        html_report_dir = project_root / 'htmlcov_backend'
+        if html_report_dir.exists():
+            subprocess.run(['rm', '-rf', str(html_report_dir)] if platform.system() != "Windows" else ['cmd', '/c', 'rd', '/s', '/q', str(html_report_dir)], check=False)
+
+        # Run tests with coverage
+        # Using 'backend' as the source to measure coverage on the 'backend' app
+        # Ensure your .coveragerc is configured to pick up the correct source files
+        print("\nRunning all backend tests with coverage...")
+        test_command = [
+            'coverage', 'run',
+            '--rcfile=.coveragerc', # Specify the config file
+            'manage.py', 'test', 'backend.tests'
+        ]
         result_all = subprocess.run(
-            ['python', 'manage.py', 'test', 'backend.tests'],
+            test_command,
             cwd=project_root,
             capture_output=True,
             text=True,
             check=False # Explicitly set check=False
         )
         print(result_all.stdout, flush=True)
-        print(result_all.stderr, flush=True)
+        if result_all.stderr:
+            print("Errors from Django test execution:", file=sys.stderr)
+            print(result_all.stderr, flush=True)
+
+        if result_all.returncode != 0:
+            print("Backend tests failed. Skipping coverage report generation.", file=sys.stderr)
+            return False
+        # Generate coverage report (text summary)
+        print("\nGenerating backend coverage report (summary)...")
+        report_command = ['coverage', 'report', '--rcfile=.coveragerc']
+        result_report = subprocess.run(
+            report_command,
+            cwd=project_root,
+            capture_output=True,
+            text=True,
+            check=False
+        )
+        print(result_report.stdout, flush=True)
+        if result_report.stderr:
+            print("Errors from coverage report generation:", file=sys.stderr)
+            print(result_report.stderr, flush=True)
+
+        # Generate HTML coverage report
+        print("\nGenerating backend HTML coverage report (in htmlcov_backend/)...")
+        html_command = ['coverage', 'html', '--rcfile=.coveragerc', '-d', 'htmlcov_backend']
+        result_html_report = subprocess.run(
+            html_command,
+            cwd=project_root,
+            capture_output=True,
+            text=True,
+            check=False
+        )
+        if result_html_report.stderr and "No data to report" not in result_html_report.stderr:
+            print("Errors from HTML coverage report generation:", file=sys.stderr)
+            print(result_html_report.stderr, flush=True)
+        else:
+            print(f"Backend HTML report generated in {project_root / 'htmlcov_backend'}")
+            
+        # The success is determined by the test execution itself
         return result_all.returncode == 0
     except Exception as e:
-        print(f"Error running Django tests: {e}")
+        print(f"Error running Django tests with coverage: {e}")
         return False
+
 
 def run_react_frontend_tests(frontend_dir):
     """Run React frontend tests using Vitest"""

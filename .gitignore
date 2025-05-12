@@ -4,3 +4,10 @@ venv
 *.pyc
 __pycache__/
 node_modules/
+# Coverage reports
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+htmlcov_backend/
+htmlcov_frontend/ # Placeholder for frontend

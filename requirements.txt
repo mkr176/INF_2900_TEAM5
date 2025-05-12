@@ -16,3 +16,4 @@ pynose==1.5.1
 cryptography
 django-filter
 factory-boy
+coverage
