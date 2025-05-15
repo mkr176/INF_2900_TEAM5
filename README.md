@@ -7,12 +7,6 @@
 
 Agile Software Engineers and Inventors: Alvaro, Carlos, Julius, Matt
 
-## Documentation
-
-[LateX Link](https://sharelatex.tum.de/1436619729gkstxqtxbvgv)
-
-[Docs (old, rather use the LaTeX Link above for user stories, features etc.)](docs/README.md)
-
 ## Pre-requisites
 
 To run this project, you will need to have the following installed:

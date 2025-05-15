@@ -1,0 +1,42 @@
+# INF_2900_TEAM5/library_manager/.coveragerc
+[run]
+source = backend
+branch = True
+omit =
+    */migrations/*
+    */tests/*
+    backend/apps.py
+    backend/admin.py
+    backend/wsgi.py
+    backend/asgi.py
+    backend/settings.py
+    backend/urls.py
+    backend/db_config.py # Typically not covered by Django tests, external config
+    manage.py
+
+[report]
+# Fail if coverage is below 70%, but let's not enable this by default
+# until baseline coverage is established.
+# fail_under = 70
+show_missing = True
+skip_covered = False
+# Regexes for lines to exclude from consideration
+exclude_lines =
+    # Have to re-enable the standard pragma
+    pragma: no cover
+
+    # Don't complain about missing debug-only code:
+    def __repr__
+    def __str__
+
+    # Don't complain if tests don't hit defensive assertion code:
+    raise AssertionError
+    raise NotImplementedError
+
+    # Don't complain if non-runnable code isn't run:
+    if 0:
+    if __name__ == .__main__.:
+
+[html]
+directory = htmlcov_backend
+title = Backend Test Coverage Report
