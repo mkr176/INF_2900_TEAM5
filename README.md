@@ -1,272 +1,148 @@
 <p align="center">
-  <img src="library_manager\frontend\public\images\library_seal.jpg" alt="docu_llama" width="300"/>
-  <br>
+  <img src="library_manager/frontend/public/images/library_seal.jpg" alt="LibManager Logo" width="200"/>
 </p>
 
-# LibManager
+<h1 align="center">LibManager: A Full-Stack Library Management System</h1>
 
-Agile Software Engineers and Inventors: Alvaro, Carlos, Julius, Matt
+<p align="center">
+  A comprehensive web application developed for the <strong>INF-2900 Software Engineering</strong> course at <strong>UiT The Arctic University of Norway</strong>.
+</p>
 
-## Pre-requisites
+<p align="center">
+  <img src="https://img.shields.io/badge/Python-3.11-blue?style=for-the-badge&logo=python" alt="Python">
+  <img src="https://img.shields.io/badge/Django-5.0-green?style=for-the-badge&logo=django" alt="Django">
+  <img src="https://img.shields.io/badge/React-18.2-blue?style=for-the-badge&logo=react" alt="React">
+  <img src="https://img.shields.io/badge/TypeScript-5.2-blue?style=for-the-badge&logo=typescript" alt="TypeScript">
+  <img src="https://img.shields.io/badge/MySQL-8.0-orange?style=for-the-badge&logo=mysql" alt="MySQL">
+</p>
 
-To run this project, you will need to have the following installed:
+## 🌟 About The Project
 
-- [Node.js](https://nodejs.org/en/)
-- [npm](https://www.npmjs.com/)
-- [Python](https://www.python.org/)
+LibManager is a full-stack web application designed to modernize library operations. It provides an intuitive platform for both librarians and patrons to manage, browse, and borrow books. This project was our capstone for the **INF-2900 Software Engineering** course, where we applied agile methodologies, full-stack development principles, and collaborative software engineering practices to build a real-world application from the ground up.
 
-You will also need to install the following python packages:
+Our goal was to create a system that is not only functional and secure but also user-friendly and maintainable, demonstrating our readiness for professional software development roles.
 
-- Django (v5.0.1)
-- WhiteNoise (v6.6.0)
+## ✨ Key Features
 
-### Python Virtual Environment
+- **Role-Based Access Control:** Separate views and permissions for regular Users, Librarians, and Administrators.
+- **Full-Stack Authentication:** Secure user registration, login, and session management with CSRF protection.
+- **Dynamic Book Catalog:** Browse, search, and filter books. Features an interactive carousel view and flip-card details.
+- **CRUD Operations for Books:** Librarians and Admins can easily add, update, and delete books from the catalog.
+- **Borrowing & Returning System:** Users can borrow up to three books and view their borrowing history on their profile.
+- **User Profile Management:** Users can update their profile information and choose a custom avatar.
+- **Admin Dashboard:** Administrators can manage all users, including promoting users to librarian status.
 
-#### Automatic Routine
+## 💻 Technology Stack
 
-##### Windows
+Our project is built with a modern, robust technology stack:
 
-1.  **`Windows_start_backend.bat`**: Starts the Django backend server.
+- **Backend:**
+  - **Python** with **Django** & **Django REST Framework**
+  - **WhiteNoise** for serving static files
+- **Frontend:**
+  - **React** with **TypeScript**
+  - **Vite** for the build tool
+  - **Framer Motion** & **React Slick** for animations and carousels
+- **Database:**
+  - **MySQL**
+- **Testing & DevOps:**
+  - **Backend:** `unittest` (via Django's test runner), `coverage.py`
+  - **Frontend:** **Vitest** (Component), **Cypress** (End-to-End)
+  - **Version Control:** **Git** & **GitHub**
+  - **Project Management:** **Jira**
+  - **Automation:** Bash & Batch scripts for streamlined setup and testing.
 
-    - Double-click `Windows_start_backend.bat` or run it from the command prompt in the project root by typing `Windows_start_backend.bat` and pressing Enter.
+## 🏛️ Architecture
 
-2.  **`Windows_start_frontend.bat`**: Starts the React frontend server in a **new terminal**.
-    - Open a **new Command Prompt or PowerShell window**, navigate to the project root, and run the script by typing `Windows_start_frontend.bat` and pressing Enter.
+LibManager is designed using a **Client-Server architecture**.
 
-##### Linux/Mac
+- The **Frontend (Client)** is a single-page application built with **React**, featuring a component-based structure for a modular and maintainable UI.
+- The **Backend (Server)** is a monolithic application built with **Django**, following the **Model-View-Template (MVT)** pattern. It exposes a **RESTful API** using Django REST Framework to handle all business logic and data manipulation.
+- The client and server communicate via stateless HTTP requests, ensuring a clear separation of concerns.
 
-`Linux_start_backend.sh`: Starts the Django backend server.
-Run the script for the project from the Team5/Linux_Start folder:
+## 👥 Our Team
 
+This project was a collaborative effort by the following agile software engineers:
+
+- Alvaro
+- Carlos
+- Julius
+- Matt
+
+## 🚀 Getting Started
+
+To get a local copy up and running, follow these steps.
+
+### Prerequisites
+
+- [Node.js](https://nodejs.org/en/) & [npm](https://www.npmjs.com/)
+- [Python](https://www.python.org/) (v3.9+)
+- [MySQL Server](https://dev.mysql.com/downloads/installer/)
+
+### Installation & Setup
+
+We have created automation scripts to simplify the entire setup and launch process!
+
+**1. Clone the repository:**
 ```bash
- chmod +x Linux_start_backend.sh
- ./Linux_start_backend.sh
+git clone <repository-url>
+cd INF_2900_TEAM5
 ```
 
-`Linux_start_frontend.sh`: Starts the React frontend server in a **new terminal**.
-Open a **new terminal window**, navigate to the same folder, and run the script:
+**2. Set up the Database:**
+You need a local MySQL server running.
+- Create a database named `library_test`.
+- The application is configured to use the user `root` with the password `SoftwareUser` on `localhost:3306`. You can adjust this in `library_manager/settings.py`.
 
-```bash
- chmod +x Linux_start_frontend.sh
- ./Linux_start_frontend.sh
+> 🗄️ For detailed instructions on setting up MySQL, especially for WSL users, please see our **[MySQL Setup Guide](README_MYSQL.md)**.
+
+**3. Run the Automated Launch Scripts:**
+These scripts create a Python virtual environment, install all backend and frontend dependencies, run database migrations, and start the servers.
+
+**On Windows:**
+In your first terminal, start the backend:
+```bat
+# This script handles venv, installs dependencies, runs migrations, and starts the Django server.
+Windows_start_backend.bat
+```
+Then, in a **new terminal**, start the frontend:
+```bat
+# This script navigates to the frontend folder, installs npm packages, and starts the React dev server.
+Windows_start_frontend.bat
 ```
 
-#### Manual Routine
-
-To run the project and install these python packages, it is recommended to use a virtual environment. Follow the steps below to create and activate a virtual environment.
-
-1. Create & Activate Virtual Environment:
-   Navigate to INF_2900_TEAM5:
-   For Linux/Mac:
-
+**On Linux/macOS:**
+First, make the scripts executable:
 ```bash
-   python3 -m venv venv
-   source venv/bin/activate
+chmod +x Linux_start_backend.sh Linux_start_frontend.sh
+```
+In your first terminal, start the backend:
+```bash
+./Linux_start_backend.sh
+```
+Then, in a **new terminal**, start the frontend:
+```bash
+./Linux_start_frontend.sh
 ```
 
-For Windows:
+**4. Access the Application:**
+Once both servers are running, open your browser and navigate to the frontend development server's URL:
+- **[http://localhost:5173/](http://localhost:5173/)**
 
-```bash
-   python -m venv venv
-   venv\Scripts\activate
+The React frontend will automatically connect to the Django backend API running on `http://localhost:8000`.
 
+## 🧪 Running Tests
+
+We have implemented a comprehensive testing strategy covering the entire application, including unit, functional, security, and end-to-end tests. We also created automated test runner scripts.
+
+**To run all tests automatically:**
+- **On Windows:** `Windows_run_tests.bat`
+- **On Linux/macOS:** `./Linux_run_tests.sh` (make sure to `chmod +x` it first)
+
+> 🔬 For detailed instructions on running specific test suites (backend, frontend, E2E) and generating coverage reports, please see our **[Testing Guide](README_TEST.md)**.
+
+## 📜 Project Documentation
+
+As part of our software engineering course, we maintained extensive documentation covering our process and design decisions. This includes our user stories, architectural diagrams, sprint planning (using Jira), and reflections on the agile process. This demonstrates our commitment to not just writing code, but also to planning, documenting, and reflecting on our work like a professional engineering team.
+**[Group Report](docs/Software%20Engineering%20Group%20Report.pdf)**
 ```
-
-2. To install the required python packages, run the following command:
-
-```bash
-   pip install -r requirements.txt
-
-```
-
-3. Change directory to `library_manager` and Run Database Migration
-
-```bash
-   python manage.py makemigrations
-   python manage.py migrate
-```
-
-4. If Any error occurs, Check if MySQL Server is Running
-
-Run the following command to check if MySQL is running inside WSL:
-
-Linux:
-
-```bash
-   sudo service mysql status
-```
-
-Windows:
-
-```bash
-   Get-Service -Name MySQL*
-```
-
-5. If MySQL is Not Running, start it and run step 3 again.
-
-Start it with:
-
-```bash
-   sudo service mysql start
-```
-
-Windows:
-If you don’t know the exact MySQL service name, you can list all services:
-
-```bash
-   Get-Service | Select-String "MySQL"
-```
-
-```bash
-   Start-Service -Name MySQL80  # Change "MySQL80" if your service has a different name
-```
-
-6. To start the Django server. run the following command:
-
-```bash
-   python manage.py runserver
-```
-
-## Running the Frontend
-
-To run the frontend , you will need to run the following commands in NEW terminal:
-
-1. NOTE: Continue the rest in your second termnial:  
-   To install all requierd npm packages, navigate to the `library_manager/frontend` folder and run the following:
-
-```bash
-   npm install
-```
-
-2. Before run it, add npm package for react motion and movement
-
-```bash
-   npm install framer-motion
-   npm install react-slick
-   npm install react-slick slick-carousel
-```
-
-
-3. To start the React server, in the same folder run the command:. Note: The listed server does not serve static files managed by Django. It's specifically for developing the React frontend.
-
-```bash
-   npm run dev
-```
-
-4. Open your browser and navigate to [http://localhost:8000/](http://localhost:8000/)
-
-## DATABASE CONNECTIONS
-
-First download the version OF (mysql-installer-community-8.0.41.0.msi) [352.2m](https://dev.mysql.com/downloads/installer/)
-
-When you are installing it only install the MySQLServer version 8.0.41 and the MySQL Workbench 8.0.41
-The password should be SoftwareUser
-The only things that should be change is the port to 3305.
-
-These are the only changes that you must do when you are installing MySQL
-
-When you start MySQL you should run and create a database called:
-
-- CREATE DATABASE library_test
-
-Then connect to the database.
-
-When it finish all the instalation and after you install the `requirements.txt` in the terminal you should enter while you are in `library_manager`:
-
-- python manage.py makemigrations
-
-And after that it will show that: No changes detected. Then you should run:
-
-- python manage.py migrate
-
-And then finally you can run the server:
-
-- python manage.py runserver
-
-If the following error appear:  (1146, "Table 'library.backend_user' doesn't exist") follow this steps:
-Delete the migration
-Delete the database
-Then redo the 3 commands above
-
-## Running Tests
-
-This project includes automated tests for the backend (Django) and frontend (React and Cypress). Here's how to run them:
-
-### Automated Test Scripts
-
-We provide scripts for running tests on both Windows and Linux/macOS. These scripts handle activating the virtual environment and executing the tests.
-
-#### Windows
-
-1.  **Activate Virtual Environment and Run Tests:**
-    - Double-click `Windows_run_tests.bat` or run it from the command prompt in the project root:
-      ```bash
-      Windows_run_tests.bat
-      ```
-    - This script activates the Python virtual environment and then runs the `run_tests.py` script.
-
-#### Linux/macOS
-
-1.  **Activate Virtual Environment and Run Tests:**
-    - Make the script executable:
-      ```bash
-      chmod +x Linux_run_tests.sh
-      ```
-    - Run the script from the project root:
-      ```bash
-      ./Linux_run_tests.sh
-      ```
-    - This script activates the Python virtual environment and then runs the `run_tests.py` script.
-
-## Git Workflow
-
-### Push to main from branch
-
-To push changes from your branch to the main branch, you'll need to follow these steps using Git:
-
-1. Ensure you are in your branch:
-
-   ```bash
-   git checkout <your-branch-name>
-   ```
-
-2. Commit your changes:
-
-   ```bash
-   git add <what-you-are-adding>
-   git commit -m "Your commit message"
-   ```
-
-3. Push changes to your remote branch:
-
-   ```bash
-   git push origin <your-branch-name>
-   ```
-
-4. Switch to the "main" branch:
-
-   ```bash
-   git checkout main
-   ```
-
-5. Pull the latest changes from the remote "main" branch:
-
-   ```bash
-   git pull origin main
-   ```
-
-6. Merge your branch into "main":
-
-   ```bash
-   git merge <your-branch-name>
-   ```
-
-7. Push the changes to the remote 'main' branch:
-   ```bash
-   git push origin main
-   ```
-
-To update the text file which shows who created or changed which files at which time use this command
-   ```bash
-   git log --all --pretty=format:"Author: %an %nDate:   %ad%nSubject: %s%n%b%n" --name-status --date=iso > commits_all_hash.txt      
-   ```
